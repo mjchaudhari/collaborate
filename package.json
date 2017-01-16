@@ -1,0 +1,42 @@
+{
+  "name": "collaborate",
+  "version": "0.1.77",
+  "description": "Collaoration core",
+  "dependencies": {
+    "angular-cookies": "^1.6.1",
+    "apidoc": "^0.16.1",
+    "async": "^1.5.2",
+    "azure-storage": "^0.10.0",
+    "body-parser": "^1.15.1",
+    "connect-busboy": "0.0.2",
+    "cookie-parser": "^1.4.1",
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "google-auth-library": "^0.9.8",
+    "googleapis": "^9.0.0",
+    "harmony-proxy": "^1.0.1",
+    "mime": "^1.3.4",
+    "mongodb": "^2.1.19",
+    "multer": "^1.1.0",
+    "oauth2orize": "^1.2.2",
+    "passport": "^0.3.2",
+    "passport-http": "^0.3.0",
+    "passport-http-bearer": "^1.0.1",
+    "shortid": "^2.2.6",
+    "underscore-node": "^0.1.2",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "bower": "^1.7.0",
+    "chai": "^3.5.0",
+    "eslint-plugin-angular": "~0.12.0",
+    "mocha": "^3.2.0"
+  },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
+  "scripts":{
+    "test":"./node_modules/mocha/bin/mocha ./api/**/*.test.js"
+  }
+}
