@@ -42,11 +42,11 @@ function($http,$q, $log, config, $timeout, CacheFactory){
     getUsers : function(searchTerm ){
       if(searchTerm)
       {
-        return $http.get(this.apiPrefix + "/v1/user/search" + "?term=" + searchTerm, requestOpts);
+        return $http.get(this.apiPrefix + "/account/v1/search" + "?term=" + searchTerm, requestOpts);
       }
       else
       {
-        return $http.get(this.apiPrefix + "/v1/user/search", requestOpts);
+        return $http.get(this.apiPrefix + "/account/v1/search", requestOpts);
       }
     },
     

@@ -22,6 +22,7 @@
     "passport": "^0.3.2",
     "passport-http": "^0.3.0",
     "passport-http-bearer": "^1.0.1",
+    "q": "^1.4.1",
     "shortid": "^2.2.6",
     "underscore-node": "^0.1.2",
     "winston": "^2.2.0"
@@ -36,7 +37,7 @@
     "lint",
     "test"
   ],
-  "scripts":{
-    "test":"./node_modules/mocha/bin/mocha ./api/**/*.test.js"
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha ./api/**/*.test.js"
   }
 }
