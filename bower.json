@@ -4,7 +4,8 @@
     "angular-ellipsis": "^0.1.7",
     "angular-material-sidenav": "^0.0.14",
     "angular-material-data-table": "^0.10.10",
-    "ngstorage": "^0.3.11"
+    "ngstorage": "^0.3.11",
+    "ez-utils": "*"
   },
   "devDependencies": {
     "angular": "1.4.8",
