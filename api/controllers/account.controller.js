@@ -19,8 +19,8 @@ exports.authenticate = function(req, cb){
             userName: r.userName,
             secret: r.secret
         };   
-        var c = new Core();
-        c.authenticate(authData, function(e,p){
+        var core = new Core();
+        core.authenticate(authData, function(e,p){
             if(e){
                 return cb(new models.error(e)); 
             }

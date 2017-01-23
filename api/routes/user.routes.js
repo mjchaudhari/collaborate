@@ -16,7 +16,7 @@ module.exports = function (app) {
 	 *
      * @apiSuccess on success returns the authentication token which should be validated with each subsequent request
     */
-	app.post('/account/v1/authenticate', function (req, res) {
+	app.post('/v1/account/authenticate', function (req, res) {
 		console.log("authenticate");
 		AccountController.authenticate(req, function (d) {
 			if (d.isError) {
@@ -34,7 +34,7 @@ module.exports = function (app) {
 	 *
      * @apiSuccess on success returns the authentication token
     */
-	app.post('/account/v1/pin/resend', function (req, res) {
+	app.post('/v1/account/pin/resend', function (req, res) {
 		var v1 = new userCtrl.v1();
 		console.log("resend pin");
 		console.log(req.body);
@@ -67,7 +67,7 @@ module.exports = function (app) {
 	 *     } 
      * @apiSuccess on success returns the authentication token
     */
-	app.post('/account/v1/isAuthenticated', function (req, res) {
+	app.post('/v1/account/isAuthenticated', function (req, res) {
 		console.log('isLoggedIn');
 		if (req.isAuthenticated())
 			res.json(new models.success('true'));
@@ -104,7 +104,7 @@ module.exports = function (app) {
 					}]
 				}
 	 */
-	app.get("/account/v1/search:term?", function (req, res) {
+	app.get("/v1/account/search:term?", function (req, res) {
 		var v1 = new userCtrl.v1();
 		v1.searchUsers(req, function (data) {
 			res.json(data);
@@ -120,7 +120,7 @@ module.exports = function (app) {
      *
 	 * * @apiSuccess {String} groups object [{Firstname:"", LastName : "", UserName:"", "Status":"", CreatedOn : "", EmailId:"",Picture:""}]
     */
-	app.post('/account/v1/user', function (req, res) {
+	app.post('/v1/account/user', function (req, res) {
 		var v1 = new userCtrl.v1();
 		v1.createUser(req, function (e, d) {
 			
@@ -130,7 +130,7 @@ module.exports = function (app) {
 			res.json(d);
 		});
 	});
-	app.get("/account/v1/:username?", function (req, res) {
+	app.get("/v1/account/:username?", function (req, res) {
 		var u = new user();
 		u.init(req.params.username, function (err, data) {
 			if (err) {

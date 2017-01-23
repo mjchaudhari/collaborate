@@ -6,8 +6,7 @@ var passport        = require('passport');
 var path            = require("path");
 var bodyParser      = require('body-parser');
 var busboy          = require('connect-busboy');
-// var dbConfig        = require("./api/db.connection.js");
-// var auth            = require("./api/auth.js");
+
 
 var tempUploadFolder = path.normalize(__dirname + "/../../tmpStore");
 var multer  = require('multer')
@@ -41,7 +40,7 @@ app.get('/', function (req, res, next) {
 //require('./api/routes/auth.routes.js')(dbConfig, app, authController); // load our routes and pass in our app and fully configured passport
 //require('./api/routes/oauth.routes.js')(dbConfig, app); // load our routes and pass in our app and fully configured passport
 require('./api/routes/user.routes.js')(app); // load our routes and pass in our app and fully configured passport
-// require('./api/routes/group.routes.js')(dbConfig, auth, app); // load our routes and pass in our app and fully configured passport
+require('./api/routes/group.routes.js')(app); // load our routes and pass in our app and fully configured passport
 // // require('./api/routes/utils.routes.js')(dbConfig, auth, app); // load our routes and pass in our app and fully configured passport
 // require('./api/routes/asset.routes.js')(dbConfig, auth, app); // load our routes and pass in our app and fully configured passport
 

@@ -100,7 +100,7 @@
         }
 
         function getGroups (){
-            $scope.promices.groupsPromice = dataService.getGroups()
+            return dataService.getGroups()
             .then(function(d){
                 angular.copy(d.data.data, $scope.groupsList);
                 var sectionHeader = {
@@ -134,7 +134,6 @@
             function(e){
 
             });
-            return $scope.promices.groupsPromice;
         }
         $scope.onSelect = function(node){
             $log.debug(node);
@@ -159,12 +158,13 @@
         var preInit = function(){
             var tasks = [];
             tasks.push(getGroups());
-            $q.all([
+            var initPromice = $q.all([
                 tasks
             ])
             .then(function(){
                 init()
             });
+            $scope.promices.initPromice = initPromice;
         }
 
         var init = function(){

@@ -1,12 +1,13 @@
 
 //User routes
-var groupCtrl = require("./../controllers/group.controller.js");
+
 var mongodb = require('mongodb');
 var mongo = mongodb.MongoClient;
-
 var models = require("./../response.models.js").models;
-module.exports = function(dbConfig, auth,app) {
-	var v1=new groupCtrl.v1();
+var auth            = require("./../auth.js");
+var GroupController = require("./../controllers/group.controller.js");
+
+module.exports = function(app) {
 	/**
      * @api {get} /v1/groups get groups
      * @apiDescription Get the groups of the logged in user has created and the groups he is member of.
@@ -49,14 +50,14 @@ module.exports = function(dbConfig, auth,app) {
 			}
     */
 	app.get('/v1/groups', auth.isBearerAuth,function(req, res) {
-	  	v1.getGroups(req, function(d){
+	  	
+		  GroupController.getGroups(req, function(d){
 	  		if(d.isError){
 				res.status(400).send(d);
 				return;
 			}
 			res.json(d);
 	  	}); 
-		//res.json('okay');
 	});
 
 	
@@ -76,7 +77,7 @@ module.exports = function(dbConfig, auth,app) {
     */
 	app.post('/v1/group', auth.isBearerAuth,function(req, res) {
 		//console.log(req.body);
-		v1.createOrUpdateGroup(req, function (d){
+		GroupController.createOrUpdateGroup(req, function (d){
 			if(d.isError){
 				res.status(400).send(d);
 				return;
@@ -103,7 +104,7 @@ module.exports = function(dbConfig, auth,app) {
     */
 	app.get('/v1/group/members/:groupId', auth.isBearerAuth,function(req, res) {
 		var groupId = req.params.groupId; 
-		v1.getMembers(groupId, function (d){
+		GroupController.getMembers(groupId, function (d){
 			if(d.isError){
 				res.status(400).send(d);
 				return;
@@ -129,7 +130,7 @@ module.exports = function(dbConfig, auth,app) {
      * @apiSuccess {group} group object.
     */
 	app.post('/v1/group/members', auth.isBearerAuth,function(req, res) {
-		v1.addMembers(req, function (d){
+		GroupController.addMembers(req, function (d){
 			if(d.isError){
 				res.status(400).send(d);
 				return;
@@ -154,7 +155,7 @@ module.exports = function(dbConfig, auth,app) {
      * @apiSuccess {group} group object.
     */
 	app.post('/v1/group/members/remove', auth.isBearerAuth, function(req, res) {
-		v1.removeMembers(req, function (d){
+		GroupController.removeMembers(req, function (d){
 			if(d.isError){
 				res.status(400).send(d);
 				return;
@@ -180,7 +181,7 @@ module.exports = function(dbConfig, auth,app) {
     */
     app.get('/v1/group/membership', auth.isBearerAuth, function(req, res) {
         
-		v1.checkGroupMembership (req.user.User._id,req.query.groupId, function (d){
+		GroupController.checkGroupMembership (req.user.User._id,req.query.groupId, function (d){
 			if(d.isError){
 				res.status(400).send(d);
 				return;

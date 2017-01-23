@@ -20,13 +20,13 @@ angular.module('app').factory('authService', ['$http', '$log','$q','config' ,'$l
     Register yourself
     */
     var _register = function( registerModel){
-      var url = config.apiBaseUrl + "account/v1";
+      var url = config.apiBaseUrl + "v1/account";
       
       return $http.post(url, registerModel);
     }
     
     var _resendPin = function( data){
-      var url = config.apiBaseUrl + "account/v1/pin/resend";
+      var url = config.apiBaseUrl + "v1/account/pin/resend";
       return $http.post(url, data);
     }
     var _login = function (userName, password) {
@@ -35,7 +35,7 @@ angular.module('app').factory('authService', ['$http', '$log','$q','config' ,'$l
             userName: userName
             , secret: password
         };
-        var url = config.apiBaseUrl + "account/v1/authenticate";
+        var url = config.apiBaseUrl + "v1/account/authenticate";
         $http.post(url, model).then(
         function(d){
         	dataService.clearCache();
@@ -67,7 +67,7 @@ angular.module('app').factory('authService', ['$http', '$log','$q','config' ,'$l
     };
 
     var _isAuthenticated = function () {
-        var url = config.apiBaseUrl + "account/v1/isAuthenticated";
+        var url = config.apiBaseUrl + "v1/account/isAuthenticated";
         return $http.post(url).then(function(f){
             _isLoggedIn = !f.data.isError;
             if($localStorage.__splituser){

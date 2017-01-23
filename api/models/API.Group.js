@@ -7,7 +7,7 @@ var API = API || {} // Namespace
 API.Group = function(data){
     
     //Properties
-    this._id = data.__id;
+    this._id = data._id;
     this.name = data.name;
     this.description = data.description;
     this.locale = data.locale;

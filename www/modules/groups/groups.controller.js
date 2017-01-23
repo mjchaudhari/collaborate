@@ -13,20 +13,21 @@
         $scope.promices = {};
         
         function getGroups (){
-            $scope.promices.groupsPromice = dataService.getGroups()
+            var groupsPromice = dataService.getGroups()
             .then(function(d){
                 angular.copy(d.data.data, $scope.groupList);
             },
             function(e){
 
             });
-            return $scope.promices.groupsPromice;
+            $scope.promices.groupsPromice = groupsPromice;
+            return groupsPromice;
         }
 
         var preInit = function(){
             var tasks = [];
             tasks.push(getGroups());
-            $q.all([
+            $scope.promices.init = $q.all([
                 tasks
             ])
             .then(function(){
