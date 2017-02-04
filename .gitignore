@@ -9,17 +9,3 @@ test-reports/
 node_modules/
 node_modules/.bin/_mocha
 www/vendor
-
-www/vendor/angular-animate/.bower.json
-
-www/vendor/.DS_Store
-
-www/vendor/.DS_Store
-
-www/vendor/.DS_Store
-
-www/.DS_Store
-
-.DS_Store
-
-.DS_Store
