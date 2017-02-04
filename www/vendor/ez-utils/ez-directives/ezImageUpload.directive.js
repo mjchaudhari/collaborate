@@ -45,14 +45,16 @@
                        'Use square cropper area',
                   '</md-switch>',
                   '<div layout="column" layout-align="center center" class="crop-area md-whiteframe-1dp">',
-                      '<ng-md-icon icon="camera_alt" size="64" ngf-select ', 
-                          'ng-model="thumb.sourceFile" accept="\'image/*\'"></ng-md-icon> ',
-                      '<img-crop image="thumb.sourceFile | ngfDataUrl" area-type="{{thumb.cropperGuide}}"',
-                      '    area-min-size="thumb.cropperMinSize" result-image-size="thumb.resultSize" ',
-                      '    result-image="thumb.croppedDataUrl" >',
+                      '<ng-md-icon icon="camera_alt" size="64" ngf-select=""  ', 
+                          'ng-model="thumb.sourceFile" ></ng-md-icon> ',
+//                       '<img-crop image="thumb.sourceFile|ngfDataUrl" area-type="{{thumb.cropperGuide}}"',
+//                       '    area-min-size="thumb.cropperMinSize" result-image-size="thumb.resultSize" ',
+//                       '    result-image="thumb.croppedDataUrl" ng-init="croppedDataUrl=\'\'">',
+//                       '</img-crop>',
+                      '<img-crop image="thumb.sourceFile|ngfDataUrl" area-type="{{thumb.cropperGuide}}" result-image="thumb.croppedDataUrl" >',
                       '</img-crop>',
-                      '<h3>Preiew</h3>',
-                      '<img src="{{thumb.croppedDataUrl}}" />',
+//                       '<h3>Preiew</h3>',
+//                       '<img src="{{thumb.croppedDataUrl}}" />',
                   '</div>',
 
               '</div>',
@@ -82,7 +84,7 @@
               resultSize : 100,
               cropperGuide : 'circle'
           }
-          $scope.defaultImage = "./content/images/group-default3.png";
+          //$scope.defaultImage = "./images/group-default3.png";
           $scope.thumnailClass="";
           var init = function(){
             

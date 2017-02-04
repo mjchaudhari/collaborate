@@ -1,26 +1,8 @@
-<div  ng-controller="groupDetailController"  cg-busy="promices.groupDetail" >
+<div  ng-controller="groupDetailController"  cg-busy="promices.busy" >
     <md-toolbar class=""  >
 		  <div class="md-toolbar-tools">
             <ez-thumb img="group.thumbnail" text="group.name"></ez-thumb>
             <span>{{group.name}}</span>
-            <div flex></div>
-            <md-button class="md-icon-button" aria-label="save" ui-sref="home.group.detail">
-				<i class="material-icons">info</i>
-            </md-button>
-            <md-button class="md-icon-button" aria-label="save" ui-sref="home.group.files">
-				<i class="material-icons">view_list</i>
-            </md-button>
-            <md-button class="md-icon-button" aria-label="save" ui-sref="home.group.analytics">
-            	<i class="material-icons">assessment</i>
-            </md-button>
-            
-            <div flex></div>
-            <md-button class="md-icon-button" aria-label="save" ng-click="save()">
-                    <i class="material-icons">save</i>
-            </md-button>
-            <md-button class="md-icon-button" aria-label="Cancel" ng-click="cancel()">
-                    <i class="material-icons">cancel</i>
-            </md-button>
 		  </div>
     </md-toolbar>
     <div layout-padding>

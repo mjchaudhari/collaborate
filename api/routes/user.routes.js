@@ -19,10 +19,6 @@ module.exports = function (app) {
 	app.post('/v1/account/authenticate', function (req, res) {
 		console.log("authenticate");
 		AccountController.authenticate(req, function (d) {
-			if (d.isError) {
-				res.status(401).send(d);
-				return;
-			}
 			res.json(d);
 		});
 	});
@@ -39,17 +35,6 @@ module.exports = function (app) {
 		console.log("resend pin");
 		console.log(req.body);
 		AccountController.resetPasword(req, function (d) {
-			if (d.isError) {
-				res.status(400).send(d);
-				return;
-			}
-			if (d.data && !d.data.Secret) {
-				log.debug("Secret not generated");
-				var e = new models.error("Internal error while resetting credentials.")
-				res.status(400).send(d);
-			}
-			//Send email here
-			var m = new models.success("Password reset.");
 			res.json(m);
 		});
 	});
@@ -105,8 +90,7 @@ module.exports = function (app) {
 				}
 	 */
 	app.get("/v1/account/search:term?", function (req, res) {
-		var v1 = new userCtrl.v1();
-		v1.searchUsers(req, function (data) {
+		AccountController.searchUsers(req, function (data) {
 			res.json(data);
 		});
 	})
@@ -120,23 +104,9 @@ module.exports = function (app) {
      *
 	 * * @apiSuccess {String} groups object [{Firstname:"", LastName : "", UserName:"", "Status":"", CreatedOn : "", EmailId:"",Picture:""}]
     */
-	app.post('/v1/account/user', function (req, res) {
-		var v1 = new userCtrl.v1();
-		v1.createUser(req, function (e, d) {
-			
-			if (e) {
-				res.json(e);
-			}
+	app.post('/v1/account/user', function (req, res) {		
+		AccountController.createUser(req, function (d) {
 			res.json(d);
-		});
-	});
-	app.get("/v1/account/:username?", function (req, res) {
-		var u = new user();
-		u.init(req.params.username, function (err, data) {
-			if (err) {
-				res.json(new models.error(err));
-			}
-			res.json(new models.success(u));
 		});
 	});
 }

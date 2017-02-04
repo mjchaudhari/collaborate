@@ -126,7 +126,7 @@ function($http,$q, $log, config, $timeout, CacheFactory){
         qryString+="from="+filter.from
       }
 
-      var url = config.apiBaseUrl + "/v1/"+ filter.groupId +"/assets";
+      var url = config.apiBaseUrl + "/v1/group/"+ filter.groupId +"/assets";
       if(qryString.length > 0){
         url+="?"+qryString;
       }

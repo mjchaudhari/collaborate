@@ -36,8 +36,9 @@
 
         var preInit = function(){
             var tasks = [];
-            tasks.push(getGroupDetail());
-            $q.all([
+            $scope.promices.groupDetail = getGroupDetail();
+            tasks.push($scope.promices.groupDetail);
+            $scope.promices.busy = $q.all([
                 tasks
             ])
             .then(function(){
@@ -50,11 +51,11 @@
         };
 
         function getGroupDetail (){
-            $scope.promices.groupDetail = dataService.getGroup($scope._id)
+            return dataService.getGroup($scope._id)
             .then(function(d){
                 $scope.group = angular.copy(d.data.data[0]);
                 if($scope.group.members){
-                    $scope.group.Members.forEach(function(m){
+                    $scope.group.members.forEach(function(m){
                         m._name = m.firstName + ' ' + m.lastName;
                     })
                 }
@@ -63,7 +64,6 @@
             function(e){
 
             });
-            return $scope.promices.groupPromice;
         }
 
         function _querySearch(term){
@@ -99,7 +99,7 @@
             .then(function(d){   
                 var users = [];
                 d.data.data.forEach(function(u){
-                    u.name = u.firstName + ' ' + u.lastName;
+                    u._name = u.firstName + ' ' + u.lastName;
                 });
                 defer.resolve(d.data.data);
             });
@@ -118,6 +118,9 @@
                 //if this group is created by current user then allow user to manage users
                 $scope.group._id = g.data.data._id;
                 $scope.group.members = g.data.data.members;
+                $scope.group.members.forEach(function(u){
+                    u._name = u.firstName + ' ' + u.lastName;
+                });
                 $scope.group.createdBy = g.data.data.createdBy;
                 showSimpleToast("Group saved");
             },

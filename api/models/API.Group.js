@@ -102,10 +102,11 @@ API.Group.prototype.getFileFromStorage = function(params,callback){
  * @return {array[asset]} array - list of assets
  */
 API.Group.prototype.getAssets = function(params, callback){
+    var self = this;
     mongo.connect( )
         .then(function(db){
             //find the groups of this user
-            var filter = { "_id": params.groupId,  "members": { $in: [params.profileId] } }
+            var filter = { "_id": self._id,  "members": { $in: [params.profileId] } }
             db.collection("groups").find(filter).toArray(function(err, data){
                 if(err){
                     db.close();  
@@ -117,17 +118,27 @@ API.Group.prototype.getAssets = function(params, callback){
                     return callback(new apiException().unauthenticated('unauthorized', 'Group'));
                 }
                 
-                var parentId = options.parentId;
-                if(options.parentId == null){
-                    parentId = options.groupId;
+                var parentId = params.parentId;
+                if(params.parentId == null){
+                    parentId = self._id;
                 }
-                
+                var from = params.from;
+                if(params.from == null){
+                    from = new Date(2000, 1, 1);
+                }
+
                 var filter = {
-                    "groupId": options.groupId,
-                    "auditTrail.updatedOn" : {"$gte": options.from},
-                    "accessibility": {$or : [ null, [{ $in: [params.profileId] }]]}
+                    "groupId": self._id,
+                    "auditTrail.updatedOn" : {"$gte": from},
+                    "$or":[
+                            { "accessibility": { $in: [params.profileId]}},
+                            { "accessibility": null}
+                        ]
                 }
-                
+
+                //"accessibility": {$or : [ null, [{ $in: [params.profileId] }]]}
+                //"accessibility": { $in: [params.profileId, null] }
+                                
                 //return assetsas per criteria
                 filter._paths = {$in : [new RegExp('/' + parentId + '$')]};
                 

@@ -7,8 +7,8 @@ var async = require ("async");
 var path = require("path");
 var models = require("./../response.models.js").models;
 var Core = require("./../models/API.Core.js");
-var apiAccount = require("./../models/API.Profile.js");
 
+var Group = require("./../models/API.Group.js");
 /**
  * Controller for group management
  */
@@ -25,7 +25,6 @@ exports.getGroups =function(req, cb)
     profile.getGroups(options, function(e, result){
         if(e)
         {
-            db.close();
             return cb(new models.error(e));
         }
         return cb(new models.success(result));
@@ -43,4 +42,17 @@ exports.createOrUpdateGroup = function(req, cb){
         return cb(new models.success(data));
     });
 
+}
+
+exports.getAssets = function(req, cb){
+    var profile = req.user;
+    var groupId = req.params.groupId;
+    var g = new Group({_id:groupId});
+    g.getAssets({"profileId": profile._id}, function(e, data){
+        if(e)
+        {
+            return cb(new models.error(e));
+        }
+        return cb(new models.success(data));
+    });
 }

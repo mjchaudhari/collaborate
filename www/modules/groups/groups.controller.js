@@ -11,7 +11,7 @@
         $scope.mainTitle = "Groups";
         $scope.groupList = [];
         $scope.promices = {};
-        
+        $scope.defaultGroupThumbnail = "./images/cp.png";
         function getGroups (){
             var groupsPromice = dataService.getGroups()
             .then(function(d){
@@ -40,6 +40,10 @@
         };
         $scope.openBoard = function(g){
             $state.go("home.group.board",{"g": g._id});
+            $scope.mainTitle = g.name;
+        }
+        $scope.details = function(g){
+            $state.go("home.group.detail",{"g": g._id});
             $scope.mainTitle = g.name;
         }
         preInit();

@@ -11,7 +11,7 @@
         $scope.title = "Groups";
         $scope.groupsList = [];
         $scope.promices = {};
-        $scope._id = $stateParams.id;
+        $scope._id = $stateParams.g;
         $scope.view = $stateParams.v;
         $scope.selectedTab = 'analytics';
         $scope.group = null;

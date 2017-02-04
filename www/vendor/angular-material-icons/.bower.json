@@ -38,6 +38,6 @@
     "commit": "5a6c5182dcd354a0444b8724536c59822f7b9cd2"
   },
   "_source": "https://github.com/klarsys/angular-material-icons.git",
-  "_target": "0.2.0",
+  "_target": "^0.2.0",
   "_originalSource": "angular-material-icons"
 }

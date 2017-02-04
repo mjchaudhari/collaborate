@@ -54,7 +54,7 @@
     min-height: 100vh;
 }
 .body-bg{
-    background-image: url(../images/bg-9.jpg) ;
+/*     background-image: url(../images/bg-9.jpg) ; */
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -164,10 +164,10 @@ Show the image as background to display: block;
   content: ' ';
 }
 .thumbnail-card{
-  border: 1px solid silver;
-  height: 110px;
-  width: 130px;
-  padding:5px;
+  /* border: 1px solid silver; */
+  /* height: 110px; */
+  /* width: 130px; */
+  /* padding:5px; */
   border-radius: 50%;
 }
 .thumbnail-card.square{
@@ -390,3 +390,9 @@ md-input-container {
   margin: 2px 0;
 }
 
+.cropArea {
+    background: #E4E4E4;
+    overflow: hidden;
+    width:500px;
+    height:350px;
+}

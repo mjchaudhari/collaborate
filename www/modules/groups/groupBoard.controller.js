@@ -66,7 +66,7 @@
         function getTopics (){
             $scope.promices.groupTopics = dataService.getAssets({groupId:$scope._id})
             .then(function(d){
-                $scope.topics = angular.copy(d.data.data[0]);
+                $scope.topics = angular.copy(d.data.data);
             },
             function(e){
 

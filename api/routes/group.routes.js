@@ -102,7 +102,7 @@ module.exports = function(app) {
      *
      * @apiSuccess {group} group object.
     */
-	app.get('/v1/group/members/:groupId', auth.isBearerAuth,function(req, res) {
+	app.get('/v1/group/:groupId/members', auth.isBearerAuth,function(req, res) {
 		var groupId = req.params.groupId; 
 		GroupController.getMembers(groupId, function (d){
 			if(d.isError){
@@ -248,5 +248,25 @@ module.exports = function(app) {
 			
 		});
 	});
-    
+    /**
+     * @api {get} /v1/groupId/assets?parentId?count?updartedAfter?  check if current user is member of this group
+     * @apiName Get assets
+     * @apiGroup Asset
+     * @apiParam {string} groupId - the group in which asset is created
+     * @apiParam {string} parentId - the parant container Id in which the asset lies. OPTIONAL
+     * @apiParam {int} count - count of the recorda required OPTIONAL defaults to 100
+	 * @apiHeader {date} from - fetch records created/updated after this date. Optional
+     * 
+	 * @apiHeaderExample {json} Header-Example:
+	 *     {
+	 *       "Authorization": "Bearer xajksdhfkalsduwerb7879fasdf--"
+	 *     }      
+     *
+     * @apiSuccess {boolean} true if user is member of given group 
+    */
+    app.get('/v1/group/:groupId/assets', auth.isBearerAuth, function(req, res) {
+		GroupController.getAssets(req, function (d){
+			res.json(d);
+		});
+	});
 }

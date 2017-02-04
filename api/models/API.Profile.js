@@ -102,11 +102,12 @@ API.Profile.prototype.getGroups = function (options, cb) {
     var profileId = this._id;
     //TODO
     //search.Members = {$in : [new mongoose.Types.ObjectId(u._id)]};
-    //search.Members = {$in : [ u._id]};
+    search.members = {$in : [profileId]};
+
     mongo.connect()
     .then(function (db) {
         db.collection("groups")
-        .find({ "members": { $in: [profileId]}})
+        .find(search)
         .toArray(function (e, resultGroups) {
             if (e) {
                 db.close();
@@ -135,28 +136,30 @@ API.Profile.prototype.getGroups = function (options, cb) {
         });
     });
 };
-
+/**
+ * Add member to group
+ * @param {array[object]} groupData - array of group object
+ * @param {string} group.__id - group id
+ * @param {array[object]} group.memberes - members
+ * @return {object} group
+ */
 API.Profile.prototype.createOrUpdateGroup = function (groupData, cb) {
     console.log("controller : post artifact");
     var self = this;
     var param = groupData;
     var data = {}
+    if(param._id == null){
 
-    if (param._id) {
-        data._id = param._id;
     }
-    else {
-        data._id = shortId.generate();
-        data.createdBy = self._id;
-        data.members = [];
-        if (param.members) {
-            data.members = _.pluck(param.members, "_id");
-        }
-        if(!_.contains(data.members, self._id)){
-            data.members.push(self._id);
-        }
+    
+    data.members = [];
+    if (param.members) {
+        data.members = _.pluck(param.members, "_id");
     }
 
+    if(!_.contains(data.members, self._id)){
+        data.members.push(self._id);
+    }
     if (param.name) {
         data.name = param.name;
     }
@@ -186,7 +189,7 @@ API.Profile.prototype.createOrUpdateGroup = function (groupData, cb) {
         db.collection("groups")
         .findOneAndUpdate({ "_id": data._id }, { $set: data }, { "upsert": true, "forceServerObjectId": false, "returnOriginal": false }, function (err, data) {
             if (err) {
-                return cb(new apiException(null, 'Profile', err));
+                return cb(new apiException(null, 'Profile', err))
             }
             //check if the data.thumbnail is base64 image or an url
             //if base64 then save it as file in drive and update url to this group
@@ -201,6 +204,48 @@ API.Profile.prototype.createOrUpdateGroup = function (groupData, cb) {
                     return cb(null, result[0]);
                 });
             })
+        });
+    });
+};
+
+API.Profile.prototype.addMember = function (groupData, cb) {
+    console.log("controller : add member");
+    var self = this;
+    var param = groupData;
+    var data = {}
+
+    if (param._id == null) {
+        var ex = new apiException().unauthenticated('unauthorized', 'Group');
+        return cb(ex, null);
+    }
+    
+    data.members = [];
+    if (param.members) {
+        data.members = _.pluck(param.members, "_id");
+    }
+    
+    if(!_.contains(data.members, self._id)){
+        data.members.push(self._id);
+    }
+    
+    data.updatedBy = this._id;
+    data.updatedOn = new Date();
+    
+    mongo.connect()
+    .then(function (db) {
+        db.collection("groups")
+        .findOneAndUpdate({ "_id": data._id }, { $set: data }, { "upsert": true, "forceServerObjectId": false, "returnOriginal": false }, function (err, data) {
+            if (err) {
+                return cb(new apiException(null, 'Profile', err));
+            }
+            //check if the data.thumbnail is base64 image or an url
+            //if base64 then save it as file in drive and update url to this group
+            self.getGroups({'_id': gdata._id}, function(e, result){
+                if(e){
+                    return cb(new apiException('Member saved but there is a problem retrieving it.', 'Profile', err));
+                }
+                return cb(null, result[0]);
+            });
         });
     });
 };

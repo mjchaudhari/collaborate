@@ -5,12 +5,28 @@
 			<md-grid-list md-cols="4" md-cols-xs="2" md-cols-sm="3" md-cols-gt-md="4" 
 				md-row-height="1:1" md-gutter="4px">
 				<md-grid-tile ng-repeat="g in groupList"
-											md-colspan-sm="1"
-											ng-class="" 
-											style="background-image: url({{g.thumbnail}}); background-size: cover;"
-											class="md-whiteframe-5dp"
-											ng-click="openBoard(g)">
-					<md-grid-tile-footer><h3>{{g.name}}</h3></md-grid-tile-footer>
+						md-colspan-sm="1"
+						ng-class="" 
+						style="background-image: url({{g.defaultGroupThumbnail || defaultGroupThumbnail}}); background-size: cover;"
+						class="md-whiteframe-5dp"
+						>
+						<md-button layout-align="center end" class="md-icon-button" aria-label="more" ng-click="openBoard(g)">
+							<i class="material-icons">remove_red_eye</i>
+						</md-button>
+					<md-grid-tile-footer>
+						<div layout="row" layout-aligh="center center">
+							<div flex="80">
+								<h3>{{g.name}}</h4>
+							</div>
+							
+							<div flex="20">
+								<md-button layout-align="center end" class="md-icon-button" aria-label="more" 
+									ng-click="details(g)">
+									<i class="material-icons">more_vert</i>
+								</md-button>
+							</flex>
+						</div>						
+					</md-grid-tile-footer>
 				</md-grid-tile>
 			</md-grid-list>
 		</md-content>
