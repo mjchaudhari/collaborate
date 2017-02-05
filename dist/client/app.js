@@ -1,0 +1,2151 @@
+
+/// <reference path="../typings/angularjs/angular.d.ts"/>
+// Code goes here
+ //module = angular.module('ezDirectives', ['ngFileUpload']);
+ var app = angular.module('app', ['ngMaterial','ngMdIcons', 'ngAnimate', 'ngSanitize', 'ui.router',
+      'ngStorage','ngFileUpload','ngImgCrop', 'ezDirectives','angular-cache','angularMoment',
+      'cgBusy','sasrio.angular-material-sidenav']);
+ app.constant("config",{
+     appTitle:"easy collaborate",
+     apiBaseUrl : "",
+     themes : ['default','White-theme','light-blue','amber','cyan', 'light-green','lime','cool-blue']
+  	
+ })
+ app.config([ "$httpProvider","$urlRouterProvider", '$stateProvider','$mdThemingProvider', 'CacheFactoryProvider', '$localStorageProvider','ssSideNavSectionsProvider',
+ function($httpProvider, $urlRouterProvider, $stateProvider, $mdThemingProvider, CacheFactoryProvider, $localStorageProvider,ssSideNavSectionsProvider ){
+   
+   
+
+   angular.extend(CacheFactoryProvider.defaults, { maxAge: 1 * 60 * 1000 });
+   $localStorageProvider.setKeyPrefix("__cpadmin");
+
+    // $mdThemingProvider.theme('default')
+	//    .primaryPalette('cool-blue')
+	//    .accentPalette('red')
+	//    .warnPalette('deep-orange')
+	//    .backgroundPalette('bg-white');
+
+    $mdThemingProvider.theme('White-theme')
+	.primaryPalette('blue-grey')
+	.accentPalette('red')
+    .warnPalette('orange')
+    .backgroundPalette('blue-grey').dark();
+
+    
+   $mdThemingProvider.theme('light-blue')
+    .primaryPalette('light-blue')
+    .accentPalette('red');
+
+   $mdThemingProvider.theme('amber')
+    .primaryPalette('amber')
+    .accentPalette('red');
+
+   $mdThemingProvider.theme('cyan')
+    .primaryPalette('cyan')
+    .accentPalette('red');
+
+   $mdThemingProvider.theme('dark-blue')
+    .primaryPalette('yellow')
+    .accentPalette('red');
+//light-green
+   $mdThemingProvider.theme('light-green')
+    .primaryPalette('light-green')
+    .accentPalette('red');
+//lime
+  $mdThemingProvider.theme('lime')
+      .primaryPalette('lime')
+      .accentPalette('pink');
+
+
+
+         
+   $mdThemingProvider.alwaysWatchTheme(true);
+   ssSideNavSectionsProvider.initWithTheme($mdThemingProvider);
+   $httpProvider.interceptors.push('httpInterceptor');
+   
+   $urlRouterProvider.otherwise("/");
+   
+   $stateProvider
+   .state("landing", {url:"/", templateUrl : "/modules/landing/landing.html"})
+   .state("account", {url:"/account", templateUrl : "/modules/account/accountContainer.html", abstract:"true"})
+   .state("account.login", {url:"/login", templateUrl : "/modules/account/login.html"})
+   .state("account.register", {url:"/register", templateUrl : "/modules/account/register.html"})
+   .state("account.forgotpassword", {url:"/forgotpassword", templateUrl : "/modules/account/forgotpassword.html"})     
+   
+   //requires login
+   .state("home", {url:"", templateUrl : "/modules/homeContainer.html", abstract:true})
+   .state("home.dashboard", {url:"/dashboard", templateUrl : "/modules/dashboard.html"})
+   .state("home.groups", {url:"/groups", templateUrl : "/modules/groups/groups.html"})
+   
+   .state("home.group", {url:"/:g", templateUrl : "/modules/groups/group.html"})
+   .state("home.group.board", {url:"/board", templateUrl : "/modules/groups/group.board.html"})
+   .state("home.group.detail", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
+   .state("home.group.analytics", {url:"/analytics", templateUrl : "./modules/groups/group.analytics.html"})
+   .state("home.group.assets", {url:"/assets?p", templateUrl : "./modules/assets/asset.list.html"})
+   .state("home.group.files", {url:"/files", templateUrl : "./modules/assets/file.list.html"})
+   .state("home.group.asset", {url:"/asset?p?type?a", templateUrl : "modules/assets/asset.edit.html"})
+   
+   .state("home.asset", {url:"/:groupId/asset?p&type&a", templateUrl : "./modules/groups/asset.edit.html"})
+      
+      
+      
+    ;
+      
+ }]);
+ //Initialize state provider here.
+ app.run(['$state', function ($state) {
+   //hook the httpintercepter here so that it will add the token in each request
+   //$httpProvider.interceptors.push('httpInterceptor');
+       
+ }]);
+ 
+
+
+
+'use strict';
+
+angular.module('app').factory('httpInterceptor', ["$rootScope", '$q', '$location', '$injector', '$localStorage','$log',
+function ($rootScope, $q, $location, $injector , $localStorage, $log) {
+
+    var authInterceptorServiceFactory = {};
+
+    var _request = function (config) {
+
+        if (config.url.search('authenticate') == -1 && config.url.search('resend')=='-1') {
+                                
+            config.headers = config.headers || {};
+
+            var authData = $localStorage.__splituserat;
+            if (authData) {
+                
+                config.headers.Authorization = 'Bearer ' + authData;
+            }
+        }
+        return config;
+    }
+
+    // On request failure
+    var _requestError= function (rejection) {
+        return $q.reject(rejection);
+    }
+
+    // On response success
+    var _response= function (response) {
+        return response || $q.when(response);
+    }
+
+    var _responseError = function (rejection) {
+        if (rejection.status === 401) {
+            if ($location.$$path.indexOf("login") <= -1  )
+            {
+                //$log.info('Unauthenticated...redirecting to login page.');
+                //$injector.get('$state').go("account.login");
+                $rootScope.$emit("onUnauthenticatedAccess");
+            }
+        }
+        else {
+            
+            //$log.error('Status: ' + rejection.status + ' , Message: ' + rejection.statusText);
+            //$log.debug( 'Response Error: - ' + JSON.stringify(rejection));
+        }
+        return $q.reject(rejection);
+    }
+
+    authInterceptorServiceFactory.request = _request;
+    authInterceptorServiceFactory.requestError = _requestError;
+    authInterceptorServiceFactory.response = _response;
+    authInterceptorServiceFactory.responseError = _responseError;
+
+    return authInterceptorServiceFactory;
+}]);
+
+angular.module('app').factory('authService', ['$http', '$log','$q','config' ,'$localStorage', 'CacheFactory','dataService',
+	function ($http, $log, $q, config, $localStorage, CacheFactory,dataService) {
+
+    var authServiceFactory = {
+        get isLoggedIn () {
+            return _isLoggedIn;
+        },
+        get userDetail () {
+            return _userDetail;
+        },
+        
+        
+
+    };
+    var _isLoggedIn = false;
+    var _userDetail = {
+    };
+	/**
+    Register yourself
+    */
+    var _register = function( registerModel){
+      var url = config.apiBaseUrl + "v1/account";
+      
+      return $http.post(url, registerModel);
+    }
+    
+    var _resendPin = function( data){
+      var url = config.apiBaseUrl + "v1/account/pin/resend";
+      return $http.post(url, data);
+    }
+    var _login = function (userName, password) {
+        var deferred = $q.defer();
+        var model = {
+            userName: userName
+            , secret: password
+        };
+        var url = config.apiBaseUrl + "v1/account/authenticate";
+        $http.post(url, model).then(
+        function(d){
+        	dataService.clearCache();
+            $localStorage.__splituser = d.data.data;
+            $localStorage.__splituserat = d.data.data.accessToken;
+            _userDetail = d.data.data;
+            _isLoggedIn = true;
+            deferred.resolve(d.data.data);
+        },
+        function (e){
+            _logOut();
+              deferred.reject(e);
+          });
+        return deferred.promise;
+    };
+     
+    var _logOut = function () {
+    	var deferred = $q.defer();
+    	$q.all(
+			$localStorage.__splituser = null,
+			$localStorage.__splituserat=null
+            
+    	).then(function(){
+    		dataService.clearCache();
+            _isLoggedIn = false;
+    		deferred.resolve();
+    	});
+		return deferred.promise;
+    };
+
+    var _isAuthenticated = function () {
+        var url = config.apiBaseUrl + "v1/account/isAuthenticated";
+        return $http.post(url).then(function(f){
+            _isLoggedIn = !f.data.isError;
+            if($localStorage.__splituser){
+            	_userDetail = $localStorage.__splituser;
+            }
+        })
+    };
+    
+
+    authServiceFactory.login = _login;
+    authServiceFactory.logOut = _logOut;
+    authServiceFactory.isAuthenticated = _isAuthenticated;
+    
+    
+    authServiceFactory.resendPin = _resendPin;
+    authServiceFactory.register = _register;
+    
+    function init(){
+    	_isAuthenticated().then(function(){
+			
+	});
+	
+    }
+    
+
+    //init();
+    return authServiceFactory;	
+}])
+
+
+angular.module('app').factory('dataService', 
+function($http,$q, $log, config, $timeout, CacheFactory){
+  if (!CacheFactory.get('dataServiceCache')) {
+      
+      CacheFactory.createCache('dataServiceCache', {
+        deleteOnExpire: 'aggressive',
+        recycleFreq: 1 * 60 * 1000
+      });
+    }
+
+    var dataServiceCache = CacheFactory.get('dataServiceCache');
+    var requestOpts = {cache: dataServiceCache};
+    
+  return {
+    apiPrefix : config.apiBaseUrl,  
+    clearCache:function(){
+      CacheFactory.clearAll();
+    },
+    getUser : function( ){
+      
+    },
+    getConfigCategories : function(name,categoryGroup){
+      var querystring = [];
+      if(name != null){
+          querystring.push( "name=" + name);
+      }
+      if(categoryGroup != null){
+          querystring.push( "categoryGroup=" + categoryGroup);
+      }
+      var q = "?" + querystring.join("&");
+      
+      var url = config.apiBaseUrl + "v1/config/categories" + q;
+      return $http.get(url, requestOpts);
+    },
+    /**
+    Register yourself
+    */
+    saveProfile : function( model){
+      var url = config.apiBaseUrl + "/v1/profile";
+      return $http.post(url, model);
+    },
+    getUsers : function(searchTerm ){
+      if(searchTerm)
+      {
+        return $http.get(this.apiPrefix + "/v1/account/search" + "?term=" + searchTerm, requestOpts);
+      }
+      else
+      {
+        return $http.get(this.apiPrefix + "/v1/account/search", requestOpts);
+      }
+    },
+    
+    getGroups : function(){
+      var defered = $q.defer();
+      var url = config.apiBaseUrl + "/v1/groups?status=active";
+      $http.get(url, requestOpts)
+      .then(function(d){
+        defered.resolve(d);
+      }, function(e){
+        defered.reject(e);
+      });
+      return defered.promise;
+    },
+    getGroup     : function(id){
+      
+      var url = config.apiBaseUrl + "/v1/groups?_id="+id;
+      return $http.get(url, requestOpts);
+    },
+    saveGroup : function(grp){
+      
+      var url = config.apiBaseUrl + "/v1/group";
+      return $http.post(url, grp);
+    },
+    getGroupMembers : function(id){
+      
+      var url = config.apiBaseUrl + "/v1/group/members/"+id;
+      return $http.get(url, requestOpts);
+    },
+    /**
+    * @param data : {groupId: 1, members:"1,2,3" }
+    **/
+    addGroupMembers : function(data){
+      
+      var url = config.apiBaseUrl + "/v1/group/members";
+      return $http.post(url, data);
+    },
+    
+    /**
+    * @param data : {groupId: 1, members:"1,2,3" }
+    **/
+    removeGroupMembers : function(data){
+      
+      var url = config.apiBaseUrl + "/v1/group/members/remove";
+      return $http.post(url, data);
+    },
+    getFileTree : function(groupId){
+      
+      var url = config.apiBaseUrl + "/v1/group/" + groupId + "/fileTree";
+      return $http.get(url, requestOpts);
+    },
+    /**
+    * @param data : {groupId: 1, members:"1,2,3" }
+    **/
+    getAssets : function(filter){
+      var qryString = "";
+
+      if(filter.parentId)
+      {
+        if(qryString.length > 0){
+          qryString+="&";
+        }
+        qryString+="parentId="+filter.parentId
+      }
+      if(filter.count)
+      {
+        if(qryString.length > 0){
+          qryString+="&";
+        }
+        qryString+="count="+filter.count
+      }
+      if(filter.from)
+      {
+        if(qryString.length > 0){
+          qryString+="&";
+        }
+        qryString+="from="+filter.from
+      }
+
+      var url = config.apiBaseUrl + "/v1/group/"+ filter.groupId +"/assets";
+      if(qryString.length > 0){
+        url+="?"+qryString;
+      }
+      return $http.get(url);
+    },
+    /**
+    * @param data : {groupId: 1, members:"1,2,3" }
+    **/
+    getAssetTree : function(filter){
+      var qryString = "";
+
+      if(filter.parentId)
+      {
+        if(qryString.length > 0){
+          qryString+="&";
+        }
+        qryString+="p="+filter.parentId
+      }
+      
+      if(filter.levels)
+      {
+        if(qryString.length > 0){
+          qryString+="&";
+        }
+        qryString+="levels="+filter.levels
+      }
+      
+      if(filter.structureOnly)
+      {
+        if(qryString.length > 0){
+          qryString+="&";
+        }
+        qryString+="structure_only=true"; 
+      }
+      
+      var url = config.apiBaseUrl + "/v1/"+ filter.groupId +"/asset/hierarchy";
+      if(qryString.length > 0){
+        url+="?"+qryString;
+      }
+      return $http.get(url);
+    },
+    /**
+    * @param data : {groupId: 1, members:"1,2,3" }
+    **/
+    getAsset : function(id){
+      var url = config.apiBaseUrl + "/v1/asset?id="+id;
+      
+      return $http.get(url);
+    },
+    createAsset : function(data){
+      var url = config.apiBaseUrl + "/v1/asset/create";
+      return $http.post(url,data);
+    },
+    saveAsset : function(data){
+      var url = config.apiBaseUrl + "/v1/asset";
+      return $http.post(url,data);
+    },
+    saveAssetThumbnail : function(assetId, base64thumbnail){
+        var url = config.apiBaseUrl + "/v1/asset/thumbnail/binary";
+        return $http.post(url,{"assetId" : assetId, "base64ImgUrl" : base64thumbnail});
+    },
+    uploadThumbnail : function(fileName, base64Image){
+        var url = config.apiBaseUrl + "/v1/thumbnail/binary";
+        var data = {"fileName" : fileName, "imgUrl": base64Image};
+        return $http.post(url,data)
+    }
+    
+  };
+});
+/*
+  Storage should store all data in main wrapper object with name cp-data.
+  Ideal structure
+  cp-api = {
+    [key:value]
+  }
+  
+  e.g.
+  cp-api = {
+      user:{FirstName: abc, 
+      LastName : 'xyz', 
+      AccessToken:'asdf-asd-afdgdg-', 
+      dp:"asdf/asdf/asf"
+      Status: "REGISTERED"
+    }
+  }
+*/
+
+angular.module('app').factory('storageService', 
+function($q, $log, $localStorage){
+  
+  var createStorageIfNotExist = function(){
+    if($localStorage["cp-data"] === undefined)
+      {
+        $localStorage["cp-data"] = {};  
+      }
+  }
+  createStorageIfNotExist();
+  return {
+    appName : "cp-data",
+    add : function(key, val)
+    {
+      createStorageIfNotExist();      
+      if($localStorage["cp-data"][key] === undefined)
+      {
+        $localStorage["cp-data"][key] = {};  
+      }
+      $localStorage["cp-data"][key] = val;
+    },
+    
+    get : function(key)
+    {
+      if($localStorage["cp-data"] == null){
+
+        return null;
+      }
+      if($localStorage["cp-data"] && key){
+
+        return $localStorage["cp-data"][key];
+      }
+      else{
+        return $localStorage["cp-data"];
+      }
+    },    
+    remove : function(key)
+    {
+      createStorageIfNotExist();
+      if(key){
+        if($localStorage["cp-data"][key] != undefined)
+        {
+          $localStorage["cp-data"][key] = undefined;  
+        }
+      } else{
+        $localStorage["cp-data"] = {};
+      }
+
+    }
+    
+  };
+});
+(function (){
+    angular.module("app")
+    .controller("accountController",accountController);
+    
+    accountController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$mdToast" ,"dataService", "config","authService"];
+    
+    function accountController($scope, $rootScope,  $log, $q, $localStorage, $state, $mdToast, dataService, config, authService){
+        
+        //bindable mumbers
+        $scope.title = "Accounts";
+        
+        $scope.message = "";
+        $scope.loginModel = {
+            userName:"",
+            password:"",
+            confirmPassword:""
+        }
+        $scope.signIn = function(){
+            authService.login($scope.loginModel.userName, $scope.loginModel.password)
+            .then(function(d){
+                $mdToast.show(
+                    $mdToast.simple()
+                      .content("Authenticated")
+                      .hideDelay(3000)
+                );
+                $rootScope.$emit("evtLogged");
+            },
+            function(e){
+               $mdToast.show(
+                    $mdToast.simple()
+                      .content("Failed to authenticat")
+                      .hideDelay(3000)
+                ); 
+            });
+        }
+        
+        
+    }//conroller ends
+})();
+angular.module("app")
+.controller("registerController", function($scope, $log, $state, storageService, dataService, authService){
+  $scope.title = "Register";
+  $scope.registerModel = {};
+  $scope.blockUI = false;
+  
+  $scope.saveRegistration = function(){
+    
+    var model = {
+        firstName: $scope.registerModel.fn
+      , lastName: $scope.registerModel.ln
+      , userName: $scope.registerModel.mobileNo
+      , clientKey: $scope.registerModel.clientId
+      , picture : $scope.registerModel.Thumbnail
+    };
+    
+    authService.register(model).then(
+      function(d){
+        if(d.data.isError){
+
+          return;
+        }
+        //toaster.pop('success', 'Registration successful', 'You will shortly recieve the authentication code via SMS.');
+        var message = " Please enter your authorization code'";
+        
+        storageService.add('user',model);
+        storageService.add('status',"REQUESTED");
+        $state.go("account.registrationSuccess");
+      },
+      function (e){
+        //$scope.addAlert(e.message,"danger");
+        //toaster.pop('error', '', e.message);
+      });
+  }
+  
+});
+
+
+
+(function (){
+    angular.module("app")
+    .controller("assetEditController",assetEditController);
+    
+    assetEditController.$inject = ["$scope", "$rootScope", "$log", "$q", "$timeout",  "$state", "$stateParams", "dataService", "config","authService","$mdConstant","$mdToast", "Upload"];
+    
+    function assetEditController($scope, $rootScope,  $log, $q,$timeout, $state, $stateParams, dataService, 
+            config, authService, $mdConstant, $mdToast, Upload){
+        
+        //bindable mumbers
+        $scope.title    = "Edit Assets";
+        $scope.assetId  = $stateParams.a;
+        $scope.groupId  = $stateParams.g;
+        $scope.parentId = $stateParams.p == undefined ? $stateParams.g : $stateParams.p;
+        $scope.assetType = $stateParams.type;
+        $scope.groupMembers = [];
+        $scope.types = [];
+        $scope.tempData = {
+                "Owners":[],
+                "Accessibility":[],
+                "taskUpdate" : ""
+        };
+        $scope.errorMessage=[];
+        $scope.file=null;
+        $scope.promises = {};
+
+        $scope.taskStatuses = [
+            "Pending",
+            "In Progress",
+            "Completed",
+            "Closed"
+        ]
+        
+
+        $scope.asset = {
+            "_id":$scope.assetId,
+            "AssetType" : $scope.assetType,
+            "AssetTypeId" : $scope.assetType != null ? $scope.assetType : null,
+            "Name":"",
+            "Description":"",
+            "Thumbnail":"",
+            "Urls":"",
+            "GroupId":$scope.groupId,
+            "ParentIds":[$scope.parentId],
+            "AllowLike":true,
+            "AllowComment":true,
+            "Publish":true,
+            "ActivateOn":new Date(),
+            "AssetCategory":null,
+            "Accessibility" : []
+        };
+        
+        $scope.uploadedFiles=null;
+        
+        function showSimpleToast (message) {
+            $mdToast.show(
+                $mdToast.simple()
+                .textContent(message)
+                .position('top')
+                .hideDelay(3000)
+                .action('OK')
+            );
+        };
+        
+        var preInit = function(){
+            var assetPromise = getAsset($scope.assetId);
+            var typePromise = getTypes();
+            var membersPromise = _getUsers();
+            
+            $q.all([
+                assetPromise,typePromise,membersPromise
+            ])
+            .then(function(){
+                switch ($scope.asset.AssetTypeId) {
+                        case "type_task":
+                            if($scope.asset.Task == null){
+                                $scope.asset.Task = {}
+                            }
+                            if($scope.asset.Task.Updates == null){
+                                $scope.asset.Task.Updates = [];
+                            }
+
+                            if($scope.asset.Task.Owners == null){
+                                $scope.asset.Task.Owners = [];
+                            }        
+                            break;
+                        case "type_calendar":
+                            if($scope.asset.Calendar == null){
+                                $scope.asset.Calendar = {}
+                            }
+                            break;
+                        default:
+                            break;
+                }
+                init();
+            });
+        }
+    
+        var init = function(){
+            $log.debug("Init executed")
+            var assetType = _.find($scope.types,{ "_id": $scope.assetType});
+            $scope.asset.AssetType = assetType;
+            
+        };
+        
+        function getAsset (id){
+            var defer = $q.defer();
+            
+            if(id == null || id== 0){
+                $timeout(function(){
+                    $log.debug("getAsset resolved");
+                    defer.resolve();
+                },100)
+            }
+            else{
+                $scope.promises.assetList = dataService.getAsset(id)
+                .then(function(d){
+                    $scope.asset = angular.copy(d.data.data);
+                    $scope.asset.ActivateOn = new Date(d.data.data.ActivateOn);
+                    if(d.data.data.ExpireOn){
+                        $scope.asset.ExpireOn = new Date(d.data.data.ExpireOn);
+                        $scope.asset.neverExpire = false;
+                    }
+                    else{
+                        $scope.asset.neverExpire = true;
+                    }
+                    if($scope.asset.Accessibility == null){
+                        $scope.asset.Accessibility= []
+                    }
+
+                    $scope.asset.Accessibility.forEach(function(m){
+                        m._name = m.FirstName + ' ' + m.LastName;
+                    })
+                    
+                    if($scope.asset.Files != null && $scope.asset.Files.length >= 0){
+                            var thumbnails = _.pluck($scope.asset.Files, "thumbnailLink")
+                            $scope.asset._thumbnails = thumbnails;
+                    }else{
+                            //$scope.asset._thumbnails = [$scope.asset.Thumbnail];
+                    }
+                
+                    angular.copy($scope.asset.Accessibility, $scope.tempData.Accessibility); 
+                    
+                    switch ($scope.asset.AssetTypeId) {
+                        case "type_task":
+                            if($scope.asset.Task == null){
+                                $scope.asset.Task = {}
+                            }
+                            if($scope.asset.Task.Updates == null){
+                                $scope.asset.Task.Updates = [];
+                            }
+                            if($scope.asset.Task.Owners == null){
+                                $scope.asset.Task.Owners = [];
+                            }
+                            
+                            $scope.asset.Task.Owners.forEach(function(m){
+                                m._name = m.FirstName + ' ' + m.LastName;
+                            })
+                            angular.copy($scope.asset.Task.Owners, $scope.tempData.Owners);
+                            
+                            break;
+                        case "type_calendar":
+                            if($scope.asset.Calendar == null){
+                                $scope.asset.Calendar = {}
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                     
+                    defer.resolve($scope.asset);    
+                },
+                function(e){
+                    defer.reject();
+                });    
+            }
+            return defer.promise;
+        }
+        function getTypes (){
+            var defer = $q.defer();
+            $scope.promises.types = dataService.getConfigCategories(null,"AssetType")
+            .then(function(d){
+                $scope.types = angular.copy(d.data.data);
+                $log.debug("getCategories resolved");
+                defer.resolve(d.data.data);    
+            },
+            function(e){
+                defer.reject();
+            });    
+            return defer.promise;
+        }
+        
+        function _getUsers(){
+            var defer = $q.defer();
+            dataService.getGroupMembers($scope.groupId)
+            .then(function(d){   
+                var users = [];
+                d.data.data.forEach(function(m){
+                    m._name = m.FirstName + ' ' + m.LastName;
+                })
+
+                angular.copy(d.data.data, $scope.groupMembers);
+                defer.resolve($scope.groupMembers);
+            });
+            return defer.promise;
+        }
+        $scope.querySearchWorking = function (term){
+            $scope.searchResult=[];
+            if(term && term.length > 0){
+
+            }
+            var defer = $q.defer();
+            dataService.getUsers(term)
+            .then(function(d){
+                var result = [];
+                angular.copy(d.data.data, result);
+                result.forEach(function(u){
+                    u._name = u.FirstName + ' ' + u.LastName;
+                    //check if this user is alredy added
+                    var exist = _.findWhere($scope.asset.Accessibility,{"_id":u._id});
+                    if(exist){
+                        u.__added = true;
+                    }
+                })
+                var sorted = _.sortBy(result,"_name");
+                //angular.copy(sorted,$scope.searchResult)
+                defer.resolve(sorted)
+            }, function(){
+              defer.reject()  ;
+            });
+            return defer.promise;
+        }
+        $scope.querySearch = function(term){
+            $scope.searchResult=[];
+            if(term && term.length > 0){
+
+            }
+            var defer = $q.defer();
+            $timeout(function(){
+                var regex = new RegExp(term,"i");
+                var members = _.filter($scope.groupMembers,function(m){
+                    return m._name.match(regex);
+                });
+                members.forEach(function(u){
+                    u._name = u.FirstName + ' ' + u.LastName;
+                    //check if this user is alredy added
+                    var exist = _.findWhere($scope.asset.Accessibility,{"_id":u._id});
+                    if(exist){
+                        u.__added = true;
+                    }
+                });
+                defer.resolve(members)
+            },100)
+                
+            return defer.promise;
+        }
+        $scope.cancel = function() {
+            $scope.$back();
+        };
+        $scope.toggleComentSetting = function(){
+            $scope.asset.AllowComment = !$scope.asset.AllowComment; 
+        }
+        $scope.toggleLikeSetting = function(){
+            $scope.asset.AllowLike = !$scope.asset.AllowLike; 
+        }
+        $scope.saveAsset = function(){
+
+            // if($scope.file){
+            //     _uploadAssetFile().then(function (f) {
+            //         //get file names and add to the asset
+            //         $scope.asset.Urls = f.fileName;
+            //         return _saveAssetData()
+            //     });
+            // }
+            // else{
+            //     return _saveAssetData()
+            // }
+            return _saveAssetData();
+        }
+        
+        function _saveAssetData(){
+            if($scope.asset.ParentIds == undefined ){
+                $scope.asset.ParentIds = [$scope.parentId];
+            } 
+            else if($scope.asset.ParentIds.length == 0){
+                $scope.asset.ParentIds = [$scope.parentId];
+            }
+            
+            if($scope.asset.ExpireOn && isNaN($scope.asset.ExpireOn.getDate())){
+                $scope.asset.ExpireOn = new Date(9999,12,31)
+            }
+            
+            //get owners and Accessibility data
+            if($scope.tempData.Accessibility){
+                $scope.asset.Accessibility = _.pluck($scope.tempData.Accessibility, "_id");        
+            }
+
+            if($scope.asset.Task && $scope.tempData.Owners){
+                $scope.asset.Task.Owners = _.pluck($scope.tempData.Owners, "_id");        
+            }
+            
+
+            var defer = $q.defer();
+            // upload on file select or drop
+            Upload.upload({
+                url: config.apiBaseUrl + "/v1/asset",
+                data: $scope.asset
+            }).then(function (d) {
+                $scope.asset = d.data.data;
+                if($scope.asset.Accessibility == null){
+                    $scope.asset.Accessibility =[];
+                }
+                if(d.data.data.ActivateOn){
+                    $scope.asset.ActivateOn = new Date(d.data.data.ActivateOn);
+                }
+                
+                if(d.data.data.ExpireOn){
+                    $scope.asset.ExpireOn = new Date(d.data.data.ExpireOn);
+                    $scope.asset.neverExpire = false;
+                }
+                else{
+                    $scope.asset.neverExpire = true;
+                }
+                $scope.asset.Accessibility.forEach(function(m){
+                    m._name = m.FirstName + ' ' + m.LastName;
+                })
+                defer.resolve(d.data.data);
+            }, function (resp) {
+                console.log('Error status: ' + resp.status);
+                defer.resolve(resp);
+            }, function (evt) {
+
+                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                console.log('progress: ' + $scope.progressPercentage + '% ' );
+                console.log(evt);
+            });
+            return defer.promise;
+        }
+        function _uploadAssetFile (){
+            var defer = $q.defer();
+            // upload on file select or drop
+            Upload.upload({
+                url: config.apiBaseUrl + "/v1/asset",
+                data: {file: $scope.file}
+            }).then(function (resp) {
+                console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+                defer.resolve(resp.data.data);
+            }, function (resp) {
+                console.log('Error status: ' + resp.status);
+                defer.resolve(resp);
+            }, function (evt) {
+                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+            });
+            return defer.promise;
+        };
+        
+        function _saveAssetFiles(){
+            var defer = $q.defer();
+            if($scope.asset.files || $scope.asset.files && $scope.asset.files.length  > 0)
+            {
+                $timeout(function(){
+                    defer.resolve();
+                },500);
+            }
+            return defer.promise;
+        }
+        
+        function _validateAssetData(){
+            if($scope.asset.Name == ""){
+                
+            }
+            if($scope.asset.Description == ""){
+                
+            }
+        }
+        var showToast = function(msg,type) {
+            if(type && type=="error"){
+                $mdToast.show(
+                    $mdToast.simple()
+                    .textContent(msg)
+                    .position('left')
+                    .hideDelay(3000)
+                );    
+            }
+            else{
+                $mdToast.show(
+                    $mdToast.simple()
+                    .textContent(msg)
+                    .position('left')
+                    .hideDelay(3000)
+                );
+            }
+            
+        };
+        $scope.addUpdate = function(u){
+                $scope.asset.Task.Updates.push({
+                    Update : $scope.tempData.taskUpdate,
+                    UpdatedOn : new Date(),
+                    UpdatedBy : authService.userDetail._id
+                });
+
+                $scope.tempData.taskUpdate = "";
+        }
+        preInit();
+    }//conroller ends
+})();
+
+
+(function (){
+    angular.module("app")
+    .controller("assetLstController",assetLstController);
+    
+    assetLstController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$stateParams" ,"dataService", "config","authService","$mdConstant","$mdToast", "$mdDialog", "$mdBottomSheet"];
+    
+    function assetLstController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast, $mdDialog, $mdBottomSheet ){
+        
+        //bindable mumbers
+        $scope.title = "Assets Crtl";
+        $scope.groupId = $stateParams.g;
+        $scope.parentId = $stateParams.p;
+        $scope.breadcrumb = [];
+        $scope.promices = {};
+        $scope.parent = null;
+        $scope.assets = [];
+        
+        $scope.hierarchy = null;
+        $scope.selectedNode = null;
+        $scope.nodeParentTrail = null;
+
+        $scope.searchText ="";
+        $scope.searchResult = [];
+        
+        $scope.isAllChecked = false;
+        $scope.isIndeterminate = false;
+        $scope.filter = {
+            groupId:$scope.groupId,
+            parentId:$scope.parentId,
+            count:null,
+            from:null
+        };
+
+        $scope.hierarchyTreeOptions = {
+            idAttrib        : "_id",
+            nameAttrib      : "Name",
+            childrenAttrib  : "Children"
+        };
+
+        function showSimpleToast (message) {
+            $mdToast.show(
+                $mdToast.simple()
+                .textContent(message)
+                .position('top')
+                .hideDelay(3000)
+                .action('OK')
+            );
+        };
+       
+        $scope.selectAllChecked = function() {
+            var selected = _.where($scope.assets,{"__isSelected":true});
+            $scope.toggleAll()
+            return selected.length === $scope.assets.length;
+        };
+        $scope.toggle = function (asset) {
+            if(asset.__isSelected){
+                asset.__isSelected = !asset.__isSelected;    
+            }
+            else{
+                asset.__isSelected = true;
+            }
+            determineSelectAll()
+        };
+
+        $scope.toggleAll = function() {
+            var status = $scope.isAllChecked;
+            _.forEach($scope.assets, function(a){
+                a.__isSelected = status;
+            });        
+        };
+        
+        
+        $scope.edit = function(a,assetType){
+            var assetId = a == null ? undefined : a._id;
+            var assetType = a == null ? assetType : a.AssetTypeId;
+            var groupId = a == null ? $scope.groupId : a.GroupId;
+            var parentId = a == null ? $scope.parentId :a.ParentId;
+ 
+            $state.transitionTo("home.group.asset",{"g":$scope.groupId,"p" : $scope.parentId,"type":assetType,"a":assetId, });
+            
+        }
+        $scope.qedit = function(a,assetType){
+                var assetId = a == null ? undefined : a._id;
+            var params = {
+                    assetId: assetId,
+                    groupId : a.GroupId,
+                    parentId:a.ParentId,
+                    assetType : assetType
+                };
+            $mdDialog.show({
+                templateUrl: './views/assets/asset.edit.html',
+                controller: 'assetEditController',
+                locals: {params},
+                clickOutsideToClose:true,
+                fullscreen : true
+            })
+            .then(function(result) {
+                $mdToast.show(
+                    $mdToast.simple()
+                    .textContent('Saved!')
+                    .position('top right')
+                    .hideDelay(1500)
+                );
+                //Update the folder in tree
+                var asset = result; //result.data.data;
+                if(asset.AssetTypeId == "type_collection"){
+                    getAssetHierarchy();
+                }
+                init();
+                $state.transitionTo("home.group.assets",{"g":$scope.groupId, "p" : $scope.parentId}, {"notify":false});
+                
+            }, function() {
+                $scope.status = 'You cancelled the dialog.';
+            });
+        }
+
+        $scope.onAssetSelected = function(node){
+            
+            $scope.selectedAsset = node;
+            $scope.parentId = node._id;
+            $scope.filter.parentId = node._id;
+            init();
+
+            $state.transitionTo("home.group.assets",{"g":$scope.groupId, "p" : $scope.parentId}, {"notify":false});
+        }
+        
+        $scope.onRowSelected = function (asset){
+            
+            $log.debug("dbl clicked!" + asset._id);
+            
+            if(asset.AssetTypeId == "type_collection"){
+                //open folder
+                $scope.parentId = asset._id;
+                $scope.filter.parentId = asset._id;
+                init();
+                
+                $state.transitionTo("home.group.assets",{"g":$scope.groupId, "p" : $scope.parentId}, {"notify":false});
+            }
+            else{
+                //openInviewer(asset._id);
+                $log.debug('open in viewer');
+            }
+        }
+
+        
+        function determineSelectAll(){
+            var selected = _.where($scope.assets,{"__isSelected":true});
+            $scope.isAllChecked = selected.length === $scope.assets.length;
+            if(selected.length == 0 ||
+                selected.length === $scope.assets.length){
+                $scope.isIndeterminate = false;    
+            }
+            else{
+                $scope.isIndeterminate = selected.length != $scope.assets.length;    
+            }
+
+        }
+        var preInit = function(){
+               var tasks = [];
+            tasks.push(getAssetHierarchy());
+            $q.all([
+                tasks
+            ])
+            .then(function(){
+                init();      
+                
+            });
+            
+        }
+    
+        var init = function(){
+            var tasks = [];
+            tasks.push(getAssets());  
+            
+            $q.all([
+                tasks
+            ])
+            .then(function(){
+                  //set selectedNode
+                  
+            });
+        };
+        function getAssets (){
+            $scope.filter.structureOnly = false;
+            $scope.promices.assetList = dataService.getAssetTree($scope.filter)
+            .then(function(d){
+                $scope.parent = d.data.data;
+                $scope.breadcrumb = [d.data.data];
+                setParent($scope.parentId);
+                angular.copy(d.data.data.Children, $scope.assets);                
+            },
+            function(e){
+            });
+            return $scope.promices.assetList;
+        }
+
+        function getAssetHierarchy(){
+            
+            var filter = {
+                parentId : $scope.filter.groupId,
+                groupId : $scope.filter.groupId,
+                structureOnly : true
+            }
+            $scope.promices.hierarchy = dataService.getAssetTree(filter)
+            .then(function(d){
+                $scope.parent = d.data.data;
+                $scope.breadcrumb = [d.data.data];
+                $scope.hierarchy = angular.copy(d.data.data);   
+                
+                //setTree($scope.parent._id);
+            },
+            function(e){
+
+            });
+            return $scope.promices.hierarchy;
+        }
+
+        function setParent(parentId){
+            //Select node from tree t highlight
+            _hlp.treeWalker($scope.hierarchy, function(n){
+                if(n && n ._id == parentId){
+                    $scope.selectedNode = n;
+                }
+            });
+        }
+
+        preInit();
+
+
+    }//conroller ends
+})();
+
+
+(function (){
+    angular.module("app")
+    .controller("fileLstController",fileLstController);
+    
+    fileLstController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$stateParams" ,"dataService", "config","authService","$mdConstant","$mdToast", "$mdDialog", "$mdBottomSheet"];
+    
+    function fileLstController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast, $mdDialog, $mdBottomSheet ){
+        
+        //bindable mumbers
+        $scope.title = "Uploaded Files";
+        $scope.groupId = $stateParams.g;
+        $scope.parentId = $stateParams.p;
+        $scope.breadcrumb = [];
+        $scope.promices = {};
+        
+        $scope.hierarchy = null;
+        $scope.selectedNode = null;
+        
+        $scope.searchText ="";
+        $scope.searchResult = [];
+        
+        $scope.hierarchyTreeOptions = {
+            idAttrib        : "id",
+            nameAttrib      : "name",
+            childrenAttrib  : "children"
+        };
+
+        function showSimpleToast (message) {
+            $mdToast.show(
+                $mdToast.simple()
+                .textContent(message)
+                .position('top')
+                .hideDelay(3000)
+                .action('OK')
+            );
+        };
+       
+        
+        $scope.onAssetSelected = function (asset){
+            $log.debugf(asset.Name);
+            
+        }
+        var preInit = function(){
+               var tasks = [];
+            tasks.push(getAssetHierarchy());
+            $q.all([
+                tasks
+            ])
+            .then(function(){
+                init();       
+            });
+        }
+    
+        var init = function(){
+            var tasks = [];
+            tasks.push(getFiles());  
+            
+            $q.all([
+                tasks
+            ])
+            .then(function(){
+                  //set selectedNode
+                  
+            });
+        };
+        function getFiles (){
+            
+            $scope.promices.tree = dataService.getFileTree($scope.groupId)
+            .then(function(d){
+                $scope.parent = d.data.data;
+                $scope.breadcrumb = [d.data.data];
+                setParent($scope.parentId);
+                angular.copy(d.data.data.Children, $scope.assets);                
+            },
+            function(e){
+            });
+            return $scope.promices.tree;
+        }
+
+        function getAssetHierarchy(){
+            $scope.promices.hierarchy = dataService.getFileTree($scope.groupId)
+            .then(function(d){
+                $scope.breadcrumb = [d.data.data];
+                $scope.hierarchy = angular.copy(d.data.data);   
+                $scope.selectedNode = $scope.hierarchy; 
+            },
+            function(e){
+
+            });
+            return $scope.promices.hierarchy;
+        }
+
+        function setParent(parentId){
+            //Select node from tree t highlight
+            _hlp.treeWalker($scope.hierarchy, function(n){
+                if(n && n ._id == parentId){
+                    $scope.selectedNode = n;
+                }
+            });
+        }
+
+        preInit();
+
+
+    }//conroller ends
+})();
+
+(function (){
+    angular.module("app")
+    .controller("formEditController",formEditController);
+    
+    formEditController.$inject = ["$scope", "$rootScope", "$log", "$q", "$timeout",  "$state", "$stateParams", "dataService", "config","authService","$mdConstant","$mdToast", "Upload","$mdBottomSheet","params"];
+    
+    function formEditController($scope, $rootScope,  $log, $q,$timeout, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast, Upload,$mdBottomSheet,params ){
+        
+        //bindable mumbers
+        $scope.title    = "Edit Assets";
+        if(params == null){
+            pditms = {};
+        }
+        $scope.assetId  = paramsEditetId;
+        $scope.groupId  = params.groupId;
+        $scope.parentId = params.parentId;
+        $scope.categories = [];
+        
+        $scope.errorMessage=[];
+        $scope.file=null;
+        $scope.promises = {};
+        $scope.asset = {
+            "_id":$scope.assetId,
+            //"CategoryId" : $scope.selectedCategory._id,
+            "Name":"",
+            "Description":"",
+            "Thumbnail":"",
+            "Urls":"",
+            "GroupId":$scope.groupId,
+            "ParentId":$scope.parentId,
+            "AllowLike":true,
+            "AllowComment":true,
+            "Publish":true,
+            "ActivateOn":new Date(),
+            "AssetCategory":null
+        }
+        
+        $scope.uploadedFiles=null;
+        
+        function showSimpleToast (message) {
+            $mdToast.show(
+                $mdToast.simple()
+                .textContent(message)
+                .position('top')
+                .hideDelay(3000)
+                .action('OK')
+            );
+        };
+        
+        var preInit = function(){
+            
+            var tasks = [];
+            var assetPromise = getAsset($scope.assetId);
+            var categoryPromise = getCategories();
+            
+            $q.all([
+                assetPromise,categoryPromise
+            ])
+            .then(function(){
+                init()
+            });
+        }
+    
+        var init = function(){
+            $log.debug("Init executed")
+        };
+        
+        function getAsset (id){
+            var defer = $q.defer();
+            
+            if(id == null || id== 0){
+                $timeout(function(){
+                    $log.debug("getAsset resolved");
+                    defer.resolve();
+                },100)
+            }
+            else{
+                $scope.promises.assetList = dataService.getAsset(id)
+                .then(function(d){
+                    $scope.asset = angular.copy(d.data.data);
+                    $scope.asset.ActivateOn = new Date(d.data.data.ActivateOn);
+                    if(d.data.data.ExpireOn){
+                        $scope.asset.ExpireOn = new Date(d.data.data.ExpireOn);
+                        $scope.asset.neverExpire = false;
+                    }
+                    else{
+                        $scope.asset.neverExpire = true;
+                    }
+                    defer.resolve(d.data.data);    
+                },
+                function(e){
+                    defer.reject();
+                });    
+            }
+            return defer.promise;
+        }
+        
+        function getCategories (){
+            var defer = $q.defer();
+            $scope.promises.categories = dataService.getCategories()
+            .then(function(d){
+                $scope.categories = angular.copy(d.data.data);
+                $log.debug("getategories resolved");
+                defer.resolve(d.data.data);    
+            },
+            function(e){
+                defer.reject();
+            });    
+            return defer.promise;
+        }
+        
+        $scope.cancel = function() {
+            $mdBottomSheet.hide();
+        };
+        $scope.toggleComentSetting = function(){
+            $scope.asset.AllowComment = !$scope.asset.AllowComment; 
+        }
+        $scope.toggleLikeSetting = function(){
+            $scope.asset.AllowLike = !$scope.asset.AllowLike; 
+        }
+        $scope.saveAsset = function(){
+            if($scope.asset._id == null){
+                _createAsset().then(
+                    function (d) {
+                        if($scope.file){
+                            _uploadAssetFile().then(function (f) {
+                                //get file names and add to the asset
+                                $scope.asset.Urls = f.fileName;
+                                return _saveAssetData()
+                            });
+                        }
+                    }
+                );
+            }
+            else{
+                if($scope.file){
+                    _uploadAssetFile().then(function (f) {
+                        //get file names and add to the asset
+                        $scope.asset.Urls = f.fileName;
+                        return _saveAssetData()
+                    });
+                }
+                else{
+                    return _saveAssetData()
+                }
+            }
+            
+            
+        }
+        function _createAsset(){
+            return dataService.createAsset($scope.asset).then(
+                function(d){
+                    $scope.asset._id = d.data.data._id;       
+                },
+                function(e){
+                    
+                }
+            )
+        }
+        function _saveAssetData(){
+            return dataService.saveAsset($scope.asset).then(
+                function(d){
+                    $mdBottomSheet.hide(d);
+                },
+                function(e){
+                    showToast(e.message);
+                }
+            )
+        }
+        function _uploadAssetFile (){
+            var defer = $q.defer();
+            // upload on file select or drop
+            Upload.upload({
+                url: 'v1/file',
+                data: {file: $scope.file}
+            }).then(function (resp) {
+                console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+                defer.resolve(resp.data.data);
+            }, function (resp) {
+                console.log('Error status: ' + resp.status);
+                defer.resolve(resp);
+            }, function (evt) {
+                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+            });
+            return defer.promise;
+        };
+        
+        function _saveAssetFiles(){
+            var defer = $q.defer();
+            if($scope.asset.files || $scope.asset.files && $scope.asset.files.length  > 0)
+            {
+                $timeout(function(){
+                    defer.resolve();
+                },500);
+            }
+            return defer.promise;
+        }
+        
+        function _validateAssetData(){
+            if($scope.asset.Name == ""){
+                
+            }
+            if($scope.asset.Description == ""){
+                
+            }
+        }
+        var showToast = function(msg,type) {
+            if(type && type=="error"){
+                $mdToast.show(
+                    $mdToast.simple()
+                    .textContent(msg)
+                    .position('left')
+                    .hideDelay(3000)
+                );    
+            }
+            else{
+                $mdToast.show(
+                    $mdToast.simple()
+                    .textContent(msg)
+                    .position('left')
+                    .hideDelay(3000)
+                );
+            }
+            
+        };
+        
+        preInit();
+    }//conroller ends
+})();
+
+(function (){
+    angular.module("app")
+    .controller("groupController",groupController);
+    
+    groupController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$stateParams" ,"dataService", "config","authService"];
+    
+    function groupController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService){
+        
+        //bindable mumbers
+        $scope.title = "Groups";
+        $scope.groupsList = [];
+        $scope.promices = {};
+        $scope._id = $stateParams.g;
+        $scope.view = $stateParams.v;
+        $scope.selectedTab = 'analytics';
+        $scope.group = null;
+
+        
+        function getGroupDetail (){
+            $scope.promices.groupDetail = dataService.getGroup($scope._id)
+            .then(function(d){
+                $scope.group = angular.copy(d.data.data[0]);
+            },
+            function(e){
+
+            });
+            return $scope.promices.groupPromice;
+        }
+
+        var preInit = function(){
+            var tasks = [];
+            tasks.push(getGroupDetail());
+            $q.all([
+                tasks
+            ])
+            .then(function(){
+                init()
+            });
+        }
+
+        var init = function(){
+
+        };
+        
+        $scope.tabSelected = function(tab){
+            //set the current tab to route
+            
+        }
+
+        function setView(){
+            switch ($scope.view){
+                case 'analytics' : {
+                    $scope.selectedTab = 'analytics';
+                    break;
+                }
+                case 'details' : {
+                    $scope.selectedTab = 'details';
+                    break;
+                }
+                case 'assets' : {
+                    $scope.selectedTab = 'assets';
+                    break;
+                }
+                case 'settings' : {
+                    $scope.selectedTab = 'settings';
+                    break;
+                }
+            }
+        }
+
+        preInit();
+
+    }//conroller ends
+})();
+
+(function (){
+    angular.module("app")
+    .controller("groupBoardController",groupBoardController);
+    
+    groupBoardController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$stateParams" ,"dataService", "config","authService","$mdConstant","$mdToast"];
+    
+    function groupBoardController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast ){
+        
+        //bindable mumbers
+        $scope.title = "Group Details";
+        $scope.promices = {};
+        $scope._id = $stateParams.g;
+        $scope.group = null;
+        $scope.groupCopy = null;
+
+        $scope.selectedMembers = null;
+        
+        $scope.view = $stateParams.v;
+        
+        $scope.searchText ="";
+        $scope.searchResult = [];
+        
+        function showSimpleToast (message) {
+            $mdToast.show(
+                $mdToast.simple()
+                .textContent(message)
+                .position('bottom')
+                .hideDelay(3000)
+                .action('OK')
+            );
+        };
+
+        var preInit = function(){
+            var tasks = [];
+            tasks.push(getGroupDetail());
+            tasks.push(getTopics());
+            $q.all([
+                tasks
+            ])
+            .then(function(){
+                init()
+            });
+        }
+
+        var init = function(){
+
+        };
+
+        function getGroupDetail (){
+            $scope.promices.groupBoard = dataService.getGroup($scope._id)
+            .then(function(d){
+                $scope.group = angular.copy(d.data.data[0]);
+                if($scope.group.members){
+                    $scope.group.members.forEach(function(m){
+                        m._name = m.firstName + ' ' + m.lastName;
+                    })
+                }
+                $scope.groupCopy = angular.copy($scope.group);
+            },
+            function(e){
+
+            });
+            return $scope.promices.groupPromice;
+        }
+        function getTopics (){
+            $scope.promices.groupTopics = dataService.getAssets({groupId:$scope._id})
+            .then(function(d){
+                $scope.topics = angular.copy(d.data.data);
+            },
+            function(e){
+
+            });
+            return $scope.promices.groupPromice;
+        }
+
+        preInit();
+
+
+    }//conroller ends
+})();
+
+(function (){
+    angular.module("app")
+    .controller("groupDetailController",groupDetailController);
+    
+    groupDetailController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$stateParams" ,"dataService", "config","authService","$mdConstant","$mdToast"];
+    
+    function groupDetailController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast ){
+        
+        //bindable mumbers
+        $scope.title = "Group Details";
+        $scope.promices = {};
+        $scope._id = $stateParams.g;
+        $scope.group = null;
+        $scope.groupCopy = null;
+
+        $scope.selectedMembers = null;
+        
+        $scope.view = $stateParams.v;
+        
+        $scope.searchText ="";
+        $scope.searchResult = [];
+        
+        $scope.querySearch   = _querySearch;
+        $scope.saveGroupDetails = _saveGroupDetails;
+
+        function showSimpleToast (message) {
+            $mdToast.show(
+                $mdToast.simple()
+                .textContent(message)
+                .position('bottom')
+                .hideDelay(3000)
+                .action('OK')
+            );
+        };
+
+        var preInit = function(){
+            var tasks = [];
+            $scope.promices.groupDetail = getGroupDetail();
+            tasks.push($scope.promices.groupDetail);
+            $scope.promices.busy = $q.all([
+                tasks
+            ])
+            .then(function(){
+                init()
+            });
+        }
+
+        var init = function(){
+
+        };
+
+        function getGroupDetail (){
+            return dataService.getGroup($scope._id)
+            .then(function(d){
+                $scope.group = angular.copy(d.data.data[0]);
+                if($scope.group.members){
+                    $scope.group.members.forEach(function(m){
+                        m._name = m.firstName + ' ' + m.lastName;
+                    })
+                }
+                $scope.groupCopy = angular.copy($scope.group);
+            },
+            function(e){
+
+            });
+        }
+
+        function _querySearch(term){
+            $scope.searchResult=[];
+            if(term && term.length > 0){
+
+            }
+            var defer = $q.defer();
+            dataService.getUsers(term)
+            .then(function(d){
+                var result = [];
+                angular.copy(d.data.data, result);
+                result.forEach(function(u){
+                    u._name = u.firstName + ' ' + u.lastName;
+                    //check if this user is alredy added
+                    var exist = _.findWhere($scope.group.members,{"_id":u._id});
+                    if(exist){
+                        u.__added = true;
+                    }
+                })
+                var sorted = _.sortBy(result,"_name");
+                //angular.copy(sorted,$scope.searchResult)
+                defer.resolve(sorted)
+            }, function(){
+              defer.reject()  ;
+            });
+            return defer.promise;
+        }
+        
+        function _getUsers(term){
+            var defer = $q.defer();
+            dataService.getUsers(term)
+            .then(function(d){   
+                var users = [];
+                d.data.data.forEach(function(u){
+                    u._name = u.firstName + ' ' + u.lastName;
+                });
+                defer.resolve(d.data.data);
+            });
+            return defer.promise;
+        }
+        
+        function _saveGroupDetails(){
+            //basic validation
+            if($scope.group.name == ""){
+                showSimpleToast("Group name requied");
+                return;
+            }
+
+            dataService.saveGroup($scope.group)
+            .then(function(g){
+                //if this group is created by current user then allow user to manage users
+                $scope.group._id = g.data.data._id;
+                $scope.group.members = g.data.data.members;
+                $scope.group.members.forEach(function(u){
+                    u._name = u.firstName + ' ' + u.lastName;
+                });
+                $scope.group.createdBy = g.data.data.createdBy;
+                showSimpleToast("Group saved");
+            },
+            function(e){
+                $log.error(e);
+            });
+        }
+        
+
+        preInit();
+
+
+    }//conroller ends
+})();
+
+(function (){
+    angular.module("app")
+    .controller("groupsController",groupsController);
+    
+    groupsController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state","$stateParams" ,"dataService", "config","authService"];
+    
+    function groupsController($scope, $rootScope,  $log, $q, $localStorage, $state, stateParams, dataService, config, authService){
+        
+        //bindable mumbers
+        $scope.mainTitle = "Groups";
+        $scope.groupList = [];
+        $scope.promices = {};
+        $scope.defaultGroupThumbnail = "./images/cp.png";
+        function getGroups (){
+            var groupsPromice = dataService.getGroups()
+            .then(function(d){
+                angular.copy(d.data.data, $scope.groupList);
+            },
+            function(e){
+
+            });
+            $scope.promices.groupsPromice = groupsPromice;
+            return groupsPromice;
+        }
+
+        var preInit = function(){
+            var tasks = [];
+            tasks.push(getGroups());
+            $scope.promices.init = $q.all([
+                tasks
+            ])
+            .then(function(){
+                init();
+            });
+        }
+
+        var init = function(){
+
+        };
+        $scope.openBoard = function(g){
+            $state.go("home.group.board",{"g": g._id});
+            $scope.mainTitle = g.name;
+        }
+        $scope.details = function(g){
+            $state.go("home.group.detail",{"g": g._id});
+            $scope.mainTitle = g.name;
+        }
+        preInit();
+
+    }//conroller ends
+})();
+(function (){
+    angular.module("app")
+    .controller("landingController",landingController);
+    
+    landingController.$inject = ["$scope", "$log", "$state" ,"dataService", "config","authService","$mdSidenav"];
+    
+    function landingController($scope, $log, $state, dataService, config, authService, $mdSidenav){
+        $scope.user = null
+        $scope.startApp = function(){
+            if(authService.isLoggedIn){
+                $state.go("home.dashboard");
+            }
+            else{
+                $state.go("account.login");
+            }
+        }
+        function init(){
+            if(authService.isLoggedIn){
+                $scope.user = authService.userDetail
+                    
+            }
+        }
+
+        init();
+    }//conroller ends
+})();
+
+(function (){
+    angular.module("app")
+    .controller("dashoardController",dashoardController);
+    
+    dashoardController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state" ,"dataService", "config","authService"];
+    
+    function dashoardController($scope, $rootScope,  $log, $q, $localStorage, $state, dataService, config, authService){
+        
+        //bindable mumbers
+        $scope.title = "Dashboard";
+        
+        
+    }//conroller ends
+})();
+
+
+(function (){
+    angular.module("app")
+    .controller("homeController",homeController);
+    
+    homeController.$inject = ["$scope", "$log", "$q", "$localStorage", "$mdToast",  "$state","$stateParams" ,"dataService", 
+        "config","$mdSidenav","authService","$mdDialog","$mdBottomSheet"];
+    
+    function homeController($scope, $log, $q, $localStorage, $mdToast, $state, $stateParams, dataService, 
+        config, $mdSidenav, authService, $mdDialog,$mdBottomSheet){
+        
+        //bindable mumbers
+        $scope.mainTitle  = "Collaborate";
+        $scope.nextTheme = _nextTheme
+        $scope.themes = config.themes,
+        $scope.theme = $localStorage.theme;
+        $scope.user = $localStorage.__splituser;
+        //$scope.fabOpen = false;
+        $scope.groupsList = [];
+        
+        $scope.options = {
+            idAttrib        : "Id",
+            nameAttrib      :"Name",
+            childrenAttrib  : "Children",
+        };
+        $scope.nodeParentTrail=[];
+        $scope.selectedMenu = null;
+        $scope.menu = null;
+        $scope.promices = {};
+        
+        if($scope.theme == undefined){
+            $scope.theme = 0;
+        }
+        
+        
+        $scope.logoff = function(ev){
+            //TODO; Ask for confirmation here
+            
+            // Appending dialog to document.body to cover sidenav in docs app
+            var confirm = $mdDialog.confirm()
+                  .title('Log off')
+                  .textContent('Unsaved data will be lost. Are you sure you want to logoff?')
+                  .ariaLabel('Lucky day')
+                  .targetEvent(ev)
+                  .ok('Yes, Log off.')
+                  .cancel('No, Do not logoff');
+
+            $mdDialog.show(confirm)
+            .then(function() {
+                authService.logOut();
+                $state.go("landing")
+                }, 
+                function() {
+                    $scope.status = 'You decided to keep your debt.';
+                });
+           
+        }
+        $scope.toggleLeft = function(){
+            return $mdSidenav('left')
+            .toggle();
+        }
+
+        function _toggleLeft(){
+            // Appending dialog to document.body to cover sidenav in docs app
+            var confirm = $mdDialog.confirm()
+                  .title('Log off')
+                  .textContent('Unsaved data will be lost. Are you sure you want to logoff?')
+                  .ariaLabel('Lucky day')
+                  .targetEvent(ev)
+                  .ok('Yes, Log off.')
+                  .cancel('No, Do not logoff');
+
+            $mdDialog.show(confirm)
+            .then(function() {
+                authService.logOut();
+                $state.go("landing")
+                }, 
+                function() {
+                    $scope.status = 'You decided to keep your debt.';
+                });
+           
+        }
+        $scope.toggleSideBar = function(id){
+            return $mdSidenav(id)
+            .toggle();
+        }
+
+        
+        //Set next theme
+        function _nextTheme (){
+            if(($scope.theme + 1) >= config.themes.length){
+                $scope.theme = 0;
+            }
+            else{
+                $scope.theme++;
+            }
+            
+            //storageService.add("theme",$scope.theme) ;	
+            
+            
+        }
+
+        function getGroups (){
+            return dataService.getGroups()
+            .then(function(d){
+                angular.copy(d.data.data, $scope.groupsList);
+                var sectionHeader = {
+                        Id: 'Groups',
+                        Name: 'Groups',
+                        Children: [],
+                        icon:'group'
+                }
+
+                //build menu sections
+                $scope.groupsList.forEach(function(g){
+                   
+                   var section = {
+                       Id:g._id,
+                       Name: g.Name,
+                       icon:'people_outline',
+                       Children:[
+                            {
+                                id:g._id + 1,
+                                name: 'Assets',
+                                icon:'list',
+                                parentId:g._id
+                            },
+                       ] 
+                   };
+                   sectionHeader.Children.push(section);
+                });
+                
+                $scope.menu = sectionHeader;
+            },
+            function(e){
+
+            });
+        }
+        $scope.onSelect = function(node){
+            $log.debug(node);
+            $scope.selectedMenu = node;
+
+            switch (node.Name) {
+                case "Groups":{
+                    $state.go("home.groups", {"g":node.parentId});
+                    break;
+                }
+                case "Assets":{
+                    $state.go("home.group.assets", {"g":node.parentId, "p":node.parentId});
+                    break;
+                }
+            }            
+        }
+        
+        $scope.createGroup = function(){
+            $state.go("home.group.detail");
+        }
+        
+        var preInit = function(){
+            var tasks = [];
+            tasks.push(getGroups());
+            var initPromice = $q.all([
+                tasks
+            ])
+            .then(function(){
+                init()
+            });
+            $scope.promices.initPromice = initPromice;
+        }
+
+        var init = function(){
+
+        };
+
+        preInit();
+
+    }//conroller ends
+})();

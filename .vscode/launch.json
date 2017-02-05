@@ -7,6 +7,13 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "build",
+            "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+            "cwd": "${workspaceRoot}"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceRoot}/server.js",
             "cwd": "${workspaceRoot}",
@@ -17,6 +24,7 @@
             "request": "attach",
             "name": "Attach to Process",
             "port": 5858
-        }
+        },
+        
     ]
 }

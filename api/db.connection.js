@@ -1,8 +1,8 @@
 
 var mongodb = require('mongodb');
+var serverConfig = require('../serverConfig.js');
 var q = require('q');
-mongoURI = 'mongodb://127.0.0.1:27017/easyapp';
-//var mongoURI = 'mongodb://admin:admin@ds050077.mongolab.com:50077/easyapp';
+var mongoURI = serverConfig.mongoURI;
 var connect = function(){
     var defer = q.defer();
     mongodb.MongoClient.connect(mongoURI, function(e, db){

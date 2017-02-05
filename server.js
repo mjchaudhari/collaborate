@@ -6,7 +6,7 @@ var passport        = require('passport');
 var path            = require("path");
 var bodyParser      = require('body-parser');
 var busboy          = require('connect-busboy');
-
+var serverConfig = require('./serverConfig.js');
 
 var tempUploadFolder = path.normalize(__dirname + "/../../tmpStore");
 var multer  = require('multer')
@@ -14,11 +14,12 @@ var upload = multer({ dest: tempUploadFolder })
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static(path.join(__dirname, "/www")));
+app.use(express.static(path.join(__dirname, serverConfig.webRootDir)));
 // required for passport
-app.use(session({ 	secret: 'letscCollaborate', 
-					saveUninitialized: true,
-					resave: true })); // session secret
+app.use(session({
+      secret: 'letscCollaborate', 
+      saveUninitialized: true,
+      resave: true })); // session secret
 					
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
