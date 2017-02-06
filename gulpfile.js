@@ -1,10 +1,11 @@
 //1. create folder structure
 // concatinate all js files
 var gulp = require("gulp");
-del = require("del");
-uglify = require('gulp-uglify');
-concat = require('gulp-concat');
-replace = require('gulp-html-replace');
+var del = require("del");
+var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
+var replace = require('gulp-html-replace');
+var templateCache = require('gulp-angular-templatecache');
 
 var dest = "./dist/client/"
 
@@ -94,6 +95,16 @@ gulp.task('app', function () {
       .pipe(concat('app.js'))
       .pipe(gulp.dest(dest))
 });
+
+/**
+ * create template
+ */
+gulp.task('template', function () {
+   gulp.src("./www/modules/**/*.html")
+        .pipe(templateCache('templates.js', {module: 'app', root: 'modules'}))
+        .pipe(gulp.dest(dest));
+});
+
 /**
  * concat vendors js
  */
@@ -102,13 +113,14 @@ gulp.task('replaceRefs', function () {
       .pipe(replace(
           {
               'styles': '<link rel="stylesheet" href="' + dest + 'styles/styles.css">'
-              , "app" : '<script src="'+ dest + 'app.js"></script>'
               , "vendor" : '<script src="'+ dest + 'vendor/vendor.js"></script>'
+              , "templates" : '<script src="'+ dest + 'tempates.js"></script>'
+              , "app" : '<script src="'+ dest + 'app.js"></script>'
         }))
         .pipe(gulp.dest(dest));
       
 });
 
-gulp.task('default', ['clean', 'concatStyles', 'copyMedia', 'vendor', 'app', 'replaceRefs']);
+gulp.task('default', ['clean', 'concatStyles', 'copyMedia', 'vendor', 'template', 'app', 'replaceRefs']);
 //gulp.task('default', ['replaceRefs']);
 
