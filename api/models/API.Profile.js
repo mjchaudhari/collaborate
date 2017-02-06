@@ -3,7 +3,8 @@
 var mongo = require("./../db.connection.js");
 var drive = require("./../googleDriveHelper.js")();
 var shortId = require("shortid");
-var apiException = require("./API.Exception.js");
+var APIException = require("./API.Exception.js");
+var apiException = new APIException();
 var async = require('async');
 var _ = require("underscore-node");
 var Group = require("./API.Group.js");
@@ -45,7 +46,7 @@ API.Profile.prototype.update = function (u, cb) {
         db.collection("profiles").find(filter).toArray(function (e, data) {
             if (e) {
                 db.close();
-                return cb(apiException.invalidInput(e.message, "Account"));
+                return cb(new apiException.invalidInput(e.message, "Account"));
             }
             var p = {
             };
@@ -62,7 +63,7 @@ API.Profile.prototype.update = function (u, cb) {
             db.collection("profiles").insert(p, { "forceServerObjectId": false, "upsert": true, "fullResult": true }, function (e, data) {
                 if (e) {
                     db.close();
-                    return cb(apiException.serverError(null, "Core", e));
+                    return cb(new apiException.serverError(null, "Core", e));
                 }
                 return cb(null, p);
             });
@@ -90,7 +91,7 @@ API.Profile.prototype.getGroups = function (options, cb) {
     }
     var search = {};
     if (this._id == null) {
-        return cb(new apiException().unauthenticated('unauthorized', 'Profile'));
+        return cb(new apiException.unauthenticated('unauthorized', 'Profile'));
     }
 
     if (options._id && options._id != 0) {
@@ -111,7 +112,7 @@ API.Profile.prototype.getGroups = function (options, cb) {
         .toArray(function (e, resultGroups) {
             if (e) {
                 db.close();
-                return cb(new apiException(null, 'Profile', err));
+                return cb(new APIException(null, 'Profile', err));
             }
             var result = [];
             async.eachSeries(resultGroups, function (grp, callback) {
@@ -189,7 +190,7 @@ API.Profile.prototype.createOrUpdateGroup = function (groupData, cb) {
         db.collection("groups")
         .findOneAndUpdate({ "_id": data._id }, { $set: data }, { "upsert": true, "forceServerObjectId": false, "returnOriginal": false }, function (err, data) {
             if (err) {
-                return cb(new apiException(null, 'Profile', err))
+                return cb(new APIException(null, 'Profile', err))
             }
             //check if the data.thumbnail is base64 image or an url
             //if base64 then save it as file in drive and update url to this group
@@ -199,7 +200,7 @@ API.Profile.prototype.createOrUpdateGroup = function (groupData, cb) {
                 //create group and send it.
                 self.getGroups({'_id': gdata._id}, function(e, result){
                     if(e){
-                        return cb(new apiException('Group saved but there is a problem retrieving it.', 'Profile', err));
+                        return cb(new APIException('Group saved but there is a problem retrieving it.', 'Profile', err));
                     }
                     return cb(null, result[0]);
                 });
@@ -215,7 +216,7 @@ API.Profile.prototype.addMember = function (groupData, cb) {
     var data = {}
 
     if (param._id == null) {
-        var ex = new apiException().unauthenticated('unauthorized', 'Group');
+        var ex = new apiException.unauthenticated('unauthorized', 'Group');
         return cb(ex, null);
     }
     
@@ -236,13 +237,13 @@ API.Profile.prototype.addMember = function (groupData, cb) {
         db.collection("groups")
         .findOneAndUpdate({ "_id": data._id }, { $set: data }, { "upsert": true, "forceServerObjectId": false, "returnOriginal": false }, function (err, data) {
             if (err) {
-                return cb(new apiException(null, 'Profile', err));
+                return cb(new APIException(null, 'Profile', err));
             }
             //check if the data.thumbnail is base64 image or an url
             //if base64 then save it as file in drive and update url to this group
             self.getGroups({'_id': gdata._id}, function(e, result){
                 if(e){
-                    return cb(new apiException('Member saved but there is a problem retrieving it.', 'Profile', err));
+                    return cb(new APIException('Member saved but there is a problem retrieving it.', 'Profile', err));
                 }
                 return cb(null, result[0]);
             });

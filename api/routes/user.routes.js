@@ -104,7 +104,7 @@ module.exports = function (app) {
      *
 	 * * @apiSuccess {String} groups object [{Firstname:"", LastName : "", UserName:"", "Status":"", CreatedOn : "", EmailId:"",Picture:""}]
     */
-	app.post('/v1/account/user', function (req, res) {		
+	app.post('/v1/account', function (req, res) {		
 		AccountController.createUser(req, function (d) {
 			res.json(d);
 		});

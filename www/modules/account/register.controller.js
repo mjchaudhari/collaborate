@@ -25,7 +25,7 @@ angular.module("app")
         
         storageService.add('user',model);
         storageService.add('status',"REQUESTED");
-        $state.go("account.registrationSuccess");
+        $state.go("account.registerationsuccess");
       },
       function (e){
         //$scope.addAlert(e.message,"danger");

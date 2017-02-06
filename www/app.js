@@ -70,6 +70,7 @@
    .state("account", {url:"/account", templateUrl : "/modules/account/accountContainer.html", abstract:"true"})
    .state("account.login", {url:"/login", templateUrl : "/modules/account/login.html"})
    .state("account.register", {url:"/register", templateUrl : "/modules/account/register.html"})
+   .state("account.registerationsuccess", {url:"/registerationsuccess", templateUrl : "/modules/account/registration.success.html"})
    .state("account.forgotpassword", {url:"/forgotpassword", templateUrl : "/modules/account/forgotpassword.html"})     
    
    //requires login

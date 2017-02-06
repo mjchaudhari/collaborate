@@ -2,7 +2,8 @@
 'use strict';
 var mongo = require("./../db.connection.js");
 var shortId = require("shortid");
-var apiException = require("./API.Exception.js");
+var APIException = require("./API.Exception.js");
+var apiException = new APIException();
 var Profile = require("./API.Profile.js");
 
 var API = API || {}; // Namespace
@@ -26,13 +27,13 @@ API.Core.prototype.authenticate = function(credential, cb){
     console.log("controller : verifySecret");
     getUser(credential.userName, function(e, u){
         if(e){
-            return cb(apiException.serverError("invalid credentials","authenticate")); 
+            return cb(new apiException.serverError("invalid credentials","authenticate")); 
         }
         if(u == null){
-            return cb(apiException.notFound("invalid credentials","authenticate")); 
+            return cb(new apiException.notFound("invalid credentials","authenticate")); 
         }
         if(u.secret != credential.secret){
-            return cb(apiException.invalidInput("invalid credentials","authenticate")); 
+            return cb(new apiException.invalidInput("invalid credentials","authenticate")); 
         }
         generateToken(u._id, function(e, t){
             if(e){
@@ -94,7 +95,7 @@ API.Core.prototype.searchUsers = function(searchTerm, callback){
         db.collection("profiles").find(filter).toArray(function(e, data){
             if(e){
                 db.close();
-                return callback(apiException.serverError(null, "Core", e)); 
+                return callback(new apiException.serverError(null, "Core", e)); 
             }
             db.close();
             //TODO: Format data before sending
@@ -148,7 +149,7 @@ API.Core.prototype.getUser = function(userName, cb){
 API.Core.prototype.createUser = function(user, cb){
     //validate
     if(user.userName == null || user.userName == ""){
-        return cb(apiException.invalidInput("userName required", "Core")); 
+        return cb(new apiException.invalidInput("userName required", "Core")); 
     }
     //Find if this user already exist
     var filter = {"userName": user.userName};
@@ -158,11 +159,11 @@ API.Core.prototype.createUser = function(user, cb){
         db.collection("profiles").find(filter).toArray(function(e, data){
             if (e) {
                 db.close();
-                return cb(apiException.invalidInput(e.message, "Core")); 
+                return cb(new apiException.invalidInput(e.message, "Core")); 
             }
             if (data.length > 0){
                 db.close();
-                return cb(apiException.invalidInput(user.userName + " already registered.", "Core")); 
+                return cb(new apiException.invalidInput(user.userName + " already registered.", "Core")); 
             }
             var p = {
                 _id: shortId.generate(),
@@ -183,7 +184,7 @@ API.Core.prototype.createUser = function(user, cb){
             db.collection("profiles").insert(p, {"forceServerObjectId":true, "upsert":true,  "fullResult":true}, function(e, data){
                 if (e) {
                     db.close();
-                    return cb(apiException.serverError(null, "Core", e));
+                    return cb(new apiException.serverError(null, "Core", e));
                 }
                 var randomPin = getRandomPin();
                 var u = {
@@ -196,7 +197,7 @@ API.Core.prototype.createUser = function(user, cb){
                 db.collection("users").insert(u, {"forceServerObjectId": true},  function(e, data){
                     if (e) {
                         db.close();
-                        return cb(apiException.serverError(null, "Core", e));
+                        return cb(new apiException.serverError(null, "Core", e));
                     }
                     db.close();
                     return cb(null, p);

@@ -39,6 +39,11 @@ angular.module('app').factory('authService', ['$http', '$log','$q','config' ,'$l
         $http.post(url, model).then(
         function(d){
         	dataService.clearCache();
+        	if(d.data.isError){
+        		deferred.reject("Invalid Creadentials");	
+				_logOut();
+        		return;
+        	}
             $localStorage.__splituser = d.data.data;
             $localStorage.__splituserat = d.data.data.accessToken;
             _userDetail = d.data.data;

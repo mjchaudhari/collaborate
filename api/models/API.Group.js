@@ -1,8 +1,8 @@
 
 var drive = require("./../googleDriveHelper.js")();
 var mongo        = require("./../db.connection.js")
-var apiException = require("./API.Exception.js");
-
+var APIException = require("./API.Exception.js");
+var apiException = new APIException();
 var API = API || {} // Namespace
 API.Group = function(data){
     
@@ -115,7 +115,7 @@ API.Group.prototype.getAssets = function(params, callback){
                 if(data.length <= 0 ){
                     db.close();
                     //This user has no access to the assets of this group.
-                    return callback(new apiException().unauthenticated('unauthorized', 'Group'));
+                    return callback(new apiException.unauthenticated('unauthorized', 'Group'));
                 }
                 
                 var parentId = params.parentId;
