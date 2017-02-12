@@ -1,4 +1,12 @@
 <div  ng-controller="groupBoardController"  cg-busy="promices.groupTopics" >
+    <md-toolbar class=""  >   
+        <div class="md-toolbar-tools">
+            <md-button class="md-icon-button" aria-label="back" ng-click="historyBack()"> 
+                <i class="material-icons">arrow_back</i>
+            </md-button>   
+            <span>{{title}}</span>
+        </div>
+    </md-toolbar>
     <div layout-padding>
         <div layout="row" flex  layout-align="start start">
             <md-content>

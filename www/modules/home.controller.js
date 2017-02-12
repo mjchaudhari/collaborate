@@ -2,10 +2,10 @@
     angular.module("app")
     .controller("homeController",homeController);
     
-    homeController.$inject = ["$scope", "$log", "$q", "$localStorage", "$mdToast",  "$state","$stateParams" ,"dataService", 
+    homeController.$inject = ["$scope", "$log", "$window", "$q", "$localStorage", "$mdToast",  "$state","$stateParams" ,"dataService", 
         "config","$mdSidenav","authService","$mdDialog","$mdBottomSheet"];
     
-    function homeController($scope, $log, $q, $localStorage, $mdToast, $state, $stateParams, dataService, 
+    function homeController($scope, $log, $window, $q, $localStorage, $mdToast, $state, $stateParams, dataService, 
         config, $mdSidenav, authService, $mdDialog,$mdBottomSheet){
         
         //bindable mumbers
@@ -84,6 +84,9 @@
             .toggle();
         }
 
+        $scope.historyBack = function(){
+            $window.history.back();
+        }
         
         //Set next theme
         function _nextTheme (){
@@ -151,10 +154,6 @@
             }            
         }
         
-        $scope.createGroup = function(){
-            $state.go("home.group.detail");
-        }
-        
         var preInit = function(){
             var tasks = [];
             tasks.push(getGroups());
@@ -166,7 +165,7 @@
             });
             $scope.promices.initPromice = initPromice;
         }
-
+        
         var init = function(){
 
         };

@@ -80,6 +80,7 @@
    
    .state("home.group", {url:"/:g", templateUrl : "/modules/groups/group.html"})
    .state("home.group.board", {url:"/board", templateUrl : "/modules/groups/group.board.html"})
+   .state("home.group.new", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
    .state("home.group.detail", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
    .state("home.group.analytics", {url:"/analytics", templateUrl : "./modules/groups/group.analytics.html"})
    .state("home.group.assets", {url:"/assets?p", templateUrl : "./modules/assets/asset.list.html"})

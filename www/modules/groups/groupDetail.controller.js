@@ -8,9 +8,10 @@
     function groupDetailController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast ){
         
         //bindable mumbers
-        $scope.title = "Group Details";
+        
         $scope.promices = {};
-        $scope._id = $stateParams.g;
+        $scope._id = $stateParams.g == "new" ? null : $stateParams.g;
+        $scope.title = $scope._id == null ? "Create Group" : "Edit Group";
         $scope.group = null;
         $scope.groupCopy = null;
 
@@ -36,14 +37,19 @@
 
         var preInit = function(){
             var tasks = [];
-            $scope.promices.groupDetail = getGroupDetail();
-            tasks.push($scope.promices.groupDetail);
-            $scope.promices.busy = $q.all([
-                tasks
-            ])
-            .then(function(){
-                init()
-            });
+            if($scope._id){
+                $scope.promices.groupDetail = getGroupDetail();
+                tasks.push($scope.promices.groupDetail);
+                $scope.promices.busy = $q.all([
+                    tasks
+                ])
+                .then(function(){
+                    init()
+                });
+            }
+            else{
+                init();
+            }
         }
 
         var init = function(){

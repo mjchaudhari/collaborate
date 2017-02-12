@@ -26,7 +26,7 @@
 
             }
             else{
-                $state.go("home.dashboard");
+                $state.go("home.groups");
             }
         })
         

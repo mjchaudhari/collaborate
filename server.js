@@ -12,8 +12,8 @@ var tempUploadFolder = path.normalize(__dirname + "/../../tmpStore");
 var multer  = require('multer')
 var upload = multer({ dest: tempUploadFolder })
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json({limit: '5mb'}));
+app.use(bodyParser.urlencoded({extended: true, limit: '5mb'}));
 app.use(express.static(path.join(__dirname, serverConfig.webRootDir)));
 // required for passport
 app.use(session({

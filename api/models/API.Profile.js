@@ -150,7 +150,7 @@ API.Profile.prototype.createOrUpdateGroup = function (groupData, cb) {
     var param = groupData;
     var data = {}
     if(param._id == null){
-
+        data._id = shortId.generate()
     }
     
     data.members = [];
