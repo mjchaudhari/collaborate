@@ -149,8 +149,10 @@ API.Profile.prototype.createOrUpdateGroup = function (groupData, cb) {
     var self = this;
     var param = groupData;
     var data = {}
-    if(param._id == null){
-        data._id = shortId.generate()
+    data._id = param._id;
+    if(data._id == null){
+        data._id = shortId.generate();
+        data.createdBy = self._id;
     }
     
     data.members = [];
@@ -161,6 +163,8 @@ API.Profile.prototype.createOrUpdateGroup = function (groupData, cb) {
     if(!_.contains(data.members, self._id)){
         data.members.push(self._id);
     }
+
+
     if (param.name) {
         data.name = param.name;
     }

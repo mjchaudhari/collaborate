@@ -4,5 +4,6 @@
 module.exports = {
     mongoURI : "mongodb://admin:admin@ds050077.mongolab.com:50077/easyapp"
     , webRootDir : "/www"
+    , tempFileStore : "./tmpStore"
 
 }

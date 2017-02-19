@@ -46,6 +46,11 @@
         var init = function(){
 
         };
+        
+        $scope.details = function(){
+            $state.go("home.group.detail",{"g": $scope.group._id});
+            $scope.mainTitle = $scope.group.name;
+        }
 
         function getGroupDetail (){
             $scope.promices.groupBoard = dataService.getGroup($scope._id)
@@ -73,7 +78,10 @@
             });
             return $scope.promices.groupPromice;
         }
-
+        
+        $scope.newTopic = function(){
+            $state.go("home.asset", { "g": $scope._id, "t": "type_collection" });
+        }
         preInit();
 
 

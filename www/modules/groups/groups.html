@@ -8,15 +8,16 @@
 				<span>{{mainTitle || 'Collaborate'}}</span>
 			</div>
 			<span flex></span>
+			<md-button class="md-icon-button" aria-label="Use Android" ng-click="createGroup()">
+				<i class="material-icons">add</i>
+			</md-button>
 			<md-button class="md-icon-button" aria-label="Menu" ng-click="openNotification()">
 				<i class="material-icons">add_alert</i>
 			</md-button>
 		</div>
 	</md-toolbar>    
     <div layout="column" ng-cloak class="">
-		<md-button class="md-fab md-mini md-fab-bottom-right" aria-label="Use Android" ng-click="createGroup()">
-				<i class="material-icons">add</i>
-			</md-button>
+		
 		<md-content class='md-padding content-height transperent-bg' >
 			
 			<md-grid-list md-cols="4" md-cols-xs="2" md-cols-sm="3" md-cols-gt-md="4" 
@@ -24,24 +25,15 @@
 				<md-grid-tile ng-repeat="g in groupList"
 						md-colspan-sm="1"
 						ng-class="" 
-						style="background-image: url({{g.defaultGroupThumbnail || defaultGroupThumbnail}}); background-size: cover;"
+						style="background-image: url({{g.thumbnail || defaultGroupThumbnail}}); background-size: cover;"
 						class="md-whiteframe-5dp"
 						>
 						<md-button layout-align="center end" class="md-icon-button" aria-label="more" ng-click="openBoard(g)">
 							<i class="material-icons">remove_red_eye</i>
 						</md-button>
 					<md-grid-tile-footer>
-						<div layout="row" layout-aligh="center center">
-							<div flex="80">
-								<h3>{{g.name}}</h4>
-							</div>
-							
-							<div flex="20">
-								<md-button layout-align="center end" class="md-icon-button" aria-label="more" 
-									ng-click="details(g)">
-									<i class="material-icons">more_vert</i>
-								</md-button>
-							</flex>
+						<div layout="row" layout-align="start center" flex>
+							<span flex class="md-title">{{g.name}}</span>
 						</div>						
 					</md-grid-tile-footer>
 				</md-grid-tile>

@@ -5,6 +5,7 @@ var shortId = require("shortid");
 var APIException = require("./API.Exception.js");
 var apiException = new APIException();
 var Profile = require("./API.Profile.js");
+var async = require ("async");
 
 var API = API || {}; // Namespace
 
@@ -14,7 +15,123 @@ var API = API || {}; // Namespace
 API.Core = function (){
 
 };
+var _self= this;
+this.createOrUpdateConfig = function(config,cb){
+    mongo.connect().then(function(db){  
+        db("configs").findOneAndUpdate({"_id":config._id},{$set: config}, {"upsert":true, "forceServerObjectId":false, "returnOriginal":false}, 
+        function (err, data) {
+            if(cb){
+                return cb(e,data);    
+            }
+        });
+    });
+};
 
+API.Core.prototype.getCategories = function(name, categoryGroup, callback){
+    var query = {};
+    if(name){
+        query.name =  { $regex : new RegExp(name,"i") };
+    }
+    if(categoryGroup){
+        query.configGroup = { $regex : new RegExp(categoryGroup,"i") };;
+    }
+    mongo.connect().then(function(db){  
+        db("configs").find(query).toArray(function(e,d){
+            return callback(e,d)
+        });
+    });
+    
+};
+API.Core.prototype.initConfig = function (){
+    var type_collection = {"_id":"type_collection", name:"type_collection", description:"Collection", "displayName":"Collection", "isContainer":true,"isStandard":true, "configGroup":"AssetType","isActive":true};
+    var type_topic = {"_id":"type_topic", name:"type_topic", description:"Topic", "displayName":"Topic", "isContainer":true,"isStandard":true, "configGroup":"AssetType","isActive":true};
+    var type_document = {"_id":"type_document",name:"type_document", description:"Document", "displayName":"Document", "isContainer":true,"isStandard":true, "configGroup":"AssetType","isActive":true};
+    var type_calendar = {"_id":"type_calendar",name:"type_calendar", description:"Comment", "displayName":"Comment", "isContainer":false,"isStandard":true, "configGroup":"AssetType","isActive":true};
+    var type_demand = {"_id":"type_demand", name:"type_demand", description:"Issue", "displayName":"Issue", "isContainer":true,"isStandard":true, "configGroup":"AssetType","isActive":true};
+    var type_transacton = {"_id":"type_transacton",name:"type_transacton", description:"Announcement", "displayName":"Announcement", "isContainer":false,"isStandard":true, "configGroup":"AssetType","isActive":true};
+    var type_form = {"_id":"type_form", name:"type_form", description:"Task", "displayName":"Task", "isContainer":true,"isStandard":true, "configGroup":"AssetType","isActive":true};
+    var type_task = {"_id":"type_task", name:"type_task", description:"Task", "displayName":"Task", "isContainer":true,"isStandard":true, "configGroup":"AssetType","isActive":true};
+    
+    async.parallel([
+        function(callback){
+            _self.createOrUpdateConfig( type_collection, callback)
+        },
+        function(callback){
+            _self.createOrUpdateConfig( type_topic, callback)
+        },
+        function(callback){    
+            _self.createOrUpdateConfig( type_document, callback)
+            },
+        function(callback){    
+            _self.createOrUpdateConfig( type_calendar, callback)
+            },
+        function(callback){    
+            _self.createOrUpdateConfig( type_demand, callback)
+            },
+        function(callback){    
+            _self.createOrUpdateConfig( type_transacton, callback)
+            },
+        function(callback){    
+            _self.createOrUpdateConfig( type_task, callback)
+            },
+        function(callback){    
+            _self.createOrUpdateConfig( type_form, callback)
+            }    
+        ],
+        function(err, callback) {
+            // results is now equals to: {one: 1, two: 2}
+            console.log("type config created");
+    });
+    
+    var catTopic = {"_id":"ct_topic", name:"ct_topic", description:"Topic", "displayName":"Topic", "isContainer":true,"isStandard":true, "configGroup":"AssetCategory","isActive":true};
+    var catDocument = {"_id":"ct_post",name:"ct_post", description:"Document", "displayName":"Document", "isContainer":true,"isStandard":true, "configGroup":"AssetCategory","isActive":true};
+    var catComment = {"_id":"ct_comment",name:"ct_comment", description:"Comment", "displayName":"Comment", "isContainer":false,"isStandard":true, "configGroup":"AssetCategory","isActive":true};
+    var catAnnouncement = {"_id":"ct_announcement",name:"ct_announcement", description:"Announcement", "displayName":"Announcement", "isContainer":false,"isStandard":true, "configGroup":"AssetCategory","isActive":true};
+    var categoryTask = {"_id":"ct_task", name:"ct_task", description:"Task", "displayName":"Task", "isContainer":true,"isStandard":true, "configGroup":"AssetCategory","isActive":false};
+    var categoryIssue = {"_id":"ct_issue", name:"ct_issue", description:"Issue", "displayName":"Issue", "isContainer":true,"isStandard":true, "configGroup":"AssetCategory","isActive":false};
+    var categoryEvent = {"_id":"ct_event", name:"ct_event", description:"Event", "displayName":"Event", "isContainer":true,"isStandard":true, "configGroup":"AssetCategory","isActive":false};
+    var categoryDemand = {"_id":"ct_demand",name:"ct_demand", description:"Demand for resource (help/money)", "displayName":"Demand", "isContainer":true,"isStandard":true, "configGroup":"AssetCategory","isActive":false};
+    var categoryTransaction = {"_id":"ct_transaction",name:"ct_transaction", description:"Transaction", "displayName":"Transaction", "isContainer":true,"isStandard":true, "configGroup":"AssetCategory","isActive":false};
+    var categoryQuestionnaire = {"_id":"ct_questionnaire",name:"ct_questionnaire", description:"Questionnaire", "displayName":"Questionnaire", "isContainer":true,"isStandard":true, "configGroup":"AssetCategory","isActive":false};
+    
+    
+    async.parallel([
+        function(callback){
+            _self.createOrUpdateConfig( catTopic, callback);
+        },
+        function(callback){    
+            _self.createOrUpdateConfig( catDocument,callback); 
+        },
+        function(callback){
+            _self.createOrUpdateConfig( catComment, callback);
+                },
+        function(callback){
+            _self.createOrUpdateConfig( catAnnouncement, callback);
+                },
+        function(callback){
+            _self.createOrUpdateConfig( categoryTask, callback);
+        },
+        function(callback){
+            _self.createOrUpdateConfig( categoryIssue, callback);
+        },
+        function(callback){
+            _self.createOrUpdateConfig( categoryEvent, callback);
+        },
+        function(callback){
+            _self.createOrUpdateConfig( categoryTransaction, callback);
+        },
+        function(callback){
+            _self.createOrUpdateConfig( categoryQuestionnaire, callback);
+        },
+        function(callback){
+            _self.createOrUpdateConfig( categoryDemand, callback);
+        }
+        ],
+        function(err, results) {
+            // results is now equals to: {one: 1, two: 2}
+            console.log("category config created");
+    });
+};
 /**
  * Authenticate user credentiala
  * @param {object} credential

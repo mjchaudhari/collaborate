@@ -43,11 +43,6 @@
             $state.go("home.group.new",{"g": "new"});
         }
 
-        $scope.details = function(g){
-            $state.go("home.group.detail",{"g": g._id});
-            $scope.mainTitle = g.name;
-        }
-
         $scope.openBoard = function(g){
             $state.go("home.group.board",{"g": g._id});
             $scope.mainTitle = g.name;

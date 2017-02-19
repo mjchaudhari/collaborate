@@ -17,8 +17,8 @@
         $scope.groupMembers = [];
         $scope.types = [];
         $scope.tempData = {
-                "Owners":[],
-                "Accessibility":[],
+                "owners":[],
+                "accessibility":[],
                 "taskUpdate" : ""
         };
         $scope.errorMessage=[];
@@ -35,20 +35,20 @@
 
         $scope.asset = {
             "_id":$scope.assetId,
-            "AssetType" : $scope.assetType,
-            "AssetTypeId" : $scope.assetType != null ? $scope.assetType : null,
-            "Name":"",
-            "Description":"",
-            "Thumbnail":"",
-            "Urls":"",
-            "GroupId":$scope.groupId,
-            "ParentIds":[$scope.parentId],
-            "AllowLike":true,
-            "AllowComment":true,
-            "Publish":true,
-            "ActivateOn":new Date(),
-            "AssetCategory":null,
-            "Accessibility" : []
+            "assetType" : $scope.assetType,
+            "assetTypeId" : $scope.assetType != null ? $scope.assetType : null,
+            "name":"",
+            "description":"",
+            "thumbnail":"",
+            "urls":"",
+            "groupId":$scope.groupId,
+            "parentIds":[$scope.parentId],
+            "allowwLike":true,
+            "allowwComment":true,
+            "publish":true,
+            "activateOn":new Date(),
+            "assetCategory":null,
+            "accessibility" : []
         };
         
         $scope.uploadedFiles=null;
@@ -72,22 +72,22 @@
                 assetPromise,typePromise,membersPromise
             ])
             .then(function(){
-                switch ($scope.asset.AssetTypeId) {
+                switch ($scope.asset.assetTypeId) {
                         case "type_task":
-                            if($scope.asset.Task == null){
-                                $scope.asset.Task = {}
+                            if($scope.asset.task == null){
+                                $scope.asset.task = {}
                             }
-                            if($scope.asset.Task.Updates == null){
-                                $scope.asset.Task.Updates = [];
+                            if($scope.asset.task.updates == null){
+                                $scope.asset.task.updates = [];
                             }
 
-                            if($scope.asset.Task.Owners == null){
-                                $scope.asset.Task.Owners = [];
+                            if($scope.asset.task.owners == null){
+                                $scope.asset.task.owners = [];
                             }        
                             break;
                         case "type_calendar":
-                            if($scope.asset.Calendar == null){
-                                $scope.asset.Calendar = {}
+                            if($scope.asset.calendar == null){
+                                $scope.asset.calendar = {}
                             }
                             break;
                         default:
@@ -100,7 +100,7 @@
         var init = function(){
             $log.debug("Init executed")
             var assetType = _.find($scope.types,{ "_id": $scope.assetType});
-            $scope.asset.AssetType = assetType;
+            $scope.asset.assetType = assetType;
             
         };
         
@@ -117,52 +117,52 @@
                 $scope.promises.assetList = dataService.getAsset(id)
                 .then(function(d){
                     $scope.asset = angular.copy(d.data.data);
-                    $scope.asset.ActivateOn = new Date(d.data.data.ActivateOn);
-                    if(d.data.data.ExpireOn){
-                        $scope.asset.ExpireOn = new Date(d.data.data.ExpireOn);
+                    $scope.asset.activateOn = new Date(d.data.data.activateOn);
+                    if(d.data.data.expireOn){
+                        $scope.asset.expireOn = new Date(d.data.data.expireOn);
                         $scope.asset.neverExpire = false;
                     }
                     else{
                         $scope.asset.neverExpire = true;
                     }
-                    if($scope.asset.Accessibility == null){
-                        $scope.asset.Accessibility= []
+                    if($scope.asset.accessibility == null){
+                        $scope.asset.accessibility= []
                     }
 
-                    $scope.asset.Accessibility.forEach(function(m){
-                        m._name = m.FirstName + ' ' + m.LastName;
+                    $scope.asset.accessibility.forEach(function(m){
+                        m._name = m.firstName + ' ' + m.lastName;
                     })
                     
-                    if($scope.asset.Files != null && $scope.asset.Files.length >= 0){
-                            var thumbnails = _.pluck($scope.asset.Files, "thumbnailLink")
+                    if($scope.asset.Files != null && $scope.asset.files.length >= 0){
+                            var thumbnails = _.pluck($scope.asset.files, "thumbnailLink")
                             $scope.asset._thumbnails = thumbnails;
                     }else{
                             //$scope.asset._thumbnails = [$scope.asset.Thumbnail];
                     }
                 
-                    angular.copy($scope.asset.Accessibility, $scope.tempData.Accessibility); 
+                    angular.copy($scope.asset.accessibility, $scope.tempData.accessibility); 
                     
-                    switch ($scope.asset.AssetTypeId) {
+                    switch ($scope.asset.assetTypeId) {
                         case "type_task":
-                            if($scope.asset.Task == null){
-                                $scope.asset.Task = {}
+                            if($scope.asset.task == null){
+                                $scope.asset.task = {}
                             }
-                            if($scope.asset.Task.Updates == null){
-                                $scope.asset.Task.Updates = [];
+                            if($scope.asset.task.updates == null){
+                                $scope.asset.task.updates = [];
                             }
-                            if($scope.asset.Task.Owners == null){
-                                $scope.asset.Task.Owners = [];
+                            if($scope.asset.task.owners == null){
+                                $scope.asset.task.owners = [];
                             }
                             
-                            $scope.asset.Task.Owners.forEach(function(m){
-                                m._name = m.FirstName + ' ' + m.LastName;
+                            $scope.asset.task.owners.forEach(function(m){
+                                m._name = m.firstName + ' ' + m.lastName;
                             })
-                            angular.copy($scope.asset.Task.Owners, $scope.tempData.Owners);
+                            angular.copy($scope.asset.task.owners, $scope.tempData.owners);
                             
                             break;
                         case "type_calendar":
-                            if($scope.asset.Calendar == null){
-                                $scope.asset.Calendar = {}
+                            if($scope.asset.calendar == null){
+                                $scope.asset.calendar = {}
                             }
                             break;
                         default:
@@ -180,7 +180,7 @@
         }
         function getTypes (){
             var defer = $q.defer();
-            $scope.promises.types = dataService.getConfigCategories(null,"AssetType")
+            $scope.promises.types = dataService.getConfigCategories(null,"assetType")
             .then(function(d){
                 $scope.types = angular.copy(d.data.data);
                 $log.debug("getCategories resolved");
@@ -198,7 +198,7 @@
             .then(function(d){   
                 var users = [];
                 d.data.data.forEach(function(m){
-                    m._name = m.FirstName + ' ' + m.LastName;
+                    m._name = m.firstName + ' ' + m.lastName;
                 })
 
                 angular.copy(d.data.data, $scope.groupMembers);
@@ -217,9 +217,9 @@
                 var result = [];
                 angular.copy(d.data.data, result);
                 result.forEach(function(u){
-                    u._name = u.FirstName + ' ' + u.LastName;
+                    u._name = u.firstName + ' ' + u.lastName;
                     //check if this user is alredy added
-                    var exist = _.findWhere($scope.asset.Accessibility,{"_id":u._id});
+                    var exist = _.findWhere($scope.asset.accessibility,{"_id":u._id});
                     if(exist){
                         u.__added = true;
                     }
@@ -244,9 +244,9 @@
                     return m._name.match(regex);
                 });
                 members.forEach(function(u){
-                    u._name = u.FirstName + ' ' + u.LastName;
+                    u._name = u.firstName + ' ' + u.lastName;
                     //check if this user is alredy added
-                    var exist = _.findWhere($scope.asset.Accessibility,{"_id":u._id});
+                    var exist = _.findWhere($scope.asset.accessibility,{"_id":u._id});
                     if(exist){
                         u.__added = true;
                     }
@@ -260,10 +260,10 @@
             $scope.$back();
         };
         $scope.toggleComentSetting = function(){
-            $scope.asset.AllowComment = !$scope.asset.AllowComment; 
+            $scope.asset.allowwComment = !$scope.asset.allowwComment; 
         }
         $scope.toggleLikeSetting = function(){
-            $scope.asset.AllowLike = !$scope.asset.AllowLike; 
+            $scope.asset.allowwLike = !$scope.asset.allowwLike; 
         }
         $scope.saveAsset = function(){
 
@@ -281,24 +281,24 @@
         }
         
         function _saveAssetData(){
-            if($scope.asset.ParentIds == undefined ){
-                $scope.asset.ParentIds = [$scope.parentId];
+            if($scope.asset.parentIds == undefined ){
+                $scope.asset.parentIds = [$scope.parentId];
             } 
-            else if($scope.asset.ParentIds.length == 0){
-                $scope.asset.ParentIds = [$scope.parentId];
+            else if($scope.asset.parentIds.length == 0){
+                $scope.asset.parentIds = [$scope.parentId];
             }
             
-            if($scope.asset.ExpireOn && isNaN($scope.asset.ExpireOn.getDate())){
-                $scope.asset.ExpireOn = new Date(9999,12,31)
+            if($scope.asset.expireOn && isNaN($scope.asset.expireOn.getDate())){
+                $scope.asset.expireOn = new Date(9999,12,31)
             }
             
-            //get owners and Accessibility data
-            if($scope.tempData.Accessibility){
-                $scope.asset.Accessibility = _.pluck($scope.tempData.Accessibility, "_id");        
+            //get owners and accessibility data
+            if($scope.tempData.accessibility){
+                $scope.asset.accessibility = _.pluck($scope.tempData.accessibility, "_id");        
             }
 
-            if($scope.asset.Task && $scope.tempData.Owners){
-                $scope.asset.Task.Owners = _.pluck($scope.tempData.Owners, "_id");        
+            if($scope.asset.task && $scope.tempData.owners){
+                $scope.asset.task.owners = _.pluck($scope.tempData.owners, "_id");        
             }
             
 
@@ -309,22 +309,22 @@
                 data: $scope.asset
             }).then(function (d) {
                 $scope.asset = d.data.data;
-                if($scope.asset.Accessibility == null){
-                    $scope.asset.Accessibility =[];
+                if($scope.asset.accessibility == null){
+                    $scope.asset.accessibility =[];
                 }
                 if(d.data.data.ActivateOn){
                     $scope.asset.ActivateOn = new Date(d.data.data.ActivateOn);
                 }
                 
-                if(d.data.data.ExpireOn){
-                    $scope.asset.ExpireOn = new Date(d.data.data.ExpireOn);
+                if(d.data.data.expireOn){
+                    $scope.asset.expireOn = new Date(d.data.data.expireOn);
                     $scope.asset.neverExpire = false;
                 }
                 else{
                     $scope.asset.neverExpire = true;
                 }
-                $scope.asset.Accessibility.forEach(function(m){
-                    m._name = m.FirstName + ' ' + m.LastName;
+                $scope.asset.accessibility.forEach(function(m){
+                    m._name = m.firstName + ' ' + m.lastName;
                 })
                 defer.resolve(d.data.data);
             }, function (resp) {
@@ -396,7 +396,7 @@
             
         };
         $scope.addUpdate = function(u){
-                $scope.asset.Task.Updates.push({
+                $scope.asset.task.updates.push({
                     Update : $scope.tempData.taskUpdate,
                     UpdatedOn : new Date(),
                     UpdatedBy : authService.userDetail._id

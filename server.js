@@ -7,8 +7,9 @@ var path            = require("path");
 var bodyParser      = require('body-parser');
 var busboy          = require('connect-busboy');
 var serverConfig = require('./serverConfig.js');
+var Core            = require("./api/models/API.Core.js");
 
-var tempUploadFolder = path.normalize(__dirname + "/../../tmpStore");
+var tempUploadFolder = path.normalize(__dirname + serverConfig.tempFileStore);
 var multer  = require('multer')
 var upload = multer({ dest: tempUploadFolder })
 
@@ -42,11 +43,15 @@ app.get('/', function (req, res, next) {
 //require('./api/routes/oauth.routes.js')(dbConfig, app); // load our routes and pass in our app and fully configured passport
 require('./api/routes/user.routes.js')(app); // load our routes and pass in our app and fully configured passport
 require('./api/routes/group.routes.js')(app); // load our routes and pass in our app and fully configured passport
-// // require('./api/routes/utils.routes.js')(dbConfig, auth, app); // load our routes and pass in our app and fully configured passport
+require('./api/routes/utils.routes.js')(app); // load our routes and pass in our app and fully configured passport
 // require('./api/routes/asset.routes.js')(dbConfig, auth, app); // load our routes and pass in our app and fully configured passport
 
 
 // launch ====================================================================== 
 app.listen(port);
+
+var core = new Core();
+core.initConfig();
+
 console.log('Start on port ' + port);
 

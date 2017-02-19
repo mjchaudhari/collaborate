@@ -83,11 +83,8 @@
    .state("home.group.new", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
    .state("home.group.detail", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
    .state("home.group.analytics", {url:"/analytics", templateUrl : "./modules/groups/group.analytics.html"})
-   .state("home.group.assets", {url:"/assets?p", templateUrl : "./modules/assets/asset.list.html"})
-   .state("home.group.files", {url:"/files", templateUrl : "./modules/assets/file.list.html"})
-   .state("home.group.asset", {url:"/asset?p?type?a", templateUrl : "modules/assets/asset.edit.html"})
    
-   .state("home.asset", {url:"/:groupId/asset?p&type&a", templateUrl : "./modules/groups/asset.edit.html"})
+   .state("home.asset", {url:"/:g/asset?p&t&a", templateUrl : "./modules/assets/asset.edit.html"})
       
       
       

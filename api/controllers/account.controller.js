@@ -12,7 +12,7 @@ var apiAccount = require("./../models/API.Profile.js");
 /**
  * Controller for profile and account management
  */
-exports.authenticate = function(req, cb){
+    exports.authenticate = function(req, cb){
         console.log("controller : verifySecret");
         var r = req.body;
         var authData = {

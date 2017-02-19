@@ -1,21 +1,15 @@
-    //User routes
 
-var models = require("./../response.models.js").models;
 var path = require("path");
 var fs = require('fs-extra'); 
-var azureStorage = require("../azureStorageHelper.js")();
-var fileCtrl = require("./../controllers/file.controller.js");
-var utilsCtrl = require("./../controllers/utils.controller.js");
-var models = require("./../response.models.js").models;
+var serverConfig = require('./../../serverConfig.js');
+var fileHandler = require("./../file.handler.js");
+var UtilsController = require("./../controllers/utils.controller.js");
 var _dir = process.cwd();
 
-
-
-
-module.exports = function(dbConfig, auth, app) {
-    var utils=new utilsCtrl.v1(dbConfig);
+module.exports = function(app) {
     
-	var tmpUploadFolder = utils.tempUploadFolder;
+    
+	var tmpUploadFolder = path.normalize(_dir + serverConfig.tempFileStore);
 	
 	/**
 	 * @apiName /v1/file?filename  get the file
@@ -44,16 +38,6 @@ module.exports = function(dbConfig, auth, app) {
 	});
     
     /**
-     * Upload file
-     */
-    app.post("/v1/file", auth.isBearerAuth, function(req, res){
-        utils.fileUpload(req, res);
-	});
-    
-    app.post("/v1/thumbnail", function(req, res){
-        utils.fileUpload(req, res)
-	});
-    /**
      * Upload base64 thumbnail 
      * @apiParam {string} imgUrl - image in base64 string  
      * @apiParam {string} name - file name 
@@ -63,7 +47,7 @@ module.exports = function(dbConfig, auth, app) {
         var base64String = req.body.imgUrl;
         var fileName = req.body.fileName;
         
-        fileCtrl.saveFileFromBase64(fileName, base64String, function(err, filePath){
+        fileHandler.saveFileFromBase64(fileName, base64String, function(err, filePath){
             if(err){
                 console.error(err);
                 var e = new models.error(err,"");
@@ -74,28 +58,9 @@ module.exports = function(dbConfig, auth, app) {
             var s = new models.success();
             s.data = fileName;
             res.json(s);
-            
-            // fileCtrl.uploadToAzureStorage("gallery",filePath,function(err,result){
-            //     if(err){
-            //         var e = new models.error(err,"");
-            //         res.json(e);    
-            //     }
-            //     var s = new models.success(result);
-            //     res.json(s);
-            // });
         });
 	});
-    
-    
-    
-    app.post('/drive/upload', function(req, res){
-        
-        var options = {};
-        
-        
-		
-	});
-    /**
+/**
 	 * @apiName /v1/utils/categories/:name?/:categoryGroup Get categories
 	 * @apiDescription Get asset categories
      * @apiGroup Config
@@ -126,18 +91,8 @@ module.exports = function(dbConfig, auth, app) {
 				}
 	 */
 	app.get("/v1/config/categories",  function(req, res){
-        var name = "";
-        var categoryGroup = "";
-        if( req.query != null ){
-            name = req.query.name;
-            categoryGroup = req.query.categoryGroup;
-        }
-		utils.getCategories(name, categoryGroup, function (e,d){
-            if(e)
-            {
-                res.json(new models.error(e));
-            }
-            res.json(new models.success(d));
-        });
-	});
+		UtilsController.getCategories(req, function (d) {
+			res.json(d);
+		});
+    });
 }
