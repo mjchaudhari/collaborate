@@ -103,8 +103,7 @@ module.exports = function(app) {
      * @apiSuccess {group} group object.
     */
 	app.get('/v1/group/:groupId/members', auth.isBearerAuth,function(req, res) {
-		var groupId = req.params.groupId; 
-		GroupController.getMembers(groupId, function (d){
+		GroupController.getMembers(req, function (d){
 			if(d.isError){
 				res.status(400).send(d);
 				return;

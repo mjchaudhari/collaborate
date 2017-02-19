@@ -56,3 +56,15 @@ exports.getAssets = function(req, cb){
         return cb(new models.success(data));
     });
 }
+exports.getMembers = function(req, cb){
+    var profile = req.user;
+    var groupId = req.params.groupId;
+    var g = new Group({_id:groupId});
+    g.getMembers({_id: groupId, "profileId": profile._id}, function(e, data){
+        if(e)
+        {
+            return cb(new models.error(e));
+        }
+        return cb(new models.success(data));
+    });
+}

@@ -15,12 +15,13 @@ exports.getCategories = function(req, cb){
         name = req.query.name;
         categoryGroup = req.query.categoryGroup;
     }
+    var core = new Core();
     core.getCategories(name, categoryGroup, function (e,d){
         if(e)
         {
-            res.json(new models.error(e));
+            cb(new models.error(e));
         }
-        res.json(new models.success(d));
+        cb(new models.success(d));
     });
 };
     

@@ -60,7 +60,54 @@ API.Group.prototype.init = function(id, userId, cb){
         });
     });
 }
+/**
+ * get the group members
+ * @param {object} options 
+ * @return {object} options._id - group id
+ * @return {array[object]} group.memberes - members
+ 
+ */
+API.Group.prototype.getMembers = function (options, cb) {
+    if (options == null) {
+        options = {};
+    }
+    var search = {};
+    
+    if (options._id && options._id != 0) {
+        search._id = options._id;
+    }
+    
+    mongo.connect()
+    .then(function (db) {
+        db.collection("groups")
+        .findOne({"_id" : search._id})
+        .toArray(function (e, resultGroup) {
+            if (e) {
+                db.close();
+                return cb(new APIException(null, 'Group', err));
+            }
+            else if(g == null){
+                var ex = new ApiException();
 
+                return cb(new ex.notFound("Group Not found", 'Group', err));
+            }
+
+            var result = [];
+        
+            //{"_id":  {$in: ["VJvggm7ug","VJ0esDQ_e","41yeBrY_l","NJ6PJdKFe","EyfRUZB5x"]} }
+            var members = resultGroup.members;
+            db.collection("profiles")
+            .find({ "_id": { $in: members } }).toArray(function (e, members) {
+                if (e) {
+                    return callback();
+                }
+                else {
+                    return callback();
+                }
+            });
+        });
+    });
+};
 API.Group.prototype.getFilesFromStorage = function(callback){
     if(!this._isReady){
         //throw new API.ApiException("Group is not instanciated.", "Group.getFileStarage()");

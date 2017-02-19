@@ -73,7 +73,7 @@ function($http,$q, $log, config, $timeout, CacheFactory){
     },
     getGroupMembers : function(id){
       
-      var url = config.apiBaseUrl + "/v1/group/members/"+id;
+      var url = config.apiBaseUrl + "/v1/group/" + id + "/members/";
       return $http.get(url, requestOpts);
     },
     /**

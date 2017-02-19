@@ -18,10 +18,10 @@ API.Core = function (){
 var _self= this;
 this.createOrUpdateConfig = function(config,cb){
     mongo.connect().then(function(db){  
-        db("configs").findOneAndUpdate({"_id":config._id},{$set: config}, {"upsert":true, "forceServerObjectId":false, "returnOriginal":false}, 
+        db.collection("configs").findOneAndUpdate({"_id":config._id},{$set: config}, {"upsert":true, "forceServerObjectId":false, "returnOriginal":false}, 
         function (err, data) {
             if(cb){
-                return cb(e,data);    
+                return cb(err,data);    
             }
         });
     });
@@ -36,7 +36,7 @@ API.Core.prototype.getCategories = function(name, categoryGroup, callback){
         query.configGroup = { $regex : new RegExp(categoryGroup,"i") };;
     }
     mongo.connect().then(function(db){  
-        db("configs").find(query).toArray(function(e,d){
+        db.collection("configs").find(query).toArray(function(e,d){
             return callback(e,d)
         });
     });
@@ -51,7 +51,7 @@ API.Core.prototype.initConfig = function (){
     var type_transacton = {"_id":"type_transacton",name:"type_transacton", description:"Announcement", "displayName":"Announcement", "isContainer":false,"isStandard":true, "configGroup":"AssetType","isActive":true};
     var type_form = {"_id":"type_form", name:"type_form", description:"Task", "displayName":"Task", "isContainer":true,"isStandard":true, "configGroup":"AssetType","isActive":true};
     var type_task = {"_id":"type_task", name:"type_task", description:"Task", "displayName":"Task", "isContainer":true,"isStandard":true, "configGroup":"AssetType","isActive":true};
-    
+
     async.parallel([
         function(callback){
             _self.createOrUpdateConfig( type_collection, callback)
@@ -76,7 +76,7 @@ API.Core.prototype.initConfig = function (){
             },
         function(callback){    
             _self.createOrUpdateConfig( type_form, callback)
-            }    
+            }
         ],
         function(err, callback) {
             // results is now equals to: {one: 1, two: 2}
