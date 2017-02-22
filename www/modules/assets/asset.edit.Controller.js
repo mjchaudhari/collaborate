@@ -34,7 +34,7 @@
         
 
         $scope.asset = {
-            "_id":$scope.assetId,
+            "_id": $scope.assetId,
             "assetType" : $scope.assetType,
             "assetTypeId" : $scope.assetType != null ? $scope.assetType : null,
             "name":"",
@@ -43,8 +43,8 @@
             "urls":"",
             "groupId":$scope.groupId,
             "parentIds":[$scope.parentId],
-            "allowwLike":true,
-            "allowwComment":true,
+            "allowLike":true,
+            "allowComment":true,
             "publish":true,
             "activateOn":new Date(),
             "assetCategory":null,
@@ -68,8 +68,8 @@
             var typePromise = getTypes();
             var membersPromise = _getUsers();
             
-            $q.all([
-                assetPromise,typePromise,membersPromise
+            $scope.promises.loading = $q.all([
+                assetPromise, typePromise, membersPromise
             ])
             .then(function(){
                 switch ($scope.asset.assetTypeId) {
@@ -193,8 +193,8 @@
         }
         
         function _getUsers(){
-            var defer = $q.defer();
-            dataService.getGroupMembers($scope.groupId)
+            
+            return dataService.getGroupMembers($scope.groupId)
             .then(function(d){   
                 var users = [];
                 d.data.data.forEach(function(m){
@@ -202,9 +202,9 @@
                 })
 
                 angular.copy(d.data.data, $scope.groupMembers);
-                defer.resolve($scope.groupMembers);
+                //defer.resolve($scope.groupMembers);
             });
-            return defer.promise;
+            
         }
         $scope.querySearchWorking = function (term){
             $scope.searchResult=[];
@@ -260,10 +260,10 @@
             $scope.$back();
         };
         $scope.toggleComentSetting = function(){
-            $scope.asset.allowwComment = !$scope.asset.allowwComment; 
+            $scope.asset.allowComment = !$scope.asset.allowComment; 
         }
         $scope.toggleLikeSetting = function(){
-            $scope.asset.allowwLike = !$scope.asset.allowwLike; 
+            $scope.asset.allowLike = !$scope.asset.allowLike; 
         }
         $scope.saveAsset = function(){
 

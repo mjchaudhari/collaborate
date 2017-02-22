@@ -112,7 +112,7 @@ API.Profile.prototype.getGroups = function (options, cb) {
         .toArray(function (e, resultGroups) {
             if (e) {
                 db.close();
-                return cb(new APIException(null, 'Profile', err));
+                return cb(new APIException(null, 'Profile', e));
             }
             var result = [];
             async.eachSeries(resultGroups, function (grp, callback) {

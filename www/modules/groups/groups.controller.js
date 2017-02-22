@@ -10,24 +10,24 @@
         //bindable mumbers
         $scope.mainTitle = "Groups";
         $scope.groupList = [];
-        $scope.promices = {};
+        $scope.promises = {};
         $scope.defaultGroupThumbnail = "./images/cp.png";
         function getGroups (){
-            var groupsPromice = dataService.getGroups()
+            var groupsPromise = dataService.getGroups()
             .then(function(d){
                 angular.copy(d.data.data, $scope.groupList);
             },
             function(e){
 
             });
-            $scope.promices.groupsPromice = groupsPromice;
-            return groupsPromice;
+            $scope.promises.groupsPromise = groupsPromise;
+            return groupsPromise;
         }
 
         var preInit = function(){
             var tasks = [];
             tasks.push(getGroups());
-            $scope.promices.init = $q.all([
+            $scope.promises.init = $q.all([
                 tasks
             ])
             .then(function(){

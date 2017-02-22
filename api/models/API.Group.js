@@ -80,15 +80,14 @@ API.Group.prototype.getMembers = function (options, cb) {
     mongo.connect()
     .then(function (db) {
         db.collection("groups")
-        .findOne({"_id" : search._id})
-        .toArray(function (e, resultGroup) {
+        .findOne({"_id" : search._id}, function (e, resultGroup) {
             if (e) {
                 db.close();
                 return cb(new APIException(null, 'Group', err));
             }
-            else if(g == null){
+            else if(resultGroup == null){
                 var ex = new ApiException();
-
+                db.close();
                 return cb(new ex.notFound("Group Not found", 'Group', err));
             }
 
@@ -98,11 +97,12 @@ API.Group.prototype.getMembers = function (options, cb) {
             var members = resultGroup.members;
             db.collection("profiles")
             .find({ "_id": { $in: members } }).toArray(function (e, members) {
+                db.close();
                 if (e) {
-                    return callback();
+                    return cb(new APIException(null,'Group', e));
                 }
                 else {
-                    return callback();
+                    return cb(null, members);
                 }
             });
         });
