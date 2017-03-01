@@ -3,7 +3,7 @@
 // Code goes here
  //module = angular.module('ezDirectives', ['ngFileUpload']);
  var app = angular.module('app', ['ngMaterial','ngMdIcons', 'ngAnimate', 'ngSanitize', 'ui.router',
-      'ngStorage','ngFileUpload','ngImgCrop', 'ezDirectives','angular-cache','angularMoment',
+      'ngStorage','ngFileUpload','uiCropper', 'ezDirectives','angular-cache','angularMoment',
       'cgBusy','sasrio.angular-material-sidenav']);
  app.constant("config",{
      appTitle:"easy collaborate",

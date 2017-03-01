@@ -3,7 +3,7 @@
 // Code goes here
  //module = angular.module('ezDirectives', ['ngFileUpload']);
  var app = angular.module('app', ['ngMaterial','ngMdIcons', 'ngAnimate', 'ngSanitize', 'ui.router',
-      'ngStorage','ngFileUpload','ngImgCrop', 'ezDirectives','angular-cache','angularMoment',
+      'ngStorage','ngFileUpload','uiCropper', 'ezDirectives','angular-cache','angularMoment',
       'cgBusy','sasrio.angular-material-sidenav']);
  app.constant("config",{
      appTitle:"easy collaborate",
@@ -80,13 +80,11 @@
    
    .state("home.group", {url:"/:g", templateUrl : "/modules/groups/group.html"})
    .state("home.group.board", {url:"/board", templateUrl : "/modules/groups/group.board.html"})
+   .state("home.group.new", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
    .state("home.group.detail", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
    .state("home.group.analytics", {url:"/analytics", templateUrl : "./modules/groups/group.analytics.html"})
-   .state("home.group.assets", {url:"/assets?p", templateUrl : "./modules/assets/asset.list.html"})
-   .state("home.group.files", {url:"/files", templateUrl : "./modules/assets/file.list.html"})
-   .state("home.group.asset", {url:"/asset?p?type?a", templateUrl : "modules/assets/asset.edit.html"})
    
-   .state("home.asset", {url:"/:groupId/asset?p&type&a", templateUrl : "./modules/groups/asset.edit.html"})
+   .state("home.asset", {url:"/:g/asset?p&t&a", templateUrl : "./modules/assets/asset.edit.html"})
       
       
       
@@ -200,6 +198,11 @@ angular.module('app').factory('authService', ['$http', '$log','$q','config' ,'$l
         $http.post(url, model).then(
         function(d){
         	dataService.clearCache();
+        	if(d.data.isError){
+        		deferred.reject("Invalid Creadentials");	
+				_logOut();
+        		return;
+        	}
             $localStorage.__splituser = d.data.data;
             $localStorage.__splituserat = d.data.data.accessToken;
             _userDetail = d.data.data;
@@ -334,7 +337,7 @@ function($http,$q, $log, config, $timeout, CacheFactory){
     },
     getGroupMembers : function(id){
       
-      var url = config.apiBaseUrl + "/v1/group/members/"+id;
+      var url = config.apiBaseUrl + "/v1/group/" + id + "/members/";
       return $http.get(url, requestOpts);
     },
     /**
@@ -593,7 +596,7 @@ angular.module("app")
         
         storageService.add('user',model);
         storageService.add('status',"REQUESTED");
-        $state.go("account.registrationSuccess");
+        $state.go("account.registerationsuccess");
       },
       function (e){
         //$scope.addAlert(e.message,"danger");
@@ -601,6 +604,24 @@ angular.module("app")
       });
   }
   
+});
+
+
+angular.module("app")
+.controller("registrationSuccessController", function($scope){
+  $scope.title = "Registation success";
+});
+
+
+angular.module("app")
+.controller("registrationSuccessController", function($scope){
+  $scope.title = "Registation success";
+});
+
+
+angular.module("app")
+.controller("registrationSuccessController", function($scope){
+  $scope.title = "Registation success";
 });
 
 
@@ -623,8 +644,8 @@ angular.module("app")
         $scope.groupMembers = [];
         $scope.types = [];
         $scope.tempData = {
-                "Owners":[],
-                "Accessibility":[],
+                "owners":[],
+                "accessibility":[],
                 "taskUpdate" : ""
         };
         $scope.errorMessage=[];
@@ -640,21 +661,21 @@ angular.module("app")
         
 
         $scope.asset = {
-            "_id":$scope.assetId,
-            "AssetType" : $scope.assetType,
-            "AssetTypeId" : $scope.assetType != null ? $scope.assetType : null,
-            "Name":"",
-            "Description":"",
-            "Thumbnail":"",
-            "Urls":"",
-            "GroupId":$scope.groupId,
-            "ParentIds":[$scope.parentId],
-            "AllowLike":true,
-            "AllowComment":true,
-            "Publish":true,
-            "ActivateOn":new Date(),
-            "AssetCategory":null,
-            "Accessibility" : []
+            "_id": $scope.assetId,
+            "assetType" : $scope.assetType,
+            "assetTypeId" : $scope.assetType != null ? $scope.assetType : null,
+            "name":"",
+            "description":"",
+            "thumbnail":"",
+            "urls":"",
+            "groupId":$scope.groupId,
+            "parentIds":[$scope.parentId],
+            "allowLike":true,
+            "allowComment":true,
+            "publish":true,
+            "activateOn":new Date(),
+            "assetCategory":null,
+            "accessibility" : []
         };
         
         $scope.uploadedFiles=null;
@@ -674,26 +695,26 @@ angular.module("app")
             var typePromise = getTypes();
             var membersPromise = _getUsers();
             
-            $q.all([
-                assetPromise,typePromise,membersPromise
+            $scope.promises.loading = $q.all([
+                assetPromise, typePromise, membersPromise
             ])
             .then(function(){
-                switch ($scope.asset.AssetTypeId) {
+                switch ($scope.asset.assetTypeId) {
                         case "type_task":
-                            if($scope.asset.Task == null){
-                                $scope.asset.Task = {}
+                            if($scope.asset.task == null){
+                                $scope.asset.task = {}
                             }
-                            if($scope.asset.Task.Updates == null){
-                                $scope.asset.Task.Updates = [];
+                            if($scope.asset.task.updates == null){
+                                $scope.asset.task.updates = [];
                             }
 
-                            if($scope.asset.Task.Owners == null){
-                                $scope.asset.Task.Owners = [];
+                            if($scope.asset.task.owners == null){
+                                $scope.asset.task.owners = [];
                             }        
                             break;
                         case "type_calendar":
-                            if($scope.asset.Calendar == null){
-                                $scope.asset.Calendar = {}
+                            if($scope.asset.calendar == null){
+                                $scope.asset.calendar = {}
                             }
                             break;
                         default:
@@ -706,7 +727,7 @@ angular.module("app")
         var init = function(){
             $log.debug("Init executed")
             var assetType = _.find($scope.types,{ "_id": $scope.assetType});
-            $scope.asset.AssetType = assetType;
+            $scope.asset.assetType = assetType;
             
         };
         
@@ -723,52 +744,52 @@ angular.module("app")
                 $scope.promises.assetList = dataService.getAsset(id)
                 .then(function(d){
                     $scope.asset = angular.copy(d.data.data);
-                    $scope.asset.ActivateOn = new Date(d.data.data.ActivateOn);
-                    if(d.data.data.ExpireOn){
-                        $scope.asset.ExpireOn = new Date(d.data.data.ExpireOn);
+                    $scope.asset.activateOn = new Date(d.data.data.activateOn);
+                    if(d.data.data.expireOn){
+                        $scope.asset.expireOn = new Date(d.data.data.expireOn);
                         $scope.asset.neverExpire = false;
                     }
                     else{
                         $scope.asset.neverExpire = true;
                     }
-                    if($scope.asset.Accessibility == null){
-                        $scope.asset.Accessibility= []
+                    if($scope.asset.accessibility == null){
+                        $scope.asset.accessibility= []
                     }
 
-                    $scope.asset.Accessibility.forEach(function(m){
-                        m._name = m.FirstName + ' ' + m.LastName;
+                    $scope.asset.accessibility.forEach(function(m){
+                        m._name = m.firstName + ' ' + m.lastName;
                     })
                     
-                    if($scope.asset.Files != null && $scope.asset.Files.length >= 0){
-                            var thumbnails = _.pluck($scope.asset.Files, "thumbnailLink")
+                    if($scope.asset.Files != null && $scope.asset.files.length >= 0){
+                            var thumbnails = _.pluck($scope.asset.files, "thumbnailLink")
                             $scope.asset._thumbnails = thumbnails;
                     }else{
                             //$scope.asset._thumbnails = [$scope.asset.Thumbnail];
                     }
                 
-                    angular.copy($scope.asset.Accessibility, $scope.tempData.Accessibility); 
+                    angular.copy($scope.asset.accessibility, $scope.tempData.accessibility); 
                     
-                    switch ($scope.asset.AssetTypeId) {
+                    switch ($scope.asset.assetTypeId) {
                         case "type_task":
-                            if($scope.asset.Task == null){
-                                $scope.asset.Task = {}
+                            if($scope.asset.task == null){
+                                $scope.asset.task = {}
                             }
-                            if($scope.asset.Task.Updates == null){
-                                $scope.asset.Task.Updates = [];
+                            if($scope.asset.task.updates == null){
+                                $scope.asset.task.updates = [];
                             }
-                            if($scope.asset.Task.Owners == null){
-                                $scope.asset.Task.Owners = [];
+                            if($scope.asset.task.owners == null){
+                                $scope.asset.task.owners = [];
                             }
                             
-                            $scope.asset.Task.Owners.forEach(function(m){
-                                m._name = m.FirstName + ' ' + m.LastName;
+                            $scope.asset.task.owners.forEach(function(m){
+                                m._name = m.firstName + ' ' + m.lastName;
                             })
-                            angular.copy($scope.asset.Task.Owners, $scope.tempData.Owners);
+                            angular.copy($scope.asset.task.owners, $scope.tempData.owners);
                             
                             break;
                         case "type_calendar":
-                            if($scope.asset.Calendar == null){
-                                $scope.asset.Calendar = {}
+                            if($scope.asset.calendar == null){
+                                $scope.asset.calendar = {}
                             }
                             break;
                         default:
@@ -786,7 +807,7 @@ angular.module("app")
         }
         function getTypes (){
             var defer = $q.defer();
-            $scope.promises.types = dataService.getConfigCategories(null,"AssetType")
+            $scope.promises.types = dataService.getConfigCategories(null,"assetType")
             .then(function(d){
                 $scope.types = angular.copy(d.data.data);
                 $log.debug("getCategories resolved");
@@ -799,18 +820,18 @@ angular.module("app")
         }
         
         function _getUsers(){
-            var defer = $q.defer();
-            dataService.getGroupMembers($scope.groupId)
+            
+            return dataService.getGroupMembers($scope.groupId)
             .then(function(d){   
                 var users = [];
                 d.data.data.forEach(function(m){
-                    m._name = m.FirstName + ' ' + m.LastName;
+                    m._name = m.firstName + ' ' + m.lastName;
                 })
 
                 angular.copy(d.data.data, $scope.groupMembers);
-                defer.resolve($scope.groupMembers);
+                //defer.resolve($scope.groupMembers);
             });
-            return defer.promise;
+            
         }
         $scope.querySearchWorking = function (term){
             $scope.searchResult=[];
@@ -823,9 +844,9 @@ angular.module("app")
                 var result = [];
                 angular.copy(d.data.data, result);
                 result.forEach(function(u){
-                    u._name = u.FirstName + ' ' + u.LastName;
+                    u._name = u.firstName + ' ' + u.lastName;
                     //check if this user is alredy added
-                    var exist = _.findWhere($scope.asset.Accessibility,{"_id":u._id});
+                    var exist = _.findWhere($scope.asset.accessibility,{"_id":u._id});
                     if(exist){
                         u.__added = true;
                     }
@@ -850,9 +871,9 @@ angular.module("app")
                     return m._name.match(regex);
                 });
                 members.forEach(function(u){
-                    u._name = u.FirstName + ' ' + u.LastName;
+                    u._name = u.firstName + ' ' + u.lastName;
                     //check if this user is alredy added
-                    var exist = _.findWhere($scope.asset.Accessibility,{"_id":u._id});
+                    var exist = _.findWhere($scope.asset.accessibility,{"_id":u._id});
                     if(exist){
                         u.__added = true;
                     }
@@ -866,10 +887,10 @@ angular.module("app")
             $scope.$back();
         };
         $scope.toggleComentSetting = function(){
-            $scope.asset.AllowComment = !$scope.asset.AllowComment; 
+            $scope.asset.allowComment = !$scope.asset.allowComment; 
         }
         $scope.toggleLikeSetting = function(){
-            $scope.asset.AllowLike = !$scope.asset.AllowLike; 
+            $scope.asset.allowLike = !$scope.asset.allowLike; 
         }
         $scope.saveAsset = function(){
 
@@ -887,24 +908,24 @@ angular.module("app")
         }
         
         function _saveAssetData(){
-            if($scope.asset.ParentIds == undefined ){
-                $scope.asset.ParentIds = [$scope.parentId];
+            if($scope.asset.parentIds == undefined ){
+                $scope.asset.parentIds = [$scope.parentId];
             } 
-            else if($scope.asset.ParentIds.length == 0){
-                $scope.asset.ParentIds = [$scope.parentId];
+            else if($scope.asset.parentIds.length == 0){
+                $scope.asset.parentIds = [$scope.parentId];
             }
             
-            if($scope.asset.ExpireOn && isNaN($scope.asset.ExpireOn.getDate())){
-                $scope.asset.ExpireOn = new Date(9999,12,31)
+            if($scope.asset.expireOn && isNaN($scope.asset.expireOn.getDate())){
+                $scope.asset.expireOn = new Date(9999,12,31)
             }
             
-            //get owners and Accessibility data
-            if($scope.tempData.Accessibility){
-                $scope.asset.Accessibility = _.pluck($scope.tempData.Accessibility, "_id");        
+            //get owners and accessibility data
+            if($scope.tempData.accessibility){
+                $scope.asset.accessibility = _.pluck($scope.tempData.accessibility, "_id");        
             }
 
-            if($scope.asset.Task && $scope.tempData.Owners){
-                $scope.asset.Task.Owners = _.pluck($scope.tempData.Owners, "_id");        
+            if($scope.asset.task && $scope.tempData.owners){
+                $scope.asset.task.owners = _.pluck($scope.tempData.owners, "_id");        
             }
             
 
@@ -915,22 +936,22 @@ angular.module("app")
                 data: $scope.asset
             }).then(function (d) {
                 $scope.asset = d.data.data;
-                if($scope.asset.Accessibility == null){
-                    $scope.asset.Accessibility =[];
+                if($scope.asset.accessibility == null){
+                    $scope.asset.accessibility =[];
                 }
                 if(d.data.data.ActivateOn){
                     $scope.asset.ActivateOn = new Date(d.data.data.ActivateOn);
                 }
                 
-                if(d.data.data.ExpireOn){
-                    $scope.asset.ExpireOn = new Date(d.data.data.ExpireOn);
+                if(d.data.data.expireOn){
+                    $scope.asset.expireOn = new Date(d.data.data.expireOn);
                     $scope.asset.neverExpire = false;
                 }
                 else{
                     $scope.asset.neverExpire = true;
                 }
-                $scope.asset.Accessibility.forEach(function(m){
-                    m._name = m.FirstName + ' ' + m.LastName;
+                $scope.asset.accessibility.forEach(function(m){
+                    m._name = m.firstName + ' ' + m.lastName;
                 })
                 defer.resolve(d.data.data);
             }, function (resp) {
@@ -1002,7 +1023,7 @@ angular.module("app")
             
         };
         $scope.addUpdate = function(u){
-                $scope.asset.Task.Updates.push({
+                $scope.asset.task.updates.push({
                     Update : $scope.tempData.taskUpdate,
                     UpdatedOn : new Date(),
                     UpdatedBy : authService.userDetail._id
@@ -1708,6 +1729,11 @@ angular.module("app")
         var init = function(){
 
         };
+        
+        $scope.details = function(){
+            $state.go("home.group.detail",{"g": $scope.group._id});
+            $scope.mainTitle = $scope.group.name;
+        }
 
         function getGroupDetail (){
             $scope.promices.groupBoard = dataService.getGroup($scope._id)
@@ -1735,7 +1761,10 @@ angular.module("app")
             });
             return $scope.promices.groupPromice;
         }
-
+        
+        $scope.newTopic = function(){
+            $state.go("home.asset", { "g": $scope._id, "t": "type_collection" });
+        }
         preInit();
 
 
@@ -1751,9 +1780,10 @@ angular.module("app")
     function groupDetailController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast ){
         
         //bindable mumbers
-        $scope.title = "Group Details";
+        
         $scope.promices = {};
-        $scope._id = $stateParams.g;
+        $scope._id = $stateParams.g == "new" ? null : $stateParams.g;
+        $scope.title = $scope._id == null ? "Create Group" : "Edit Group";
         $scope.group = null;
         $scope.groupCopy = null;
 
@@ -1779,14 +1809,19 @@ angular.module("app")
 
         var preInit = function(){
             var tasks = [];
-            $scope.promices.groupDetail = getGroupDetail();
-            tasks.push($scope.promices.groupDetail);
-            $scope.promices.busy = $q.all([
-                tasks
-            ])
-            .then(function(){
-                init()
-            });
+            if($scope._id){
+                $scope.promices.groupDetail = getGroupDetail();
+                tasks.push($scope.promices.groupDetail);
+                $scope.promices.busy = $q.all([
+                    tasks
+                ])
+                .then(function(){
+                    init()
+                });
+            }
+            else{
+                init();
+            }
         }
 
         var init = function(){
@@ -1890,24 +1925,24 @@ angular.module("app")
         //bindable mumbers
         $scope.mainTitle = "Groups";
         $scope.groupList = [];
-        $scope.promices = {};
+        $scope.promises = {};
         $scope.defaultGroupThumbnail = "./images/cp.png";
         function getGroups (){
-            var groupsPromice = dataService.getGroups()
+            var groupsPromise = dataService.getGroups()
             .then(function(d){
                 angular.copy(d.data.data, $scope.groupList);
             },
             function(e){
 
             });
-            $scope.promices.groupsPromice = groupsPromice;
-            return groupsPromice;
+            $scope.promises.groupsPromise = groupsPromise;
+            return groupsPromise;
         }
 
         var preInit = function(){
             var tasks = [];
             tasks.push(getGroups());
-            $scope.promices.init = $q.all([
+            $scope.promises.init = $q.all([
                 tasks
             ])
             .then(function(){
@@ -1918,14 +1953,16 @@ angular.module("app")
         var init = function(){
 
         };
+        
+        $scope.createGroup = function(){
+            $state.go("home.group.new",{"g": "new"});
+        }
+
         $scope.openBoard = function(g){
             $state.go("home.group.board",{"g": g._id});
             $scope.mainTitle = g.name;
         }
-        $scope.details = function(g){
-            $state.go("home.group.detail",{"g": g._id});
-            $scope.mainTitle = g.name;
-        }
+        
         preInit();
 
     }//conroller ends
@@ -1977,10 +2014,10 @@ angular.module("app")
     angular.module("app")
     .controller("homeController",homeController);
     
-    homeController.$inject = ["$scope", "$log", "$q", "$localStorage", "$mdToast",  "$state","$stateParams" ,"dataService", 
+    homeController.$inject = ["$scope", "$log", "$window", "$q", "$localStorage", "$mdToast",  "$state","$stateParams" ,"dataService", 
         "config","$mdSidenav","authService","$mdDialog","$mdBottomSheet"];
     
-    function homeController($scope, $log, $q, $localStorage, $mdToast, $state, $stateParams, dataService, 
+    function homeController($scope, $log, $window, $q, $localStorage, $mdToast, $state, $stateParams, dataService, 
         config, $mdSidenav, authService, $mdDialog,$mdBottomSheet){
         
         //bindable mumbers
@@ -2059,6 +2096,9 @@ angular.module("app")
             .toggle();
         }
 
+        $scope.historyBack = function(){
+            $window.history.back();
+        }
         
         //Set next theme
         function _nextTheme (){
@@ -2126,10 +2166,6 @@ angular.module("app")
             }            
         }
         
-        $scope.createGroup = function(){
-            $state.go("home.group.detail");
-        }
-        
         var preInit = function(){
             var tasks = [];
             tasks.push(getGroups());
@@ -2141,7 +2177,7 @@ angular.module("app")
             });
             $scope.promices.initPromice = initPromice;
         }
-
+        
         var init = function(){
 
         };

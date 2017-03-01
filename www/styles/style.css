@@ -385,7 +385,7 @@ Show the image as background to display: block;
   content: '\e7f7';
 }
 
-md-input-container {
+.md-input-container {
   margin: 2px 0;
 }
 

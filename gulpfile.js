@@ -7,7 +7,7 @@ var concat = require('gulp-concat');
 var replace = require('gulp-html-replace');
 var templateCache = require('gulp-angular-templatecache');
 
-var dest = "./dist/client/"
+var dest = "./dist/"
 
 var clientAssetsStyles =[
     "/www/fonts/**.*",
@@ -18,12 +18,11 @@ var clientStyles =[
     './www/vendor/angular-material/angular-material.min.css'
     , './www/styles/robotodraft.css'
     , './www/fonts/icon.css'
-    , './www/vendor/ez-utils/ez-directives/eztree.css'
-    , './www/vendor/ng-img-crop/compile/minified/ng-img-crop.css'
+    , './www/vendor/ui-cropper/compile/minified/ui-cropper.css'
     , './www/vendor/angular-busy/dist/angular-busy.min.css'
     , './www/vendor/angular-material-data-table/dist/md-data-table.css'
     , './www/vendor/angular-material-sidenav/angular-material-sidenav.css'
-    , "./www/vendor/ez-utils/ez-directives/expando.css",
+    , "./www/vendor/ez-utils/dist/ez-directives.css",
     , "./www/styles/style.css",
 ]
 var clientJsFiles =[
@@ -45,7 +44,7 @@ var vendorJsFiles =[
     , "./www/vendor/angular-ui-router/release/angular-ui-router.min.js"
     , "./www/vendor/ng-file-upload/ng-file-upload.js"  
      
-    , "./www/vendor/ng-img-crop-full-extended/compile/unminified/ng-img-crop.js"  
+    , "./www/vendor/ui-cropper/compile/unminified/ui-cropper.js"  
     , "./www/vendor/underscore/underscore-min.js"
     , "./www/vendor/moment/min/moment.min.js"
     , "./www/vendor/angular-moment/angular-moment.min.js"
@@ -55,6 +54,8 @@ var vendorJsFiles =[
     , "./www/vendor/angular-busy/dist/angular-busy.js"
     , "./www/vendor/angular-material-sidenav/angular-material-sidenav.js"
     , "./www/vendor/angular-material-data-table/dist/md-data-table.min.js"
+    , "./www/vendor/ez-utils/dist/ez-directives.js",
+
 ]
 /** clean up */
 gulp.task('clean', function (cb) {
@@ -112,10 +113,10 @@ gulp.task('replaceRefs', function () {
    gulp.src(  "./www/index.html")
       .pipe(replace(
           {
-              'styles': '<link rel="stylesheet" href="' + dest + 'styles/styles.css">'
-              , "vendor" : '<script src="'+ dest + 'vendor/vendor.js"></script>'
-              , "templates" : '<script src="'+ dest + 'tempates.js"></script>'
-              , "app" : '<script src="'+ dest + 'app.js"></script>'
+              'styles': '<link rel="stylesheet" href="./styles/styles.css">'
+              , "vendor" : '<script src="./vendor/vendor.js"></script>'
+              , "templates" : '<script src="./templates.js"></script>'
+              , "app" : '<script src="./app.js"></script>'
         }))
         .pipe(gulp.dest(dest));
       
