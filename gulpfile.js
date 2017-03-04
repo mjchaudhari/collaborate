@@ -16,8 +16,6 @@ var clientAssetsStyles =[
 
 var clientStyles =[
     './www/vendor/angular-material/angular-material.min.css'
-    , './www/styles/robotodraft.css'
-    , './www/fonts/icon.css'
     , './www/vendor/ui-cropper/compile/minified/ui-cropper.css'
     , './www/vendor/angular-busy/dist/angular-busy.min.css'
     , './www/vendor/angular-material-data-table/dist/md-data-table.css'
@@ -28,7 +26,7 @@ var clientStyles =[
 var clientJsFiles =[
     "./www/app.js",
     "./www/httpInterceptor.js",
-    "./wwm/index.controller.js",
+    "./www/index.controller.js",
     "./wwm/utils.js",
     "./www/services/**/*.js",
     "./www/modules/**/*.js",
@@ -73,6 +71,7 @@ gulp.task('copyMedia', function () {
         )
       .pipe(gulp.dest(dest))
 });
+
 /** concat */
 gulp.task('concatStyles', function () {
    gulp.src(clientStyles)
@@ -102,7 +101,7 @@ gulp.task('app', function () {
  */
 gulp.task('template', function () {
    gulp.src("./www/modules/**/*.html")
-        .pipe(templateCache('templates.js', {module: 'app', root: 'modules'}))
+        .pipe(templateCache('templates.js', {module: 'app', root: '/modules'}))
         .pipe(gulp.dest(dest));
 });
 
@@ -115,8 +114,9 @@ gulp.task('replaceRefs', function () {
           {
               'styles': '<link rel="stylesheet" href="./styles/styles.css">'
               , "vendor" : '<script src="./vendor/vendor.js"></script>'
-              , "templates" : '<script src="./templates.js"></script>'
               , "app" : '<script src="./app.js"></script>'
+              , "templates" : '<script src="./templates.js"></script>'
+              
         }))
         .pipe(gulp.dest(dest));
       
