@@ -7,7 +7,7 @@
             <span>{{title}}</span>
         </div>
     </md-toolbar>
-    <div layout-padding>
+    <md-content layout-padding layout="column">
         <div layout="row" flex  layout-align="start start">
             <ez-image-upload img="group.thumbnail" ></ez-image-upload>
             <div layout="column" flex>
@@ -46,10 +46,7 @@
             <md-button class="md-button md-raised md-primary accent" ng-click="saveGroupDetails()">
                 Save
             </md-button>
-            <md-button class="md-button md-raised md-primary accent" ng-click="cancel()">
-                Cancel
-            </md-button>
         </div>
     
-    </div>
+    </md-content>
 </div>

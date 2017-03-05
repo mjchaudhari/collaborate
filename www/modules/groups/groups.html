@@ -20,8 +20,8 @@
 		
 		<md-content class='md-padding content-height transperent-bg' >
 			
-			<md-grid-list md-cols="4" md-cols-xs="2" md-cols-sm="3" md-cols-gt-md="4" 
-				md-row-height="1:1" md-gutter="4px">
+			<md-grid-list md-cols="5" md-cols-xs="2" md-cols-sm="4" md-cols-gt-md="5" 
+				md-row-height="1:1" md-gutter="5px">
 				<md-grid-tile ng-repeat="g in groupList"
 						md-colspan-sm="1"
 						ng-class="" 
@@ -33,7 +33,7 @@
 						</md-button>
 					<md-grid-tile-footer>
 						<div layout="row" layout-align="start center" flex>
-							<span flex class="md-title">{{g.name}}</span>
+							<span flex class="md-subhead">{{g.name}}</span>
 						</div>						
 					</md-grid-tile-footer>
 				</md-grid-tile>

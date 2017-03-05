@@ -82,9 +82,9 @@
    .state("home.group.board", {url:"/board", templateUrl : "/modules/groups/group.board.html"})
    .state("home.group.new", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
    .state("home.group.detail", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
-   .state("home.group.analytics", {url:"/analytics", templateUrl : "./modules/groups/group.analytics.html"})
+   .state("home.group.analytics", {url:"/analytics", templateUrl : "/modules/groups/group.analytics.html"})
    
-   .state("home.asset", {url:"/:g/asset?p&t&a", templateUrl : "./modules/assets/asset.edit.html"})
+   .state("home.asset", {url:"/:g/asset?p&t&a", templateUrl : "/modules/assets/asset.edit.html"})
       
       
       
@@ -1735,7 +1735,7 @@ angular.module("app")
     function groupBoardController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast ){
         
         //bindable mumbers
-        $scope.title = "Group Details";
+        $scope.title = "";
         $scope.promices = {};
         $scope._id = $stateParams.g;
         $scope.group = null;
@@ -1783,6 +1783,7 @@ angular.module("app")
             $scope.promices.groupBoard = dataService.getGroup($scope._id)
             .then(function(d){
                 $scope.group = angular.copy(d.data.data[0]);
+                $scope.title = $scope.group.name;
                 if($scope.group.members){
                     $scope.group.members.forEach(function(m){
                         m._name = m.firstName + ' ' + m.lastName;

@@ -4,8 +4,9 @@
             <md-button class="md-icon-button" aria-label="back" ng-click="historyBack()"> 
                 <i class="material-icons">arrow_back</i>
             </md-button>   
-            <span>{{title}}</span>
+            <span class="md-regular">{{title}}</span>
             <span flex></span>
+            <img ng-src="{{group.thumbnail}}" class="avatar-small" ng-click="details()" />
             <md-button class="md-icon-button" aria-label="Menu" ng-click="newTopic()">
 				<i class="material-icons">add</i>
 			</md-button>

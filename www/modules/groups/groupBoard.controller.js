@@ -8,7 +8,7 @@
     function groupBoardController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast ){
         
         //bindable mumbers
-        $scope.title = "Group Details";
+        $scope.title = "";
         $scope.promices = {};
         $scope._id = $stateParams.g;
         $scope.group = null;
@@ -56,6 +56,7 @@
             $scope.promices.groupBoard = dataService.getGroup($scope._id)
             .then(function(d){
                 $scope.group = angular.copy(d.data.data[0]);
+                $scope.title = $scope.group.name;
                 if($scope.group.members){
                     $scope.group.members.forEach(function(m){
                         m._name = m.firstName + ' ' + m.lastName;
