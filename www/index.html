@@ -13,6 +13,7 @@
 <!-- build:styles -->
   <link rel="stylesheet" href="./vendor/angular-material/angular-material.min.css">
   <link rel="stylesheet" href="./styles/style.css">
+  <link rel="stylesheet" href="./styles/animations.css">
   <link rel="stylesheet" href="./vendor/ui-cropper/compile/minified/ui-cropper.css">
   <link rel="stylesheet" href="./vendor/angular-busy/dist/angular-busy.min.css">
   <link rel="stylesheet" href="./vendor/angular-material-data-table/dist/md-data-table.css">
@@ -20,8 +21,9 @@
   <link rel="stylesheet" href="./vendor/ez-utils/dist/ez-directives.css">
 <!-- endbuild -->
 </head>
-<body ng-controller="indexController" >
-    <div ui-view layout="column">
+<body ng-controller="indexController" class="view-animate-container">
+  <!--index view-->
+    <div ui-view style="height:100vh;" layout="row" class="view-animate">
     
     </div>
 

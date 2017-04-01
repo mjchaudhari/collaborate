@@ -1,30 +1,67 @@
 
 var drive = require("./../googleDriveHelper.js")();
-var _dbConfig        = require("./../db.connection.js")
+var mongo = require("./../db.connection.js");
 var Asset        = require("./API.Asset.js");
 var q =require("q");
 
 
-API.Asset.task = function(){}
+var API = API || {} // Namespace
+API.Collection = function (data){
+    //call base classes constructor
+    Asset.call(this, data);
+    this.allowedTypes = data.allowedTypes;
+    this.contentCount = data.contentCount;
+    this.cumulativeContentCount = data.cumulativeContentCount;
+}
 //Prototype
-API.Asset.Collection.prototype = new Asset();
-API.Asset.Collection.__proto__ = Asset.prototype;
+
+API.Collection.prototype = Object.create( Asset.prototype );
+API.Collection.prototype.constructor = API.Collection;
+//API.Collection.__proto__ = Asset.prototype;
 
 //Properties
-API.Asset.Collection.prototype.allowedTypes = [];
-API.Asset.Collection.prototype.contentCount = null;
-API.Asset.Collection.prototype.cumulativeContentCount = null;
+// API.Collection.prototype.allowedTypes = [];
+// API.Collection.prototype.contentCount = null;
+// API.Collection.prototype.cumulativeContentCount = null;
 
 /**
- * populate it self as per database. This method can be called only if the __id is set else throws error.
+ * Create or update the collection type asset
+ * @return {object} promise
  */
-API.Asset.Collection.prototype.build = function(){
-    if(this._id == null){
-        throw Error("Require _id set for building collection");
-    }
+API.Collection.prototype.save = function(){
+    var self = this;
     var defered = q.defer();
+    Asset.prototype.save.call(this)
+    .then(function(a){
+        //save this collection asset data.
+        //here we must have got the _id of the current asset
+        var data = {
+            _id: a._id
+            , allowedTypes: self.allowedTypes
+        }
 
+        mongo.connect()
+        .then(function (db) {
+            db.collection("assets")
+            .findOneAndUpdate({ "_id": data._id },
+                { $set: data }, 
+                { "upsert": true, "forceServerObjectId": false, "returnOriginal": false }, 
+                function (err, data) {
+                    if (err) {
+                        defered.reject(new APIException(null, 'Collection Asset', err));
+                    }
+                    else{
+                        defered.resolve(data.value);
+                    }
+                });
+        })
+        .finally( function(){
+            db.close();
+        });;
+    }, function(e){
+        defered.reject(e);
+    });
     return defered.promise;
 };
 
-module.exports = API.Asset;
+module.exports = API.Collection;

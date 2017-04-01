@@ -1,8 +1,6 @@
 
 //User routes
 
-var mongodb = require('mongodb');
-var mongo = mongodb.MongoClient;
 var models = require("./../response.models.js").models;
 var auth            = require("./../auth.js");
 var GroupController = require("./../controllers/group.controller.js");

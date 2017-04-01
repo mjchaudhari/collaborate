@@ -2,6 +2,8 @@
 var drive = require("./../googleDriveHelper.js")();
 var mongo        = require("./../db.connection.js")
 var APIException = require("./API.Exception.js");
+var q =require("q");
+
 var apiException = new APIException();
 var API = API || {} // Namespace
 API.Group = function(data){
@@ -140,136 +142,6 @@ API.Group.prototype.getFileFromStorage = function(params,callback){
         return callback(e,d);
     });
     
-}
-/**
- * Get assets of this group
- * @param {object} params
- * @param {string} params.groupId - group id
- * @param {string} params.profileId - profile id who is seeking for assets
- * @return {array[asset]} array - list of assets
- */
-API.Group.prototype.getAssets = function(params, callback){
-    var self = this;
-    mongo.connect( )
-        .then(function(db){
-            //find the groups of this user
-            var filter = { "_id": self._id,  "members": { $in: [params.profileId] } }
-            db.collection("groups").find(filter).toArray(function(err, data){
-                if(err){
-                    db.close();  
-                    return callback(err);
-                }
-                if(data.length <= 0 ){
-                    db.close();
-                    //This user has no access to the assets of this group.
-                    return callback(new apiException.unauthenticated('unauthorized', 'Group'));
-                }
-                
-                var parentId = params.parentId;
-                if(params.parentId == null){
-                    parentId = self._id;
-                }
-                var from = params.from;
-                if(params.from == null){
-                    from = new Date(2000, 1, 1);
-                }
-
-                var filter = {
-                    "groupId": self._id,
-                    "auditTrail.updatedOn" : {"$gte": from},
-                    "$or":[
-                            { "accessibility": { $in: [params.profileId]}},
-                            { "accessibility": null}
-                        ]
-                }
-
-                //"accessibility": {$or : [ null, [{ $in: [params.profileId] }]]}
-                //"accessibility": { $in: [params.profileId, null] }
-                                
-                //return assetsas per criteria
-                filter._paths = {$in : [new RegExp('/' + parentId + '$')]};
-                
-                db.collection("assets").find(filter).toArray(function(err, data){
-                    db.close();
-                    return callback(err, data);
-                });
-            });
-        });
-}
-
-/** Gets the assets of given group if the current user is member of this group
-     * 
-    */     
-this.getAssetTree =function(req, cb)
-{
-    var u = req.user.User;         
-    var q = req.query;
-    var g = req.params.groupId;
-    var options = {
-        parentId : q.p,
-        groupId:g,
-        levels : q.levels ? 10 : q.levels,
-        structure_only: q.structure_only == "true" ? true : false 
-    };
-    
-    if(options.from == null ){
-        options.from = new Date("01-01-01");
-    }
-    
-    mongo.connect( ).then(function(db){
-        
-        //find the groups of this user
-        var filter = { "_id": options.groupId,  "Members": { $in: [u._id] } }
-        db.collection("groups").find(filter).toArray(function(err, data){
-            if(err){
-                db.close();  
-                return cb(err);
-            }
-            if(data.length <= 0 ){
-                db.close();
-                //This user has no access to the assets of this group.
-                return cb(new models.error("Unauthorize access","User is not authorized to access group."));
-            }
-            
-            var parentId = options.parentId;
-            if(options.parentId == null){
-                parentId = options.groupId;
-            }
-            
-            var filter = {
-                "GroupId": options.groupId,
-                "AuditTrail.UpdatedOn" : {"$gte": options.from},
-            }
-            if(options.structure_only){
-                filter.AssetTypeId = "type_collection"
-            }
-            
-            //return assetsas per criteria
-            //var parentMatch = "/" + parentId + "/$";
-            //var filter = {'Path': {'$regex': '/' + parentMatch + '/'}};
-            //{Paths: {$in : [/V1WC-H7_e/,/V1WC-H7_e$/,]}}
-            //filter.Accessibility = {$or : [{"CreateBy":u._id}, {"Accessibility" : {$or : [ null, [{ $in: [u._id] }]]}}]} ;
-            var AccessibilityExpr = {"$or": [
-                {"CreateBy":u._id}, 
-                {"Accessibility" : null}, {"Accessibility" : { $in: [u._id] }}]};
-            var pathsExpr = {"$or" : [
-                {"_id" : parentId}, 
-                { "_paths" : {$in : [new RegExp('/' + parentId + '/'), new RegExp('/' + parentId + '$')]}}
-            ]};
-            
-            filter["$and"] = [AccessibilityExpr, pathsExpr ];
-            
-            db.collection("assets").find(filter).toArray(function(err, data){
-                db.close();
-                if(err){      
-                    return cb(err);
-                }
-                
-                var hierarchy = buildTree(data, parentId, options.levels);
-                return cb(new models.success(hierarchy));
-            });
-        });
-    });
 }
 
 function buildAssetModel(data, currentUser, createId) {

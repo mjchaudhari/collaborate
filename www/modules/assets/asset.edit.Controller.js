@@ -13,7 +13,7 @@
         $scope.assetId  = $stateParams.a;
         $scope.groupId  = $stateParams.g;
         $scope.parentId = $stateParams.p == undefined ? $stateParams.g : $stateParams.p;
-        $scope.assetType = $stateParams.type;
+        $scope.assetType = $stateParams.t;
         $scope.groupMembers = [];
         $scope.types = [];
         $scope.tempData = {
@@ -41,11 +41,11 @@
             "description":"",
             "thumbnail":"",
             "urls":"",
-            "groupId":$scope.groupId,
-            "parentIds":[$scope.parentId],
+            "groupAssociations": [$scope.groupId],
+            "parentId": $scope.parentId,
             "allowLike":true,
             "allowComment":true,
-            "publish":true,
+            "publish": true,
             "activateOn":new Date(),
             "assetCategory":null,
             "accessibility" : []
@@ -165,6 +165,9 @@
                                 $scope.asset.calendar = {}
                             }
                             break;
+                    case "type_collection":
+                            
+                            break;
                         default:
                             break;
                     }
@@ -281,12 +284,9 @@
         }
         
         function _saveAssetData(){
-            if($scope.asset.parentIds == undefined ){
-                $scope.asset.parentIds = [$scope.parentId];
+            if($scope.asset.parentId == undefined ){
+                $scope.asset.parentId = $scope.parentId;
             } 
-            else if($scope.asset.parentIds.length == 0){
-                $scope.asset.parentIds = [$scope.parentId];
-            }
             
             if($scope.asset.expireOn && isNaN($scope.asset.expireOn.getDate())){
                 $scope.asset.expireOn = new Date(9999,12,31)

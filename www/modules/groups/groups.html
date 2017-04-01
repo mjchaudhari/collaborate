@@ -1,4 +1,4 @@
-<div  ng-controller="groupsController" cg-busy="promises.init">
+<div layout="column" ng-controller="groupsController" cg-busy="promises.init">
 	<md-toolbar md-scroll-shrink="false " md-scroll-shrink="0.5"  class="md-hue-2">
 		<div class="md-toolbar-tools">
 			<md-button class="md-icon-button" aria-label="Menu" ng-click="toggleSideBar('left')"> 
@@ -16,29 +16,27 @@
 			</md-button>
 		</div>
 	</md-toolbar>    
-    <div layout="column" ng-cloak class="">
-		
-		<md-content class='md-padding content-height transperent-bg' >
-			
-			<md-grid-list md-cols="5" md-cols-xs="2" md-cols-sm="4" md-cols-gt-md="5" 
-				md-row-height="1:1" md-gutter="5px">
-				<md-grid-tile ng-repeat="g in groupList"
-						md-colspan-sm="1"
-						ng-class="" 
-						style="background-image: url({{g.thumbnail || defaultGroupThumbnail}}); background-size: cover;"
-						class="md-whiteframe-5dp"
-						>
-						<md-button layout-align="center end" class="md-icon-button" aria-label="more" ng-click="openBoard(g)">
-							<i class="material-icons">remove_red_eye</i>
-						</md-button>
-					<md-grid-tile-footer>
-						<div layout="row" layout-align="start center" flex>
-							<span flex class="md-subhead">{{g.name}}</span>
-						</div>						
-					</md-grid-tile-footer>
-				</md-grid-tile>
-			</md-grid-list>
-		</md-content>
-    </div>    
-        
+    
+	<md-content layout="column" class='md-padding content-height transperent-bg' >
+
+		<md-grid-list md-cols="5" md-cols-xs="2" md-cols-sm="4" md-cols-gt-md="5" 
+			md-row-height="1:1" md-gutter="5px">
+			<md-grid-tile ng-repeat="g in groupList"
+					md-colspan-sm="1"
+					ng-class="" 
+					style="background-image: url({{g.thumbnail || defaultGroupThumbnail}}); background-size: cover;"
+					class="md-whiteframe-5dp"
+					>
+					<md-button layout-align="center end" class="md-icon-button" aria-label="more" ng-click="openBoard(g)">
+						<i class="material-icons">remove_red_eye</i>
+					</md-button>
+				<md-grid-tile-footer>
+					<div layout="row" layout-align="start center" flex>
+						<span flex class="md-subhead">{{g.name}}</span>
+					</div>						
+				</md-grid-tile-footer>
+			</md-grid-tile>
+		</md-grid-list>
+	</md-content>
+
 </div>

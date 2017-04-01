@@ -8,6 +8,8 @@ var apiException = new APIException();
 var async = require('async');
 var _ = require("underscore-node");
 var Group = require("./API.Group.js");
+var AssetManager = require("./../models/API.AssetManager.js");
+
 var API = API || {}; // Namespace
 API.Profile = function (profileData) {
 
@@ -297,6 +299,25 @@ function updateGroupStorage(gdata, cb) {
         });
     }
 
+}
+
+API.Profile.prototype.createOrUpdateAsset = function(assetReq, cb){
+    var self = this;
+    if(assetReq._id == null){
+        assetReq.createdBy = self._id;
+    }
+    var am = new AssetManager();
+    am.buildAsset(assetReq)
+    .then(function(a){
+        a.save()
+        .then(function(savedAsset){
+            cb(null, savedAsset);
+        }, function(err){
+            cb(err);
+        });
+    }, function(err){
+        cb(err);
+    });
 }
 
 module.exports = API.Profile;

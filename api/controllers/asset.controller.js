@@ -7,10 +7,8 @@ var async = require ("async");
 var path = require("path");
 var models = require("./../response.models.js").models;
 var Core = require("./../models/API.Core.js");
-
 var Group = require("./../models/API.Group.js");
-var AssetManager =require("./../models/API.AssetManager");
-var q =require("q");
+
 /**
  * Controller for group management
  */
@@ -50,12 +48,12 @@ exports.getAssets = function(req, cb){
     var profile = req.user;
     var groupId = req.params.groupId;
     var g = new Group({_id:groupId});
-    var assetManager = new AssetManager();
-    assetManager.getAssets({"groupId":groupId, "profileId": profile._id})
-    .then(function(data){
-        return cb(new models.success(data));       
-    }, function(e){
-        return cb(new models.error(e));
+    g.getAssets({"profileId": profile._id}, function(e, data){
+        if(e)
+        {
+            return cb(new models.error(e));
+        }
+        return cb(new models.success(data));
     });
 }
 exports.getMembers = function(req, cb){
@@ -69,4 +67,21 @@ exports.getMembers = function(req, cb){
         }
         return cb(new models.success(data));
     });
+}
+exports.createOrUpdateAsset = function(req, cb){
+    var p = req.user;
+    //determine path
+    if(req.body.groupId == null)
+    {
+        
+        //return cb(new models.error(e));
+    }
+    
+    p.createOrUpdateAsset(req.body, function(e, data){
+        if(e){
+            return cb(new models.error(e));
+        }
+        return cb(new models.success(data));
+    });
+
 }

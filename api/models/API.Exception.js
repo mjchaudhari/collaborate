@@ -8,7 +8,13 @@ API.Exception = function(message, source, ex) {
     this.exception = ex;
     return this;
 }
-
+API.Exception.prototype.unauthorized = function(message, source, ex){
+    this.errorCode = "UNAUTORIZED";
+    this.message = message || 'Unauthorized access';
+    this.source = source || "API";
+    this.exception = ex;
+    return this;
+}
 API.Exception.prototype.unauthenticated = function(message, source, ex){
     this.errorCode = "UNAUTHENTICATED";
     this.message = message || 'Unauthenticated';

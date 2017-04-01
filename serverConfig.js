@@ -3,7 +3,7 @@
 //mongodb://127.0.0.1:27017/easyapp
 module.exports = {
     mongoURI : "mongodb://admin:admin@ds050077.mongolab.com:50077/easyapp"
-    , webRootDir : "/dist"   //'/www'
+    , webRootDir : '/dist' //"/dist"   //'/www'
     , tempFileStore : "./tmpStore"
 
 }

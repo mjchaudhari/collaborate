@@ -44,7 +44,7 @@ app.get('/', function (req, res, next) {
 require('./api/routes/user.routes.js')(app); // load our routes and pass in our app and fully configured passport
 require('./api/routes/group.routes.js')(app); // load our routes and pass in our app and fully configured passport
 require('./api/routes/utils.routes.js')(app); // load our routes and pass in our app and fully configured passport
-// require('./api/routes/asset.routes.js')(dbConfig, auth, app); // load our routes and pass in our app and fully configured passport
+require('./api/routes/asset.routes.js')(app); // load our routes and pass in our app and fully configured passport
 
 
 // launch ====================================================================== 

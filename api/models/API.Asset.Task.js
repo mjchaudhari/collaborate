@@ -4,16 +4,16 @@ var _dbConfig        = require("./../db.connection.js")
 var Asset        = require("./API.Asset.js");
 var q =require("q");
 
-
-API.Asset.Task = function(){}
+var API = API || {} // Namespace
+API.Task = function(){}
 //Prototype
-API.Asset.Task.prototype = new Asset();
-API.Asset.Task.__proto__ = Asset.prototype;
+API.Task.prototype = Asset.prototype;
+//API.Task.__proto__ = Asset.prototype;
 
 //Properties
-API.Asset.Task.prototype.owners = [];
-API.Asset.Task.prototype.updates = [];
-API.Asset.Task.prototype.status = null; 
+API.Task.prototype.owners = [];
+API.Task.prototype.updates = [];
+API.Task.prototype.status = null; 
 
 /**
  * Add and update to the task
@@ -23,7 +23,7 @@ API.Asset.Task.prototype.status = null;
  * @param {string} update.updatedBy  - profileId of the task owner
  * @return {boolean} result
  */
-API.Asset.Task.prototype.createUpdate = function(update){
+API.Task.prototype.createUpdate = function(update){
     return true;
 }
 /**
@@ -31,7 +31,7 @@ API.Asset.Task.prototype.createUpdate = function(update){
  * @param {string} if of the update
  * @return {boolean} result
  */
-API.Asset.Task.prototype.voidUpdate = function(id){
+API.Task.prototype.voidUpdate = function(id){
     return true;
 } 
 module.exports = API.Asset;
