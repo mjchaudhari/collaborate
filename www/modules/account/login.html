@@ -1,39 +1,26 @@
 
-<div  ng-controller="accountController"   >
-    
-    <div layout="row" layout-align="center center" style="height:100vh;" layout-wrap  >
-          
-          <md-card style="" flex-sm="70" flex-md="50" flex-gt-md="30" >
-            <img ng-src="./images/bg-6.jpg" class="md-card-image" style="height:150px" alt="">
-            <md-card-title>
-                <md-card-title-text>
-                    <span class="md-headline">Sign in</span>
-                </md-card-title-text>
-            </md-card-title>
-            <md-card-content>
-                <md-input-container class="md-icon-float md-block">
-                    <label>
-                        <ng-md-icon icon="account_circle"></ng-md-icon>
-                        Name
-                    </label>
-                    <input ng-model="loginModel.userName" type="text">
-                </md-input-container>
-                <md-input-container class="md-icon-float md-block">
-                    <label>
-                        <ng-md-icon icon="vpn_key"></ng-md-icon>
-                        Password
-                    </label>
-                    <input ng-model="loginModel.password" type="password">
-                </md-input-container>
-            </md-card-content>
-            <md-card-actions layout="column" layout-align="start">
-                <md-button class="md-raised md-primary" ng-click="signIn()">Ok</md-button>
-                
-                <md-button ui-sref="account.forgotpassword" >Forgot password? Click to reset.</md-button>
-                <md-button ui-sref="account.register" >Signup</md-button>
-            </md-card-actions>
-        </md-card>        
-         
+<div class="vertical-center col-lg-6 col-md-10 col-sm-10" ng-controller="accountController"   >
+    <div class="div-center">
+            
+        <form name="signin" >
+            <cp-logo size="75"></cp-logo>
+            <div class="input-group input-group-lg">
+                <span class="input-group-addon" id="sizing-addon1">
+                    <span class="glyphicon glyphicon-user"></span>
+                </span>
+                <input type="text" ng-model="loginModel.userName" class="form-control" placeholder="Username" aria-describedby="sizing-addon1">
+            </div>
+            
+            <div class="input-group input-group-lg">
+                <span class="input-group-addon" id="sizing-addon1"><span class="glyphicon glyphicon-asterisk"></span></span>
+                <input type="text" ng-model="loginModel.password" class="form-control" placeholder="Password" aria-describedby="sizing-addon1">
+            </div>
+            <button type="button" class="btn btn-success" ng-click="signIn()">Ok</button>
+            <p/>
+            <a  ui-sref="account.forgotpassword">Forgot password? Click to reset.</a> 
+            <p/>
+            <a ui-sref="account.register" >Signup</a>
+        </form>
+
     </div>
- 
 </div>

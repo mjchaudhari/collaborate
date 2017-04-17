@@ -2,9 +2,9 @@
     angular.module("app")
     .controller("accountController",accountController);
     
-    accountController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$mdToast" ,"dataService", "config","authService"];
+    accountController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state" ,"dataService", "config","authService", "toaster"];
     
-    function accountController($scope, $rootScope,  $log, $q, $localStorage, $state, $mdToast, dataService, config, authService){
+    function accountController($scope, $rootScope,  $log, $q, $localStorage, $state, dataService, config, authService, toaster){
         
         //bindable mumbers
         $scope.title = "Accounts";
@@ -18,22 +18,16 @@
         $scope.signIn = function(){
             authService.login($scope.loginModel.userName, $scope.loginModel.password)
             .then(function(d){
-                $mdToast.show(
-                    $mdToast.simple()
-                      .content("Authenticated")
-                      .hideDelay(3000)
-                );
                 $rootScope.$emit("evtLogged");
             },
             function(e){
-               $mdToast.show(
-                    $mdToast.simple()
-                      .content("Failed to authenticat")
-                      .hideDelay(3000)
-                ); 
+                toaster.pop({
+                    type: 'error',
+                    title: '',
+                    body: 'Login failed. Try again',
+                    showCloseButton: true
+                });
             });
         }
-        
-        
-    }//conroller ends
+    } //conroller ends
 })();

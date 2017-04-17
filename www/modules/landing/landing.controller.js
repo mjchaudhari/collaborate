@@ -2,9 +2,9 @@
     angular.module("app")
     .controller("landingController",landingController);
     
-    landingController.$inject = ["$scope", "$log", "$state" ,"dataService", "config","authService","$mdSidenav"];
+    landingController.$inject = ["$scope", "$log", "$state" ,"dataService", "config","authService"];
     
-    function landingController($scope, $log, $state, dataService, config, authService, $mdSidenav){
+    function landingController($scope, $log, $state, dataService, config, authService){
         $scope.user = null
         $scope.startApp = function(){
             if(authService.isLoggedIn){

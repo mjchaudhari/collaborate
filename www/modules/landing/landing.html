@@ -1,16 +1,12 @@
-<div  class="body-bg-landing" layout="row"  layout-align="center center" ng-controller="landingController" >
-    <div >
-
-        <p>
-            <strong>Empower everybody</strong>
-        </p>
-        <span><img style="align:center;" src="./images/cp.png" alt=""></span>
-        <p><small>Communication platform v1</small></p>
+<div class="vertical-center" ng-controller="landingController">
+    <div class="div-center">
+        <cp-logo size="75"></cp-logo>
+        <h4 >Empower everybody</h4>
+        <p >Communication platform v1</p>
         <div ng-show="user!=null"  layout="row">
             <ez-thumb text="user.firstName + ' ' + user.lastName" img="user.Picture"  thumbnail-class="'avatar'"> </ez-thumb>
             <span>{{user.firstName + ' ' + user.lastName}}<span>
-        </div>        
-
-        <md-button ng-click="startApp()" >Start!</md-button>
+        </div>   
+        <a href="#" class="btn btn-primary" ng-click="startApp()">Start!</a>
     </div>
 </div>

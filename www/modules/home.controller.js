@@ -2,11 +2,11 @@
     angular.module("app")
     .controller("homeController",homeController);
     
-    homeController.$inject = ["$scope", "$log", "$window", "$q", "$localStorage", "$mdToast",  "$state","$stateParams" ,"dataService", 
-        "config","$mdSidenav","authService","$mdDialog","$mdBottomSheet"];
+    homeController.$inject = ["$scope", "$log", "$window", "$q", "$localStorage", "toaster", "$state", "$stateParams", "dataService", 
+        "config", "authService", "$uibModal"];
     
-    function homeController($scope, $log, $window, $q, $localStorage, $mdToast, $state, $stateParams, dataService, 
-        config, $mdSidenav, authService, $mdDialog,$mdBottomSheet){
+    function homeController($scope, $log, $window, $q, $localStorage, toaster, $state, $stateParams, dataService, 
+        config, authService, $uibModal){
         
         //bindable mumbers
         $scope.mainTitle  = "Collaborate";
@@ -17,11 +17,6 @@
         //$scope.fabOpen = false;
         $scope.groupsList = [];
         
-        $scope.options = {
-            idAttrib        : "Id",
-            nameAttrib      :"Name",
-            childrenAttrib  : "Children",
-        };
         $scope.nodeParentTrail=[];
         $scope.selectedMenu = null;
         $scope.menu = null;
@@ -107,9 +102,9 @@
             .then(function(d){
                 angular.copy(d.data.data, $scope.groupsList);
                 var sectionHeader = {
-                        Id: 'Groups',
-                        Name: 'Groups',
-                        Children: [],
+                        id: 'Groups',
+                        name: 'Groups',
+                        children: [],
                         icon:'group'
                 }
 
@@ -117,10 +112,10 @@
                 $scope.groupsList.forEach(function(g){
                    
                    var section = {
-                       Id:g._id,
-                       Name: g.Name,
+                       id:g._id,
+                       name: g.name,
                        icon:'people_outline',
-                       Children:[
+                       children:[
                             {
                                 id:g._id + 1,
                                 name: 'Assets',
@@ -129,7 +124,7 @@
                             },
                        ] 
                    };
-                   sectionHeader.Children.push(section);
+                   sectionHeader.children.push(section);
                 });
                 
                 $scope.menu = sectionHeader;

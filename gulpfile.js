@@ -15,12 +15,12 @@ var clientAssetsStyles =[
 ]
 
 var clientStyles =[
-    './www/vendor/angular-material/angular-material.min.css'
+    './www/vendor//bootstrap.superhero.min.css'
     , './www/vendor/ui-cropper/compile/minified/ui-cropper.css'
     , './www/vendor/angular-busy/dist/angular-busy.min.css'
-    , './www/vendor/angular-material-data-table/dist/md-data-table.css'
-    , './www/vendor/angular-material-sidenav/angular-material-sidenav.css'
+    , './www/vendor/angularJS-Toaster/toaster.min.css'
     , "./www/vendor/ez-utils/dist/ez-directives.css",
+    , "/styles/animations.css"
     , "./www/styles/style.css",
 ]
 var clientJsFiles =[
@@ -36,23 +36,23 @@ var vendorJsFiles =[
     , "./www/vendor/angular-animate/angular-animate.min.js"
     , "./www/vendor/angular-aria/angular-aria.min.js"
     , "./www/vendor/angular-sanitize/angular-sanitize.min.js"
-    , "./www/vendor/angular-material/angular-material.min.js"
-    , "./www/vendor/angular-material-icons/angular-material-icons.js"
+    , "./www//vendor/angular-bootstrap/ui-bootstrap-tpls.min.js"
     , "./www/vendor/angular-cache/dist/angular-cache.min.js"  
     , "./www/vendor/angular-ui-router/release/angular-ui-router.min.js"
     , "./www/vendor/ng-file-upload/ng-file-upload.js"  
-     
-    , "./www/vendor/ui-cropper/compile/unminified/ui-cropper.js"  
+    , "./www/vendor/angular-cache/dist/angular-cache.min.js"
+    , "./www/vendor/angular-ui-router/release/angular-ui-router.min.js"
+    , "./www/vendor/ng-file-upload/ng-file-upload.js"  
+    , "./www/vendor/ui-cropper/compile/minified/ui-cropper.js"  
     , "./www/vendor/underscore/underscore-min.js"
     , "./www/vendor/moment/min/moment.min.js"
     , "./www/vendor/angular-moment/angular-moment.min.js"
-    , "./www/vendor/angular-cookies/angular-cookies.min.js"
     , "./www/vendor/ngStorage/ngStorage.min.js"
     , "./www/vendor/angular-ellipsis/src/angular-ellipsis.min.js"
     , "./www/vendor/angular-busy/dist/angular-busy.js"
-    , "./www/vendor/angular-material-sidenav/angular-material-sidenav.js"
-    , "./www/vendor/angular-material-data-table/dist/md-data-table.min.js"
-    , "./www/vendor/ez-utils/dist/ez-directives.js",
+    , "./www/vendor/angularJS-Toaster/toaster.min.js"
+    , "./www/vendor/ez-utils/dist/ez-directives.js"
+
 
 ]
 /** clean up */

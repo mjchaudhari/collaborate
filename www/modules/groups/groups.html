@@ -1,23 +1,16 @@
 <div layout="column" ng-controller="groupsController" cg-busy="promises.init">
-	<md-toolbar md-scroll-shrink="false " md-scroll-shrink="0.5"  class="md-hue-2">
-		<div class="md-toolbar-tools">
-			<md-button class="md-icon-button" aria-label="Menu" ng-click="toggleSideBar('left')"> 
-				<i class="material-icons">menu</i>
-			</md-button>
-			<div layout="row">
-				<span>{{mainTitle || 'Collaborate'}}</span>
-			</div>
-			<span flex></span>
-			<md-button class="md-icon-button" aria-label="Use Android" ng-click="createGroup()">
-				<i class="material-icons">add</i>
-			</md-button>
-			<md-button class="md-icon-button" aria-label="Menu" ng-click="openNotification()">
-				<i class="material-icons">add_alert</i>
-			</md-button>
+	<header class="navbar navbar-default navbar-fixed-top navbar-inner">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<ul class="nav navbar-nav navbar-left">
+        			<li>
+						<span>Groups</span>
+					</li>
+				</ul>
+			</div>    
 		</div>
-	</md-toolbar>    
-    
-	<md-content layout="column" class='md-padding content-height transperent-bg' >
+	</header>
+	<div layout="column" role="main" >
 
 		<md-grid-list md-cols="5" md-cols-xs="2" md-cols-sm="4" md-cols-gt-md="5" 
 			md-row-height="1:1" md-gutter="5px">
@@ -37,6 +30,6 @@
 				</md-grid-tile-footer>
 			</md-grid-tile>
 		</md-grid-list>
-	</md-content>
+	</div>
 
 </div>

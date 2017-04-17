@@ -1,47 +1,15 @@
 
-.layout-padding,
-.layout-padding-gt-sm,
-.layout-padding-md,
-.layout-padding > *,
-.layout-padding-gt-sm > *,
-.layout-padding-md > *,
-.layout-padding > .flex,
-.layout-padding > .flex-gt-sm,
-.layout-padding > .flex-md {
-  padding: 4px; }
 
-.layout-padding-gt-md > *,
-.layout-padding-lg > *,
-.layout-padding-gt-lg > *,
-.layout-padding > .flex-gt-md,
-.layout-padding > .flex-lg,
-.layout-padding > .flex-lg,
-.layout-padding > .flex-gt-lg {
-  padding: 8px; }
+@font-face {
+  font-family: 'Glyphicons Halflings';
 
-.layout-margin-sm > *,
-.layout-margin > .flex-sm {
-  margin: 4px; }
-
-.layout-margin,
-.layout-margin-gt-sm,
-.layout-margin-md,
-.layout-margin > *,
-.layout-margin-gt-sm > *,
-.layout-margin-md > *,
-.layout-margin > .flex,
-.layout-margin > .flex-gt-sm,
-.layout-margin > .flex-md {
-  margin: 4px; }
-
-.layout-margin-gt-md > *,
-.layout-margin-lg > *,
-.layout-margin-gt-lg > *,
-.layout-margin > .flex-gt-md,
-.layout-margin > .flex-lg,
-.layout-margin > .flex-gt-lg {
-  margin: 8px; }
-
+  src: url('./fonts/glyphicons-halflings-regular.eot');
+  src: url('./fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), 
+        url('./fonts/glyphicons-halflings-regular.woff2') format('woff2'), 
+        url('./fonts/glyphicons-halflings-regular.woff') format('woff'), 
+        url('./fonts/glyphicons-halflings-regular.ttf') format('truetype'), 
+        url('./fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
 
 .body-bg-landing{
     background-image: url(../images/bg-3-min.jpg);
@@ -218,52 +186,6 @@ Show the image as background to display: block;
   Chips 
 */
 
-.chipsContactChips md-content.autocomplete {
-  min-height: 250px; }
-  .chipsContactChips md-content.autocomplete input {
-    min-width: 400px; }
-.chipsContactChips .md-item-text.compact {
-  padding-top: 8px;
-  padding-bottom: 8px; }
-.chipsContactChips .contact-item {
-  box-sizing: border-box; }
-  .chipsContactChips .contact-item.selected {
-    opacity: 0.5; }
-    .chipsContactChips .contact-item.selected h3 {
-      opacity: 0.5; }
-  .chipsContactChips .contact-item .md-list-item-text {
-    padding: 14px 0;
-    max-width: 190px; }
-    .chipsContactChips .contact-item .md-list-item-text h3 {
-      margin: 0 !important;
-      padding: 0;
-      line-height: 1.2em !important; }
-    .chipsContactChips .contact-item .md-list-item-text h3, .chipsContactChips .contact-item .md-list-item-text p {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden; }
-  @media (min-width: 960px) {
-    .chipsContactChips .contact-item {
-      float: left;
-      width: 33%; } }
-.chipsContactChips md-contact-chips {
-  margin-bottom: 10px; }
-.chipsContactChips .md-chips {
-  padding: 5px 0 8px; }
-.chipsContactChips .fixedRows {
-  height: 250px;
-  overflow: hidden; }
-
-.md-datepicker-input {
-    font-size: 14px;
-    box-sizing: border-box;
-    border: none;
-    box-shadow: none;
-    outline: none;
-    background: transparent !important;
-    min-width: 120px;
-    max-width: 328px;
-  }
 .bold {
   font-weight: 700;
 }
@@ -338,60 +260,23 @@ Show the image as background to display: block;
   background-color:bisque;
 }
 
-/* Form style */
-.md-input-container {
-  margin: 5px 0;
-}
 
-
-.material-icons.type_collection:before,
-.material-icons-lg.type_collection:before
- {
-  content: '\e617';
-}
-.material-icons.type_topic:before,
-.material-icons-lg.type_topic:before
- {
-  content: '\e431';
-}
-.material-icons.type_document:before,
-.material-icons-lg.type_document:before
- {
-  content: '\e0c9 ';
-}
-.material-icons.type_calendar:before,
-.material-icons-lg.type_calendar:before
- {
-  content: '\e878';
-}
-.material-icons.type_demand:before,
-.material-icons-lg.type_demand:before
- {
-  content: '\e862';
-}
-.material-icons.type_transacton:before,
-.material-icons-lg.type_transacton:before
- {
-  content: '\e227';
-}
-.material-icons.type_form:before,
-.material-icons-lg.type_form:before
- {
-  content: '\e85d';
-}
-.material-icons.type_task:before,
-.material-icons-lg.type_task:before
- {
-  content: '\e7f7';
-}
-
-.md-input-container {
-  margin: 2px 0;
-}
 
 .cropArea {
     background: #E4E4E4;
     overflow: hidden;
     width:500px;
     height:350px;
+}
+
+.vertical-center {
+  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  min-height: 100vh; /* These two lines are counted as one :-)       */
+
+  display: flex;
+  align-items: center;
+}
+.div-center {
+  text-align: center;
+  width:100%;
 }

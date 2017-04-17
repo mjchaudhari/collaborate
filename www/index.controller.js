@@ -2,9 +2,9 @@
     angular.module("app")
     .controller("indexController",indexController);
     
-    indexController.$inject = ["$scope", "$rootScope","$q", "$log", "$state" ,"dataService", "config","$mdSidenav","authService"];
+    indexController.$inject = ["$scope", "$rootScope","$q", "$log", "$state" ,"dataService", "config","authService"];
     
-    function indexController($scope, $rootScope, $q, $log, $state, dataService, config, $mdSidenav,authService){
+    function indexController($scope, $rootScope, $q, $log, $state, dataService, config,authService){
         $scope.initializingPromice = null;
 
         function init(){
