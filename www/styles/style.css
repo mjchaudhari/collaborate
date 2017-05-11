@@ -39,10 +39,10 @@ Show the image as background to display: block;
     position: fixed;
     top: 0;
     left: 0;/* Preserve aspet ratio */
-    min-width: auto;
-    min-height: auto;
-    image-rendering: pixelated;
-    background-size: cover;
+    /* min-width: auto; */
+    /* min-height: auto; */
+    /* image-rendering: pixelated; */
+    /* background-size: cover; */
 }
 .bgOverlay {
     position: relative;
@@ -143,17 +143,29 @@ Show the image as background to display: block;
 }
 
 
-.thumbnail-img{
+.thumbnail{
   height:100px;
   width:100px;
   border-radius: 50px;
+  margin: 5px;
+}
+.thumbnail.circle-small{
+  height:70px;
+  width:70px;
+  border-radius: 50px;
   margin:0;
 }
-.thumbnail-img.square{
+.thumbnail.sq{
   border-radius: 0px;
     height:100px;
     width:120px;
 
+}
+.thumbnail.sq.sq-sm{
+    border-radius: 0px;
+    height:50px;
+    width:50px;
+    
 }
 .margin5{
   margin:5px !important;
@@ -270,8 +282,8 @@ Show the image as background to display: block;
 }
 
 .vertical-center {
-  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
-  min-height: 100vh; /* These two lines are counted as one :-)       */
+  min-height: 100%;  
+  min-height: 100vh; 
 
   display: flex;
   align-items: center;

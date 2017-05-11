@@ -15,12 +15,12 @@ var clientAssetsStyles =[
 ]
 
 var clientStyles =[
-    './www/vendor//bootstrap.superhero.min.css'
+    './www/vendor/bootstrap.superhero.min.css'
     , './www/vendor/ui-cropper/compile/minified/ui-cropper.css'
     , './www/vendor/angular-busy/dist/angular-busy.min.css'
     , './www/vendor/angularJS-Toaster/toaster.min.css'
     , "./www/vendor/ez-utils/dist/ez-directives.css",
-    , "/styles/animations.css"
+    , "./styles/animations.css"
     , "./www/styles/style.css",
 ]
 var clientJsFiles =[
@@ -52,8 +52,6 @@ var vendorJsFiles =[
     , "./www/vendor/angular-busy/dist/angular-busy.js"
     , "./www/vendor/angularJS-Toaster/toaster.min.js"
     , "./www/vendor/ez-utils/dist/ez-directives.js"
-
-
 ]
 /** clean up */
 gulp.task('clean', function (cb) {
@@ -116,10 +114,8 @@ gulp.task('replaceRefs', function () {
               , "vendor" : '<script src="./vendor/vendor.js"></script>'
               , "app" : '<script src="./app.js"></script>'
               , "templates" : '<script src="./templates.js"></script>'
-              
         }))
         .pipe(gulp.dest(dest));
-      
 });
 
 gulp.task('default', ['clean', 'concatStyles', 'copyMedia', 'vendor', 'template', 'app', 'replaceRefs']);

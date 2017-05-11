@@ -1,35 +1,30 @@
-<div layout="column" ng-controller="groupsController" cg-busy="promises.init">
-	<header class="navbar navbar-default navbar-fixed-top navbar-inner">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<ul class="nav navbar-nav navbar-left">
-        			<li>
-						<span>Groups</span>
-					</li>
-				</ul>
-			</div>    
-		</div>
-	</header>
-	<div layout="column" role="main" >
-
-		<md-grid-list md-cols="5" md-cols-xs="2" md-cols-sm="4" md-cols-gt-md="5" 
-			md-row-height="1:1" md-gutter="5px">
-			<md-grid-tile ng-repeat="g in groupList"
-					md-colspan-sm="1"
-					ng-class="" 
-					style="background-image: url({{g.thumbnail || defaultGroupThumbnail}}); background-size: cover;"
-					class="md-whiteframe-5dp"
-					>
-					<md-button layout-align="center end" class="md-icon-button" aria-label="more" ng-click="openBoard(g)">
-						<i class="material-icons">remove_red_eye</i>
-					</md-button>
-				<md-grid-tile-footer>
-					<div layout="row" layout-align="start center" flex>
-						<span flex class="md-subhead">{{g.name}}</span>
-					</div>						
-				</md-grid-tile-footer>
-			</md-grid-tile>
-		</md-grid-list>
+<div class="" ng-controller="groupsController" cg-busy="promises.init">
+	<nav class="navbar navbar-inverse navbar-fixed-top fixed-top sticky-top bg-primary">
+		<a class="navbar-brand" href="">Groups <span ng-show="groupList.length > 0" class="badge">({{groupList.length}})</span></a>
+		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+		 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	</nav>
+	<div class="" role="main">
+		<ul class="list-group" >
+			<li ng-repeat="g in groupList" ng-click="openBoard(g)" class="list-group-item list-group-item-action flex-column align-items-start">
+				<div class="row">
+					<div>
+						<img ng-src="{{g.thumbnail || defaultGroupThumbnail}}" class="thumbnail sq sq-sm" />
+					</div>
+					<div>
+						<div class="">
+							<h5 class="mb-1">{{g.name}}</h5>
+						</div>
+						<p class="mb-1">{{g.description}} </p>
+						<small class="text-muted">3 days ago</small>
+					</div>
+				</div>
+			</li>
+			<li class="list-group-item list-group-item-action flex-column align-items-start">
+				<div class="div-center"><a ng-click="createGroup()">New group</a></div>
+			</li>
+		</ul>
 	</div>
-
 </div>
