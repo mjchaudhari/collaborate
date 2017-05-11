@@ -15,13 +15,16 @@ var clientAssetsStyles =[
 ]
 
 var clientStyles =[
+    
+    './www/vendor/bootstrap/dist/css/bootstrap.css',
     './www/vendor/bootstrap.superhero.min.css'
     , './www/vendor/ui-cropper/compile/minified/ui-cropper.css'
     , './www/vendor/angular-busy/dist/angular-busy.min.css'
     , './www/vendor/angularJS-Toaster/toaster.min.css'
     , "./www/vendor/ez-utils/dist/ez-directives.css",
     , "./styles/animations.css"
-    , "./www/styles/style.css",
+    , "./www/styles/style.css"
+    , "./www/styles/robotodraft.css"
 ]
 var clientJsFiles =[
     "./www/app.js",
@@ -40,10 +43,7 @@ var vendorJsFiles =[
     , "./www/vendor/angular-cache/dist/angular-cache.min.js"  
     , "./www/vendor/angular-ui-router/release/angular-ui-router.min.js"
     , "./www/vendor/ng-file-upload/ng-file-upload.js"  
-    , "./www/vendor/angular-cache/dist/angular-cache.min.js"
-    , "./www/vendor/angular-ui-router/release/angular-ui-router.min.js"
-    , "./www/vendor/ng-file-upload/ng-file-upload.js"  
-    , "./www/vendor/ui-cropper/compile/minified/ui-cropper.js"  
+    , "./www/vendor/ui-cropper/compile/minified/ui-cropper.js"
     , "./www/vendor/underscore/underscore-min.js"
     , "./www/vendor/moment/min/moment.min.js"
     , "./www/vendor/angular-moment/angular-moment.min.js"
