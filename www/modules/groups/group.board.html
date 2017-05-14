@@ -1,30 +1,31 @@
 <div  ng-controller="groupBoardController"  cg-busy="promices.groupTopics" >
-    <md-toolbar class=""  >   
-        <div class="md-toolbar-tools">
-            <md-button class="md-icon-button" aria-label="back" ng-click="historyBack()"> 
-                <i class="material-icons">arrow_back</i>
-            </md-button>   
-            <span class="md-regular">{{title}}</span>
-            <span flex></span>
-            <img ng-src="{{group.thumbnail}}" class="avatar-small" ng-click="details()" />
-            <md-button class="md-icon-button" aria-label="Menu" ng-click="newTopic()">
-				<i class="material-icons">add</i>
-			</md-button>
-        </div>
-    </md-toolbar>
-	<md-content>
-		<md-list flex>
-			<md-subheader class="md-no-sticky">Topics {{topics.length}}</md-subheader>
-			<md-list-item class="md-2-item" ng-repeat="item in topics" ng-click="openTopic(item)">
-				<img ng-src="{{item.thumbnail}}" class="md-avatar" />
-				<div class="md-list-item-text" layout="column">
-					<h4>{{ item.name }}</h4>
-					<span>{{ item.description }}</span>
-					<md-divider md-inset></md-divider>
+	<nav class="navbar navbar-inverse navbar-fixed-top fixed-top sticky-top bg-primary">
+		<span class="navbar-brand" href=""><a ng-click="historyBack()"><span class="glyphicon glyphicon-arrow-left"></span></a> {{title}}</span>
+		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+		 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	</nav>
+	<div class="" role="main">
+		<ul class="list-group" >
+			<li>Topics {{topics.length}}</li>
+			<li ng-repeat="i in topics" ng-click="openTopic(item)" class="list-group-item list-group-item-action flex-column align-items-start">
+				<div class="row">
+					<div>
+						<img ng-src="{{item.thumbnail || defaultGroupThumbnail}}" class="thumbnail sq sq-sm" />
+					</div>
+					<div>
+						<div class="">
+							<h7 class="mb-1">{{item.name}}</h7>
+						</div>
+						<p class="mb-1">{{item.description}} </p>
+						<small class="text-muted">3 days ago</small>
+					</div>
 				</div>
-
-			</md-list-item>
-
-		</md-list>
-	</md-content>
+			</li>
+			<li class="list-group-item list-group-item-action flex-column align-items-start">
+				<div class="div-center"><a ng-click="createGroup()">New Topic</a></div>
+			</li>
+		</ul>
+	</div>
 </div>

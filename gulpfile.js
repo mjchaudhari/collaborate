@@ -17,7 +17,6 @@ var clientAssetsStyles =[
 var clientStyles =[
     
     './www/vendor/bootstrap/dist/css/bootstrap.css',
-    './www/vendor/bootstrap.superhero.min.css'
     , './www/vendor/ui-cropper/compile/minified/ui-cropper.css'
     , './www/vendor/angular-busy/dist/angular-busy.min.css'
     , './www/vendor/angularJS-Toaster/toaster.min.css'
