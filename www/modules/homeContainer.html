@@ -1,4 +1,6 @@
-<div class="" ng-controller="homeController" cg-busy="promices.initPromice">
+
+<div class="" ng-controller="homeController"  
+	cg-busy="{promise:__busy, message:'Loading ...', templateUrl: '/modules/busy.html'}">
 	<div class=" view-animate-container">
         <div  ui-view class="ng-enter" class="view-animate" layout="column" flex >
 

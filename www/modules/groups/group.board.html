@@ -1,6 +1,7 @@
-<div  ng-controller="groupBoardController"  cg-busy="promices.groupTopics" >
+<div  ng-controller="groupBoardController"  >
 	<nav class="navbar navbar-inverse navbar-fixed-top fixed-top sticky-top bg-primary">
-		<span class="navbar-brand" href=""><a ng-click="historyBack()"><span class="glyphicon glyphicon-arrow-left"></span></a> {{title}}</span>
+		<span class="navbar-brand" href=""><a ng-click="historyBack()">
+			<i class="material-icons">arrow_back</i></a> {{title}}</span>
 		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 		 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
@@ -9,7 +10,7 @@
 	<div class="" role="main">
 		<ul class="list-group" >
 			<li>Topics {{topics.length}}</li>
-			<li ng-repeat="i in topics" ng-click="openTopic(item)" class="list-group-item list-group-item-action flex-column align-items-start">
+			<li ng-repeat="item in topics" ng-click="openTopic(item)" class="list-group-item list-group-item-action flex-column align-items-start">
 				<div class="row">
 					<div>
 						<img ng-src="{{item.thumbnail || defaultGroupThumbnail}}" class="thumbnail sq sq-sm" />

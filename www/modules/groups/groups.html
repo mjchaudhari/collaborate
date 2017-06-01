@@ -1,4 +1,4 @@
-<div class="" ng-controller="groupsController" cg-busy="promises.init">
+<div class="" ng-controller="groupsController" >
 	<nav class="navbar navbar-inverse navbar-fixed-top fixed-top sticky-top bg-primary">
 		<a class="navbar-brand" href="">Groups <span ng-show="groupList.length > 0" class="badge">({{groupList.length}})</span></a>
 		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -8,17 +8,20 @@
 	</nav>
 	<div class="" role="main">
 		<ul class="list-group" >
-			<li ng-repeat="g in groupList" ng-click="openBoard(g)" class="list-group-item list-group-item-action flex-column align-items-start">
+			<li ng-repeat="g in groupList" class="list-group-item list-group-item-action flex-column align-items-start">
 				<div class="row">
 					<div>
 						<img ng-src="{{g.thumbnail || defaultGroupThumbnail}}" class="thumbnail sq sq-sm" />
 					</div>
 					<div>
 						<div class="">
-							<h7 class="mb-1">{{g.name}}</h7>
+							<a ng-click="openBoard(g)"><h7 class="">{{g.name}}</h7></a>
 						</div>
-						<p class="mb-1">{{g.description}} </p>
-						<small class="text-muted">3 days ago</small>
+						<p class="">{{g.description}} </p>
+						<div>
+							<i class="material-icons" ng-click="editGroup(g)">edit</i>
+							<i class="material-icons" ng-click="editGroup(g)">view</i>
+						</div>
 					</div>
 				</div>
 			</li>

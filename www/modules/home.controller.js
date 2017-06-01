@@ -2,10 +2,10 @@
     angular.module("app")
     .controller("homeController",homeController);
     
-    homeController.$inject = ["$scope", "$log", "$window", "$q", "$localStorage", "toaster", "$state", "$stateParams", "dataService", 
+    homeController.$inject = ["$scope", "$rootScope", "$log", "$window", "$q", "$localStorage", "toaster", "$state", "$stateParams", "dataService", 
         "config", "authService", "$uibModal"];
     
-    function homeController($scope, $log, $window, $q, $localStorage, toaster, $state, $stateParams, dataService, 
+    function homeController($scope, $rootScope, $log, $window, $q, $localStorage, toaster, $state, $stateParams, dataService, 
         config, authService, $uibModal){
         
         //bindable mumbers
@@ -20,7 +20,6 @@
         $scope.nodeParentTrail=[];
         $scope.selectedMenu = null;
         $scope.menu = null;
-        $scope.promices = {};
         
         if($scope.theme == undefined){
             $scope.theme = 0;
@@ -98,7 +97,7 @@
         }
 
         function getGroups (){
-            return dataService.getGroups()
+            var p = dataService.getGroups()
             .then(function(d){
                 angular.copy(d.data.data, $scope.groupsList);
                 var sectionHeader = {
@@ -132,6 +131,7 @@
             function(e){
 
             });
+            return p;
         }
         $scope.onSelect = function(node){
             $log.debug(node);
@@ -152,13 +152,11 @@
         var preInit = function(){
             var tasks = [];
             tasks.push(getGroups());
-            var initPromice = $q.all([
-                tasks
-            ])
+            var initPromice = $q.all(tasks)
             .then(function(){
                 init()
             });
-            $scope.promices.initPromice = initPromice;
+            $rootScope.__busy = initPromice;
         }
         
         var init = function(){

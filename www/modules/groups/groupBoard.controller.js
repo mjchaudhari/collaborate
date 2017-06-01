@@ -13,11 +13,8 @@
         $scope._id = $stateParams.g;
         $scope.group = null;
         $scope.groupCopy = null;
-
         $scope.selectedMembers = null;
-        
         $scope.view = $stateParams.v;
-        
         $scope.searchText ="";
         $scope.searchResult = [];
         

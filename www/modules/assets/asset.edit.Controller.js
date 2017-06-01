@@ -32,7 +32,6 @@
             "Closed"
         ]
         
-
         $scope.asset = {
             "_id": $scope.assetId,
             "assetType" : $scope.assetType,

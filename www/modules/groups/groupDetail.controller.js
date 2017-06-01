@@ -3,9 +3,9 @@
     angular.module("app")
     .controller("groupDetailController",groupDetailController);
     
-    groupDetailController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$stateParams" ,"dataService", "config","authService","$mdConstant","$mdToast"];
+    groupDetailController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$stateParams" ,"dataService", "config","authService","toaster", "$uibModal"];
     
-    function groupDetailController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast ){
+    function groupDetailController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, toaster, $uibModal ){
         
         //bindable mumbers
         
@@ -15,7 +15,7 @@
         $scope.group = null;
         $scope.groupCopy = null;
 
-        $scope.selectedMembers = null;
+        $scope.selectedMembers = [] ;
         
         $scope.view = $stateParams.v;
         
@@ -25,27 +25,27 @@
         $scope.querySearch   = _querySearch;
         $scope.saveGroupDetails = _saveGroupDetails;
 
+        $scope.memberOptions = {
+            remove: true,
+            onRemove : removeMember
+        }
         function showSimpleToast (message) {
-            $mdToast.show(
-                $mdToast.simple()
-                .textContent(message)
-                .position('bottom')
-                .hideDelay(3000)
-                .action('OK')
-            );
+            toaster.pop({
+                type: 'error',
+                title: '',
+                body: message,
+                showCloseButton: true
+            });
         };
 
         var preInit = function(){
             var tasks = [];
             if($scope._id){
-                $scope.promices.groupDetail = getGroupDetail();
-                tasks.push($scope.promices.groupDetail);
-                $scope.promices.busy = $q.all([
-                    tasks
-                ])
+                tasks.push(getGroupDetail());
+                $rootScope.__busy = $q.all(tasks)
                 .then(function(){
                     init()
-                });
+                });   
             }
             else{
                 init();
@@ -135,7 +135,22 @@
             });
         }
         
-
+        $scope.onMembersSelected = function(members){
+            if(members == null){
+                return;
+            }
+            members.forEach(function(m){
+                //find and add
+                var existing = _.findWhere($scope.group.members, {__id: m.__id});
+                if(existing === null){
+                    m._name = m.firstName + ' ' + m.lastName;
+                    $scope.group.members.push(m);
+                }
+            });
+        };
+        function removeMember(member){
+            $log.info(member._name);
+        }
         preInit();
 
 

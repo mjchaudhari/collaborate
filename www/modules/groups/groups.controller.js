@@ -42,6 +42,9 @@
         $scope.createGroup = function(){
             $state.go("home.group.new",{"g": "new"});
         }
+        $scope.editGroup = function(g){
+            $state.go("home.group.detail",{"g": g._id});
+        }
 
         $scope.openBoard = function(g){
             $state.go("home.group.board",{"g": g._id});

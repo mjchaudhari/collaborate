@@ -40,10 +40,10 @@
    .state("home.group", {url:"/:g", templateUrl : "/modules/groups/group.html"})
    .state("home.group.board", {url:"/board", templateUrl : "/modules/groups/group.board.html"})
    .state("home.group.new", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
-//    .state("home.group.detail", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
+   .state("home.group.detail", {url:"/detail", templateUrl : "/modules/groups/group.detail.html"})
 //    .state("home.group.analytics", {url:"/analytics", templateUrl : "/modules/groups/group.analytics.html"})
    
-//    .state("home.asset", {url:"/:g/asset?p&t&a", templateUrl : "/modules/assets/asset.edit.html"})
+   .state("home.asset", {url:"/:g/asset?p&t&a", templateUrl : "/modules/assets/asset.edit.html"})
       
       
       
@@ -339,7 +339,6 @@ function($http,$q, $log, config, $timeout, CacheFactory){
       return $http.post(url, grp);
     },
     getGroupMembers : function(id){
-      
       var url = config.apiBaseUrl + "/v1/group/" + id + "/members/";
       return $http.get(url, requestOpts);
     },
@@ -656,7 +655,6 @@ angular.module("app")
             "Closed"
         ]
         
-
         $scope.asset = {
             "_id": $scope.assetId,
             "assetType" : $scope.assetType,
@@ -1603,6 +1601,175 @@ angular.module("app")
         preInit();
     }//conroller ends
 })();
+(function (){
+      this.memberTpl = [
+        '<div class="container-fluid padding-0">' ,
+            '<div class="row">' ,
+                '<div class="col-2">',
+                    '<img ng-if="member.picture != null && member.picture != \'\'" ng-src="{{member.picture || defaultMemberThumbnail}}" class="thumbnail sq sq-sm" />',
+                    '<i ng-if="member.picture == null || member.picture == \'\'" class="material-icons-lg">person</i>',
+                '</div>',
+                '<div class="col-8">',
+                    '<h7 class="">{{member.firstName}} {{member.lastName}}</h7>',
+                '</div>',
+                '<div class="col-2">',
+                    '<i ng-if="options.select" class="material-icons-md" ng-class="{\'text-primary\':member.selected}" ng-click="onSelect(member)">check_circle</i>',
+                    '<i ng-if="options.edit" class="material-icons-md" ng-click="onEdit(member)">edit</i>',
+                    '<i ng-if="options.remove" class="material-icons-md" ng-click="onRemove(member)">remove_circle_outline</i>',
+                '</div>',
+            '</div>',
+        '</div>'
+    ].join('\n');
+    
+    angular.module("app")
+    .directive('member', ['$timeout', 
+        function ($timeout) {
+            return{
+                restrict: "E",
+                template: memberTpl,
+                replace: false,
+                scope: {
+                    member : "=",
+                    options: "=?"                  
+                },
+                controller: ["$scope", function($scope){
+                    $scope.onSelect = function(m){
+                        if($scope.options.onSelect){
+                            $scope.options.onSelect(m);
+                        }
+                    }
+                    $scope.onEdit = function(m){
+                        if($scope.options.onEdit){
+                            $scope.options.onEdit(m);
+                        }
+                    }
+                    $scope.onRemove = function(m){
+                        if($scope.options.onRemove){
+                            $scope.options.onRemove(m);
+                        }
+                    }
+                }]
+            }
+        }
+    ]);
+})();
+(function () {
+      this.memberListBtnTpl = [
+      
+        '<i class="material-icons-md" ng-click="openMemberListPopup()">add_circle_outline</i>'
+      
+        
+    ].join('\n');
+    
+    angular.module("app")
+    .directive('memberList', ['$timeout', 
+        function ($timeout) {
+            return{
+                restrict: "E",
+                template: memberListBtnTpl,
+                replace: false,
+                scope: {
+                    btnName: "=",
+                    selectedMembers: "=",
+                    done: "=",
+                    options : "=?"
+                    
+                },
+                controller: ["$scope", "$uibModal", "dataService", function($scope, $uibModal, dataService){
+                    $scope.openMemberListPopup = function(){
+                        //set selected attribute to each of member list
+                        var memberModal = $uibModal.open({
+                            ariaLabelledBy: 'modal-title',
+                            ariaDescribedBy: 'modal-body',
+                            windowTemplateUrl:"/modules/directives/modal.window.tpl.html",
+                            templateUrl : "/modules/directives/member.list.tpl.html",
+                            windowClass:"my-modal-dialog",
+                            windowTopClass : "full-page-modal",
+                            controller: "memberListPopupCtrl",
+                            size:'lg',
+                            resolve:{
+                                options: function(){
+                                    return $scope.options;
+                                }
+                            }
+                        });
+                        memberModal.result
+                        .then(function(data){
+                            angular.copy(data, $scope.selectedMembers);
+                            if($scope.done){
+                                $scope.done($scope.selectedMembers);
+                            }
+                        }, function(){
+                            //cancelled
+                        });
+
+                    }
+                }]
+            }
+    }])
+    .controller("memberListPopupCtrl", ["$scope", "$log", "$q", "$timeout", "dataService","$uibModalInstance", "options", function($scope, $log, $q, $timeout, dataService, $uibModalInstance, options){
+        $scope.title = "Search Members";
+            $scope.members = [];
+            $scope.searchTerm = "";
+            $scope.selectedItems = [];
+            if(options == null){
+                options = {};
+            }
+
+            $scope.memberOptions = {
+                select: true,
+                onSelect : selectMember
+            }
+            
+            function selectMember(m){
+                m.selected = !m.selected;
+            }
+
+
+            $scope.search = function(searchTerm){
+                //get the members
+                //if members are provided then use that list otherwise fetch
+                var userPromise = null;
+                if(options.members){
+                    userPromise = $timeout(function(){
+                        angular.copy(options.members, $scope.members);
+                    }, 10);
+                }
+                else if(options.groupId){
+                    //get members in group
+                    userPromise = dataService.getGroupMembers(options.groupId)
+                    .then(function(data){
+                        
+                    }, function(){
+
+                    });
+                }
+                else {
+                    //get all members
+                    userPromise = dataService.getUsers($scope.searchTerm);
+                }
+
+                userPromise
+                .then(function(data){
+                    
+                        angular.copy(data.data.data, $scope.members);
+                    }, function(err){
+
+                    });
+            }
+
+            $scope.ok = function(){
+                $scope.selectedItems = _.where($scope.members, {selected: true});
+                $uibModalInstance.close($scope.selectedItems);
+            }
+
+            $scope.cancel = function(){
+                $uibModalInstance.dismiss();
+            }
+    }]);
+    
+
+})();
 
 (function (){
     angular.module("app")
@@ -1693,11 +1860,8 @@ angular.module("app")
         $scope._id = $stateParams.g;
         $scope.group = null;
         $scope.groupCopy = null;
-
         $scope.selectedMembers = null;
-        
         $scope.view = $stateParams.v;
-        
         $scope.searchText ="";
         $scope.searchResult = [];
         
@@ -1773,9 +1937,9 @@ angular.module("app")
     angular.module("app")
     .controller("groupDetailController",groupDetailController);
     
-    groupDetailController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$stateParams" ,"dataService", "config","authService","$mdConstant","$mdToast"];
+    groupDetailController.$inject = ["$scope", "$rootScope", "$log", "$q", "$localStorage", "$state", "$stateParams" ,"dataService", "config","authService","toaster", "$uibModal"];
     
-    function groupDetailController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, $mdConstant, $mdToast ){
+    function groupDetailController($scope, $rootScope,  $log, $q, $localStorage, $state, $stateParams, dataService, config, authService, toaster, $uibModal ){
         
         //bindable mumbers
         
@@ -1785,7 +1949,7 @@ angular.module("app")
         $scope.group = null;
         $scope.groupCopy = null;
 
-        $scope.selectedMembers = null;
+        $scope.selectedMembers = [] ;
         
         $scope.view = $stateParams.v;
         
@@ -1794,28 +1958,29 @@ angular.module("app")
         
         $scope.querySearch   = _querySearch;
         $scope.saveGroupDetails = _saveGroupDetails;
+        $scope.openMemberList = openMemberList;
 
+        $scope.memberOptions = {
+            remove: true,
+            onRemove : removeMember
+        }
         function showSimpleToast (message) {
-            $mdToast.show(
-                $mdToast.simple()
-                .textContent(message)
-                .position('bottom')
-                .hideDelay(3000)
-                .action('OK')
-            );
+            toaster.pop({
+                type: 'error',
+                title: '',
+                body: message,
+                showCloseButton: true
+            });
         };
 
         var preInit = function(){
             var tasks = [];
             if($scope._id){
-                $scope.promices.groupDetail = getGroupDetail();
-                tasks.push($scope.promices.groupDetail);
-                $scope.promices.busy = $q.all([
-                    tasks
-                ])
+                tasks.push(getGroupDetail());
+                $rootScope.__busy = $q.all(tasks)
                 .then(function(){
                     init()
-                });
+                });   
             }
             else{
                 init();
@@ -1838,6 +2003,21 @@ angular.module("app")
                 $scope.groupCopy = angular.copy($scope.group);
             },
             function(e){
+
+            });
+        }
+        function openMemberList(){
+            var memberModal = $uibModal.open({
+                ariaLabelledBy: 'modal-title',
+                ariaDescribedBy: 'modal-body',
+                windowTemplateUrl:"modules/directives/modal.window.tpl.html",
+                temnplate: "<div>hi there</div>",
+                //templateUrl : "modules/directives/member.list.tpl.html",
+                windowClass:"my-modal-dialog",
+                windowTopClass : "full-page-modal",
+                controller: memberListCtrl,
+                size:'lg',
+                
 
             });
         }
@@ -1905,7 +2085,22 @@ angular.module("app")
             });
         }
         
-
+        $scope.onMembersSelected = function(members){
+            if(members == null){
+                return;
+            }
+            members.forEach(function(m){
+                //find and add
+                var existing = _.findWhere($scope.group.members, {__id: m.__id});
+                if(existing === null){
+                    m._name = m.firstName + ' ' + m.lastName;
+                    $scope.group.members.push(m);
+                }
+            });
+        };
+        function removeMember(member){
+            $log.info(member._name);
+        }
         preInit();
 
 
@@ -1954,6 +2149,9 @@ angular.module("app")
         
         $scope.createGroup = function(){
             $state.go("home.group.new",{"g": "new"});
+        }
+        $scope.editGroup = function(g){
+            $state.go("home.group.detail",{"g": g._id});
         }
 
         $scope.openBoard = function(g){
@@ -2012,10 +2210,10 @@ angular.module("app")
     angular.module("app")
     .controller("homeController",homeController);
     
-    homeController.$inject = ["$scope", "$log", "$window", "$q", "$localStorage", "toaster", "$state", "$stateParams", "dataService", 
+    homeController.$inject = ["$scope", "$rootScope", "$log", "$window", "$q", "$localStorage", "toaster", "$state", "$stateParams", "dataService", 
         "config", "authService", "$uibModal"];
     
-    function homeController($scope, $log, $window, $q, $localStorage, toaster, $state, $stateParams, dataService, 
+    function homeController($scope, $rootScope, $log, $window, $q, $localStorage, toaster, $state, $stateParams, dataService, 
         config, authService, $uibModal){
         
         //bindable mumbers
@@ -2030,7 +2228,6 @@ angular.module("app")
         $scope.nodeParentTrail=[];
         $scope.selectedMenu = null;
         $scope.menu = null;
-        $scope.promices = {};
         
         if($scope.theme == undefined){
             $scope.theme = 0;
@@ -2108,7 +2305,7 @@ angular.module("app")
         }
 
         function getGroups (){
-            return dataService.getGroups()
+            var p = dataService.getGroups()
             .then(function(d){
                 angular.copy(d.data.data, $scope.groupsList);
                 var sectionHeader = {
@@ -2142,6 +2339,7 @@ angular.module("app")
             function(e){
 
             });
+            return p;
         }
         $scope.onSelect = function(node){
             $log.debug(node);
@@ -2162,13 +2360,11 @@ angular.module("app")
         var preInit = function(){
             var tasks = [];
             tasks.push(getGroups());
-            var initPromice = $q.all([
-                tasks
-            ])
+            var initPromice = $q.all(tasks)
             .then(function(){
                 init()
             });
-            $scope.promices.initPromice = initPromice;
+            $rootScope.__busy = initPromice;
         }
         
         var init = function(){

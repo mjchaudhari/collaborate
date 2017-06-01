@@ -1,29 +1,53 @@
-<div  ng-controller="groupDetailController"  cg-busy="promices.busy" >
-    <md-toolbar class=""  >   
-        <div class="md-toolbar-tools">
-            <md-button class="md-icon-button" aria-label="back" ng-click="historyBack()"> 
-                <i class="material-icons">arrow_back</i>
-            </md-button>   
-            <span>{{title}}</span>
-        </div>
-    </md-toolbar>
-    <md-content layout-padding layout="column">
-        <div layout="row" flex  layout-align="start start">
-            <ez-image-upload img="group.thumbnail" ></ez-image-upload>
-            <div layout="column" flex>
-                <div layout-gt-sm="row">
-                    <md-input-container class="md-block" flex-gt-sm>
-                        <label>What's the group called!</label>
-                        <input ng-model="group.name">
-                    </md-input-container>
-                    <div class="hint" ></div>
+<div class="height-stretch" ng-controller="groupDetailController" >
+    <nav class="navbar navbar-inverse navbar-fixed-top fixed-top sticky-top bg-primary">
+		<a class="navbar-brand" href="">{{title}}</a>
+		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+		 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	</nav>
+	<div class="container height-stretch" role="main">
+        <form class="">
+            <!--<ez-image-upload img="group.thumbnail" ></ez-image-upload>-->
+            <div >
+                <!--<ez-image-upload img="group.thumbnail" ></ez-image-upload>-->
+                <div class="form-group">
+                    <label for="groupName" class="" >What's the group called!</label>
+                    <input id="groupName" class="form-control" ng-model="group.name" type="text" class="form-control" placeholder="Group name" >
+                    <small class="form-text text-muted"></small>
                 </div>
-                <md-input-container class="md-block">
-                    <label>More about this awesome group</label>
-                    <textarea ng-model="group.description" columns="1" md-maxlength="150" rows="5"></textarea>
-                </md-input-container>
+                <div class="form-group">
+                    <label for="groupDesc">More about this awesome group</label>
+                    <textarea class="form-control" ng-model="group.description" ng-maxlength="150" id="groupDesc" rows="3"></textarea>
+                </div>
             </div>
-        </div>
+            <div>
+                
+                <ul class="list-group" >
+                    <li class="list-group-item list-group-item-action ">
+                        <div class="col-10">
+                            <label>Group Members : {{group.members.length || '0'}}</label>
+                        </div>
+                         <div class="col-2">
+                            <member-list btn-name="'Add Member'" selected-members="selectedMembers" done="onMembersSelected"></member-list>
+                         </div>
+                    </li>
+                    <li ng-repeat="m in group.members" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <member member="m" options="memberOptions"></member>
+                    </li>
+                </ul>
+            </div>
+        </form>
+        <button class="btn btn-primary" ng-click="saveGroupDetails()">
+            Save
+        </button>
+	</div>
+    <div>
+        
+    </div>
+    <!--
+    <md-content layout-padding layout="column">
+        
         <div class="chipsContactChips">
             <md-sub-header>Group Members : {{group.members.length || '0'}}</md-sub-header>
             <md-content class="md-padding autocomplete" layout="column">
@@ -48,5 +72,5 @@
             </md-button>
         </div>
     
-    </md-content>
+    </md-content>-->
 </div>
