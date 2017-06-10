@@ -27,7 +27,10 @@
 
         $scope.memberOptions = {
             remove: true,
-            onRemove : removeMember
+            onRemove : removeMember,
+        }
+        function selectMember(){
+
         }
         function showSimpleToast (message) {
             toaster.pop({
@@ -63,6 +66,7 @@
                 if($scope.group.members){
                     $scope.group.members.forEach(function(m){
                         m._name = m.firstName + ' ' + m.lastName;
+                        m.name =m._name;
                     })
                 }
                 $scope.groupCopy = angular.copy($scope.group);
@@ -106,6 +110,7 @@
                 var users = [];
                 d.data.data.forEach(function(u){
                     u._name = u.firstName + ' ' + u.lastName;
+                    u.name =u._name;
                 });
                 defer.resolve(d.data.data);
             });
@@ -126,6 +131,7 @@
                 $scope.group.members = g.data.data.members;
                 $scope.group.members.forEach(function(u){
                     u._name = u.firstName + ' ' + u.lastName;
+                    u.name =u._name;
                 });
                 $scope.group.createdBy = g.data.data.createdBy;
                 showSimpleToast("Group saved");
@@ -135,14 +141,14 @@
             });
         }
         
-        $scope.onMembersSelected = function(members){
-            if(members == null){
+        $scope.onMembersSelected = function(){
+            if($scope.selectedMembers == null){
                 return;
             }
-            members.forEach(function(m){
+            $scope.selectedMembers.forEach(function(m){
                 //find and add
                 var existing = _.findWhere($scope.group.members, {__id: m.__id});
-                if(existing === null){
+                if(angular.isUndefined(existing)){
                     m._name = m.firstName + ' ' + m.lastName;
                     $scope.group.members.push(m);
                 }

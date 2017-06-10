@@ -1602,50 +1602,58 @@ angular.module("app")
     }//conroller ends
 })();
 (function (){
-      this.memberTpl = [
-        '<div class="container-fluid padding-0">' ,
+      this.listItemTpl = [
+        '<div class="container-fluid  padding-0">' ,
             '<div class="row">' ,
-                '<div class="col-2">',
-                    '<img ng-if="member.picture != null && member.picture != \'\'" ng-src="{{member.picture || defaultMemberThumbnail}}" class="thumbnail sq sq-sm" />',
-                    '<i ng-if="member.picture == null || member.picture == \'\'" class="material-icons-lg">person</i>',
-                '</div>',
-                '<div class="col-8">',
-                    '<h7 class="">{{member.firstName}} {{member.lastName}}</h7>',
-                '</div>',
-                '<div class="col-2">',
-                    '<i ng-if="options.select" class="material-icons-md" ng-class="{\'text-primary\':member.selected}" ng-click="onSelect(member)">check_circle</i>',
-                    '<i ng-if="options.edit" class="material-icons-md" ng-click="onEdit(member)">edit</i>',
-                    '<i ng-if="options.remove" class="material-icons-md" ng-click="onRemove(member)">remove_circle_outline</i>',
+                '<span class="col-2" ng-click="onSelect(item)">',
+                    '<img ng-src="{{item[options.thumbnailProp]}}" class="thumbnail circle circle-sm" ng-class="{\'no-image\':options.picture != null}" />',
+                '</span>',
+                '<span class="col-7" ng-click="onSelect(item)">',
+                    '<a class="" ng-click="onSelect(item)"><h6>{{item.name}}</h6></a>',
+                    '<p class="">{{item.description}}</p>',
+                '</span >',
+                '<span class="col-3 div-right">',
+                    '<i ng-if="options.select" class="material-icons" ng-class="{\'text-primary\':item.selected}" ng-click="onSelect(item)">check_circle</i>',
+                    '<i ng-if="options.edit" class="material-icons" ng-click="onEdit(item)">edit</i>',
+                    '<i ng-if="options.remove" class="material-icons" ng-click="onRemove(item)">remove_circle_outline</i>',
                 '</div>',
             '</div>',
         '</div>'
     ].join('\n');
     
     angular.module("app")
-    .directive('member', ['$timeout', 
+    .directive('listItem', ['$timeout', 
         function ($timeout) {
             return{
                 restrict: "E",
-                template: memberTpl,
-                replace: false,
+                template: listItemTpl,
+                replace: true,
                 scope: {
-                    member : "=",
+                    item : "=",
                     options: "=?"                  
                 },
                 controller: ["$scope", function($scope){
-                    $scope.onSelect = function(m){
+                    if($scope.options == null){
+                        $scope.options = {}
+                    }
+                    if($scope.options.thumbnailProp == null)
+                    {
+                        $scope.options.defaultThumbnail = "";
+                        $scope.options.thumbnailProp = "picture";
+                    }
+                    $scope.onSelect = function(item){
                         if($scope.options.onSelect){
-                            $scope.options.onSelect(m);
+                            $scope.options.onSelect(item);
                         }
                     }
-                    $scope.onEdit = function(m){
+                    $scope.onEdit = function(item){
                         if($scope.options.onEdit){
-                            $scope.options.onEdit(m);
+                            $scope.options.onEdit(item);
                         }
                     }
-                    $scope.onRemove = function(m){
+                    $scope.onRemove = function(item){
                         if($scope.options.onRemove){
-                            $scope.options.onRemove(m);
+                            $scope.options.onRemove(item);
                         }
                     }
                 }]
@@ -1656,7 +1664,7 @@ angular.module("app")
 (function () {
       this.memberListBtnTpl = [
       
-        '<i class="material-icons-md" ng-click="openMemberListPopup()">add_circle_outline</i>'
+        '<i class="material-icons" ng-click="openMemberListPopup()">add_circle_outline</i>'
       
         
     ].join('\n');
@@ -1739,7 +1747,7 @@ angular.module("app")
                     //get members in group
                     userPromise = dataService.getGroupMembers(options.groupId)
                     .then(function(data){
-                        
+                        angular.copy(options.members, $scope.members);
                     }, function(){
 
                     });
@@ -1751,8 +1759,11 @@ angular.module("app")
 
                 userPromise
                 .then(function(data){
-                    
                         angular.copy(data.data.data, $scope.members);
+                        $scope.members.forEach(function(m){
+                            m._name = m.firstName + ' ' + m.lastName;
+                            m.name =m._name;
+                        });
                     }, function(err){
 
                     });
@@ -1958,11 +1969,13 @@ angular.module("app")
         
         $scope.querySearch   = _querySearch;
         $scope.saveGroupDetails = _saveGroupDetails;
-        $scope.openMemberList = openMemberList;
 
         $scope.memberOptions = {
             remove: true,
-            onRemove : removeMember
+            onRemove : removeMember,
+        }
+        function selectMember(){
+
         }
         function showSimpleToast (message) {
             toaster.pop({
@@ -1998,26 +2011,12 @@ angular.module("app")
                 if($scope.group.members){
                     $scope.group.members.forEach(function(m){
                         m._name = m.firstName + ' ' + m.lastName;
+                        m.name =m._name;
                     })
                 }
                 $scope.groupCopy = angular.copy($scope.group);
             },
             function(e){
-
-            });
-        }
-        function openMemberList(){
-            var memberModal = $uibModal.open({
-                ariaLabelledBy: 'modal-title',
-                ariaDescribedBy: 'modal-body',
-                windowTemplateUrl:"modules/directives/modal.window.tpl.html",
-                temnplate: "<div>hi there</div>",
-                //templateUrl : "modules/directives/member.list.tpl.html",
-                windowClass:"my-modal-dialog",
-                windowTopClass : "full-page-modal",
-                controller: memberListCtrl,
-                size:'lg',
-                
 
             });
         }
@@ -2056,6 +2055,7 @@ angular.module("app")
                 var users = [];
                 d.data.data.forEach(function(u){
                     u._name = u.firstName + ' ' + u.lastName;
+                    u.name =u._name;
                 });
                 defer.resolve(d.data.data);
             });
@@ -2076,6 +2076,7 @@ angular.module("app")
                 $scope.group.members = g.data.data.members;
                 $scope.group.members.forEach(function(u){
                     u._name = u.firstName + ' ' + u.lastName;
+                    u.name =u._name;
                 });
                 $scope.group.createdBy = g.data.data.createdBy;
                 showSimpleToast("Group saved");
@@ -2085,14 +2086,14 @@ angular.module("app")
             });
         }
         
-        $scope.onMembersSelected = function(members){
-            if(members == null){
+        $scope.onMembersSelected = function(){
+            if($scope.selectedMembers == null){
                 return;
             }
-            members.forEach(function(m){
+            $scope.selectedMembers.forEach(function(m){
                 //find and add
                 var existing = _.findWhere($scope.group.members, {__id: m.__id});
-                if(existing === null){
+                if(angular.isUndefined(existing)){
                     m._name = m.firstName + ' ' + m.lastName;
                     $scope.group.members.push(m);
                 }
@@ -2120,6 +2121,7 @@ angular.module("app")
         $scope.groupList = [];
         $scope.promises = {};
         $scope.defaultGroupThumbnail = "./images/cp.png";
+        $scope.listItemOptions = {select:false, onSelect : openBoard, edit:true, onEdit : editGroup, thumbnailProp : 'thumbnail'};
         function getGroups (){
             var groupsPromise = dataService.getGroups()
             .then(function(d){
@@ -2150,11 +2152,12 @@ angular.module("app")
         $scope.createGroup = function(){
             $state.go("home.group.new",{"g": "new"});
         }
-        $scope.editGroup = function(g){
+        
+        function editGroup(g){
             $state.go("home.group.detail",{"g": g._id});
         }
 
-        $scope.openBoard = function(g){
+        function openBoard(g){
             $state.go("home.group.board",{"g": g._id});
             $scope.mainTitle = g.name;
         }

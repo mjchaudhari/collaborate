@@ -13,6 +13,14 @@ html, body{
         url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 
+.body-gradient{
+    background: rgb(160,218,255); /* Old browsers */
+background: -moz-linear-gradient(top, rgba(160,218,255,1) 4%, rgba(203,235,255,1) 30%, rgba(240,249,255,1) 65%, rgba(240,249,255,1) 65%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, rgba(160,218,255,1) 4%,rgba(203,235,255,1) 30%,rgba(240,249,255,1) 65%,rgba(240,249,255,1) 65%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, rgba(160,218,255,1) 4%,rgba(203,235,255,1) 30%,rgba(240,249,255,1) 65%,rgba(240,249,255,1) 65%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a0daff', endColorstr='#f0f9ff',GradientType=0 ); /* IE6-9 */
+}
+
 .body-bg-landing{
     background-image: url(../images/bg-3-min.jpg);
     -webkit-background-size: cover;
@@ -148,13 +156,17 @@ Show the image as background to display: block;
 .thumbnail{
   height:100px;
   width:100px;
+ 
+  margin: 5px;
+}
+
+.thumbnail.circle{
   border-radius: 50px;
   margin: 5px;
 }
-.thumbnail.circle-small{
-  height:70px;
-  width:70px;
-  border-radius: 50px;
+.thumbnail.circle.circle-sm{
+  height:50px;
+  width:50px;
   margin:0;
 }
 .thumbnail.sq{
@@ -293,6 +305,14 @@ Show the image as background to display: block;
   text-align: center;
   width:100%;
 }
+.div-right {
+  text-align: right;
+  width:100%;
+}
+.div-left {
+  text-align: left;
+  width:100%;
+}
 
 .cg-busy{
 	position:absolute;
@@ -325,4 +345,11 @@ Show the image as background to display: block;
 
 .padding-0{
     padding:0px; 
+}
+.border-bottom{
+    border-bottom: 1px;
+}
+
+.list-item-block{
+    display: block;
 }

@@ -858,10 +858,10 @@ pre code {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
-  display: flex;
+  /* display: flex; */
   -webkit-flex-wrap: wrap;
-      -ms-flex-wrap: wrap;
-          flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
   margin-right: -15px;
   margin-left: -15px;
 }
@@ -5141,18 +5141,18 @@ a.badge:focus, a.badge:hover {
 }
 
 .list-group-item {
-  position: relative;
+  /* position: relative; */
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
   -webkit-flex-flow: row wrap;
-      -ms-flex-flow: row wrap;
-          flex-flow: row wrap;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap;
   -webkit-box-align: center;
   -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
   padding: 0.75rem 1.25rem;
   margin-bottom: -1px;
   background-color: #fff;
@@ -9630,13 +9630,17 @@ Show the image as background to display: block;
 .thumbnail{
   height:100px;
   width:100px;
+ 
+  margin: 5px;
+}
+
+.thumbnail.circle{
   border-radius: 50px;
   margin: 5px;
 }
-.thumbnail.circle-small{
-  height:70px;
-  width:70px;
-  border-radius: 50px;
+.thumbnail.circle.circle-sm{
+  height:50px;
+  width:50px;
   margin:0;
 }
 .thumbnail.sq{
@@ -9775,6 +9779,14 @@ Show the image as background to display: block;
   text-align: center;
   width:100%;
 }
+.div-right {
+  text-align: right;
+  width:100%;
+}
+.div-left {
+  text-align: left;
+  width:100%;
+}
 
 .cg-busy{
 	position:absolute;
@@ -9807,6 +9819,13 @@ Show the image as background to display: block;
 
 .padding-0{
     padding:0px; 
+}
+.border-bottom{
+    border-bottom: 1px;
+}
+
+.list-item-block{
+    display: block;
 }
 @font-face {
   font-family: 'RobotoDraft';

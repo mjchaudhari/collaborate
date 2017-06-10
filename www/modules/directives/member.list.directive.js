@@ -1,7 +1,7 @@
 (function () {
       this.memberListBtnTpl = [
       
-        '<i class="material-icons-md" ng-click="openMemberListPopup()">add_circle_outline</i>'
+        '<i class="material-icons" ng-click="openMemberListPopup()">add_circle_outline</i>'
       
         
     ].join('\n');
@@ -84,7 +84,7 @@
                     //get members in group
                     userPromise = dataService.getGroupMembers(options.groupId)
                     .then(function(data){
-                        
+                        angular.copy(options.members, $scope.members);
                     }, function(){
 
                     });
@@ -96,8 +96,11 @@
 
                 userPromise
                 .then(function(data){
-                    
                         angular.copy(data.data.data, $scope.members);
+                        $scope.members.forEach(function(m){
+                            m._name = m.firstName + ' ' + m.lastName;
+                            m.name =m._name;
+                        });
                     }, function(err){
 
                     });
