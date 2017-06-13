@@ -3,10 +3,10 @@
     angular.module("app")
     .controller("assetEditController",assetEditController);
     
-    assetEditController.$inject = ["$scope", "$rootScope", "$log", "$q", "$timeout",  "$state", "$stateParams", "dataService", "config","authService","$mdConstant","$mdToast", "Upload"];
+    assetEditController.$inject = ["$scope", "$rootScope", "$log", "$q", "$timeout",  "$state", "$stateParams", "dataService", "config","authService", "toaster", "Upload"];
     
     function assetEditController($scope, $rootScope,  $log, $q,$timeout, $state, $stateParams, dataService, 
-            config, authService, $mdConstant, $mdToast, Upload){
+            config, authService, toaster, Upload){
         
         //bindable mumbers
         $scope.title    = "Edit Assets";
@@ -52,14 +52,13 @@
         
         $scope.uploadedFiles=null;
         
-        function showSimpleToast (message) {
-            $mdToast.show(
-                $mdToast.simple()
-                .textContent(message)
-                .position('top')
-                .hideDelay(3000)
-                .action('OK')
-            );
+        function showSimpleToast (message, type) {
+            toaster.pop({
+                type: type || 'info',
+                title: '',
+                body: message,
+                showCloseButton: true
+            });
         };
         
         var preInit = function(){
@@ -67,30 +66,30 @@
             var typePromise = getTypes();
             var membersPromise = _getUsers();
             
-            $scope.promises.loading = $q.all([
+            $rootScope.__busy = $q.all([
                 assetPromise, typePromise, membersPromise
             ])
             .then(function(){
                 switch ($scope.asset.assetTypeId) {
-                        case "type_task":
-                            if($scope.asset.task == null){
-                                $scope.asset.task = {}
-                            }
-                            if($scope.asset.task.updates == null){
-                                $scope.asset.task.updates = [];
-                            }
+                    case "type_task":
+                        if($scope.asset.task == null){
+                            $scope.asset.task = {}
+                        }
+                        if($scope.asset.task.updates == null){
+                            $scope.asset.task.updates = [];
+                        }
 
-                            if($scope.asset.task.owners == null){
-                                $scope.asset.task.owners = [];
-                            }        
-                            break;
-                        case "type_calendar":
-                            if($scope.asset.calendar == null){
-                                $scope.asset.calendar = {}
-                            }
-                            break;
-                        default:
-                            break;
+                        if($scope.asset.task.owners == null){
+                            $scope.asset.task.owners = [];
+                        }        
+                        break;
+                    case "type_calendar":
+                        if($scope.asset.calendar == null){
+                            $scope.asset.calendar = {}
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 init();
             });
@@ -279,7 +278,7 @@
             // else{
             //     return _saveAssetData()
             // }
-            return _saveAssetData();
+            $rootScope.__busy =  _saveAssetData();
         }
         
         function _saveAssetData(){
@@ -375,25 +374,7 @@
                 
             }
         }
-        var showToast = function(msg,type) {
-            if(type && type=="error"){
-                $mdToast.show(
-                    $mdToast.simple()
-                    .textContent(msg)
-                    .position('left')
-                    .hideDelay(3000)
-                );    
-            }
-            else{
-                $mdToast.show(
-                    $mdToast.simple()
-                    .textContent(msg)
-                    .position('left')
-                    .hideDelay(3000)
-                );
-            }
-            
-        };
+        
         $scope.addUpdate = function(u){
                 $scope.asset.task.updates.push({
                     Update : $scope.tempData.taskUpdate,

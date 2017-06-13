@@ -1,194 +1,64 @@
-        
-<div layout="column" ng-cloak ng-controller="assetEditController" >
-    <md-toolbar class=""  >   
-        <div class="md-toolbar-tools">
-            <md-button class="md-icon-button" aria-label="back" ng-click="historyBack()"> 
-                <i class="material-icons">arrow_back</i>
-            </md-button>   
-            <span>{{title}}</span>
-            <span flex></span>
-            <!--<md-button class="md-icon-button" aria-label="Menu" ng-click="newTopic()">
-				<i class="material-icons">add</i>
-			</md-button>-->
-        </div>
-    </md-toolbar>
-    <md-content layout="row">
-        <div aria-label="asset" layout="column" layout-padding flex layout-align="center" >
-            <div layout="row" flex layout-align="center center">
-                <ez-image-upload img="asset.thumbnail" ></ez-image-upload>
-                <div layout="column" flex>
-                    <div layout-gt-sm="row">
-                        <md-input-container class="md-block" flex-gt-sm>
-                            <label>Name</label>
-                            <input ng-model="asset.name">
-                        </md-input-container>
-                        <div class="hint" ></div>
-                    </div>
-                    <span>
-                        <time ng-show="asset.updatedOn">
-                            <span>Last Updated : {{  asset.updatedOn | amCalendar }}</span>
-                        </time>
-                    </span>
+
+<div ng-cloak ng-controller="assetEditController" >
+   <!--<nav class="navbar navbar-inverse navbar-fixed-top fixed-top sticky-top bg-primary">
+       <div class="navbar-header">
+            <button class="float-left navbar-toggler" type="button" ng-click="historyBack()" >
+                <span class="material-icons">arrow_back</span> 
+            </button>
+            <span class="navbar-brand" href="">{{title}}</span>
+            <button class="float-right navbar-toggler" type="button" ng-click="saveAsset()" >
+                <span class="material-icons">save</span> 
+            </button>
+       </div>
+	</nav>-->
+    <navbar title="title" back-action="historyBack()" ok-action="saveAsset()"></navbar>
+    <div class="container height-stretch" role="main">
+        <form >
+            <ez-image-upload img="asset.thumbnail" ></ez-image-upload>
+            <div >
+                <div class="form-group">
+                    <label for="name" class="" >Name</label>
+                    <input id="name" class="form-control" ng-model="asset.name" type="text" class="form-control" placeholder="Name" >
+                    <small class="form-text text-muted"></small>
                 </div>
+                <span>
+                    <time ng-show="asset.updatedOn">
+                        <span>Last Updated : {{  asset.updatedOn | amCalendar }}</span>
+                    </time>
+                </span>
             </div>
-            <div>
-                <form >
-                    <div layout="column" >
-                        <!--<md-input-container
-                            <md-select ng-model="asset.AssetType" ng-model-options="{trackBy: '$value.Name'}">
-                                <md-option ng-value="c" ng-repeat="c in types">{{c.DisplayName}}</md-option>
-                            </md-select>
-                        </md-input-container>-->
-                        <md-input-container class="md-block">
-                            <label>Description</label>
-                            <textarea ng-model="asset.description" columns="1" md-maxlength="2000" rows="5"></textarea>
-                        </md-input-container>
+            <div class="form-group">
+                <label for="desc" class="" >Description</label>
+                <textarea id="desc" class="form-control" ng-maxlength="2000" ng-model="asset.description" type="text" placeholder="Description" >
+                <small class="form-text text-muted"></small>
+            </div>
+            <!--Expiry<>-->
 
-                        <div ez-expando expando-title="Files">
-                            <div layout="row" layout-align="center center">
-                                
-                                <!--<div class="orangered"
-                                    ngf-drop="" ng-model="asset.file" ngf-drag-over-class="'dragover'" ngf-multiple="false"
-                                    ngf-allow-dir="false" ngf-pattern="'.png,.jpg,.gif,.jpeg,.mov,.pdf,.mp4,.mp3'">                   
-                                </div>
-                                -->
-                                <md-button class="md-raised  md-primary md-icon-button" 
-                                    ngf-select ng-model="asset.file">
-                                    <i class="material-icons">file_upload</i>
-                                </md-button>
-                                <md-button ng-if="asset.Urls!=null && asset.Urls.length > 0" class="md-raised  md-primary md-icon-button">
-                                    <i class="material-icons">remove_red_eye</i>
-                                </md-button>
-                            </div>
-                            <span>{{file.name}}</span>
-                        </div>
-                        
-                        <div ez-expando expando-title="File Expiry">
-                            <md-switch ng-model="asset.neverExpire" aria-label="Switch 1" flex="30">
-                                    <span ng-if="asset.neverExpire"> Never Expire</span>
-                                    <span ng-if="!asset.neverExpire"> Expire On</span>
-                            </md-switch>
-                            <span><h4>Expiry</h4></span>
+            <div layout="column" >
 
-                            <div layout="row" layout-align="left center">
-                                <md-datepicker class="transperent-bg" name="activateOn" ng-model="asset.activateOn" md-placeholder="Activate on" flex="50" ></md-datepicker>
-                                <flex>
-                                <md-datepicker ng-if="!asset.neverExpire" class="transperent-bg"  name="expireOn" ng-model="asset.expireOn" md-placeholder="Expire on" flex="50"></md-datepicker>
-                            </div>
-                            <div layout="row" layout-align="left center">                
-                                <md-switch ng-model="asset.allowComment" aria-label="Switch 1" flex>
-                                    Allow Comments
-                                </md-switch>
-                                <md-switch ng-model="asset.allowLike" aria-label="Switch 1" flex>
-                                    Allow Likes
-                                </md-switch>
-                            </div>
-                        </div>
-                    
+                <div ez-expando expando-title="Files">
+                    <div layout="row" layout-align="center center">
                         
-                        
-                        <div ez-expando expando-title="Accessible to Members : {{asset.accessibility.length || 'All'}}">
-                            <div  class=" md-card chipsContactChips">
-                                <md-content class="md-padding autocomplete" layout="column">
-                                    <md-contact-chips
-                                        ng-model="tempData.accessibility"
-                                        md-contacts="querySearch($query)"
-                                        md-contact-name="_name"
-                                        md-contact-image="Picture"
-                                        md-contact-email="userName"
-                                        placeholder="Add members"
-                                        filter-selected="true"
-                                        md-separator-keys="separatorKeys">
-                                    </md-contact-chips>
-                                </md-content>
-                            </div>
-                        </div>
-                
-                        <md-divider></md-divider>
-                        <div ng-switch="asset.assetTypeId">
-                            <div ng-switch-when="type_collection">
-                                <h2>Collection</h2>    
-                            </div>
-                            <div ng-switch-when="type_event">
-                                <h2>Event</h2>    
-                            </div>
-                            <div ng-switch-when="type_task">
-                                <h2>Task</h2>    
-                                <div ez-expando expando-title="Assigned to : {{asset.task.owners.length || 'Not set'}}">
-                                    <div  class=" md-card chipsContactChips">
-                                        <md-content class="md-padding autocomplete" layout="column">
-                                            <md-contact-chips
-                                                ng-model="tempData.owners"
-                                                md-contacts="querySearch($query)"
-                                                md-contact-name="_name"
-                                                md-contact-image="picture"
-                                                md-contact-email="userName"
-                                                placeholder="Add Assignee"
-                                                filter-selected="true"
-                                                md-separator-keys="separatorKeys">
-                                            </md-contact-chips>
-                                        </md-content>
-                                    </div>
-                                </div>
-                                <div>
-                                    <md-input-container class="md-block" flex-gt-sm flex="35">
-                                        <label>Status</label>
-                                        <md-select ng-model="asset.task.taskStatus">
-                                            <md-option ng-repeat="s in taskStatuses">
-                                                {{s}}
-                                            </md-option>
-                                        </md-select>
-                                    </md-input-container>
-                                    <div layout="column"  >
-                                        <h3>Updates</h3>
-                                        <div ng-repeat="u in asset.Task.Updates track by $index">
-                                            <span>{{u.Update}}</span>
-                                            <span ng-show=" u.updatedBy != null">{{" updated by :" + u.updatedBy }}</span>
-                                            <span ng-show=" u.updatedOn != null"> On : {{  u.updatedOn | amCalendar }}</span>
-                                            <md-button class="md-raised  md-primary md-icon-button" ng-click="editUpdate(u)"> 
-                                                <i class="material-icons">add</i>
-                                            </md-button>  
-                                        </div>
-                                        <div ng-show="asset.task.updates == null || asset.task.updates.length <= 0">
-                                            <span>No updates available</span>
-                                        </div>
-                                    </div>
-                                    <div layout="row">
-                                        <md-input-container class=""  flex="75">
-                                            <label>Enter update</label>
-                                            <textarea ng-model="tempData.taskUpdate" md-maxlength="2000" rows="3"  ></textarea>
-                                        </md-input-container>
-                                            
-                                        <md-button class="md-raised  md-primary md-icon-button" ng-click="addUpdate()"> 
-                                            <i class="material-icons">add</i>
-                                        </md-button>  
-                                        <pre>{{tempData.taskUpdate}}</pre>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                            <div ng-switch-when="type_demand">
-                                <h2>demand</h2>    
-                            </div>
-                            <div ng-switch-when="type_transaction">
-                                <h2>transaction</h2>    
-                            </div>
-                            <div ng-switch-when="type_questionnaire">
-                                <h2>Form</h2>    
-                            </div>
-                        </div>
+                        <md-button class="md-raised  md-primary md-icon-button" 
+                            ngf-select ng-model="asset.file">
+                            <i class="material-icons">file_upload</i>
+                        </md-button>
+                        <md-button ng-if="asset.Urls!=null && asset.Urls.length > 0" class="md-raised  md-primary md-icon-button">
+                            <i class="material-icons">remove_red_eye</i>
+                        </md-button>
                     </div>
-                </form>
+                    <span>{{file.name}}</span>
+                </div>    
+                
+                
             </div>
-            <div layout="row" layout-align="end center">
-                <ez-json-viewer jsonobj="asset"></ez-json-viewer>
-                <md-button ng-click="saveAsset()" >Save</md-button>
-                <md-button ng-click="cancel()">Cancel</md-button>
-            </div>
+        
+        </form>
+        <div layout="row" layout-align="end center">
+            <ez-json-viewer jsonobj="asset"></ez-json-viewer>
+            <md-button ng-click="saveAsset()" >Save</md-button>
+            <md-button ng-click="cancel()">Cancel</md-button>
         </div>
-    </md-content>
-    <!-- comment dialog template-->
-    <script type="ng-template">
-    </script>
-    <!-- </md-bottom-sheet> -->
+    
+    </div>
 </div>

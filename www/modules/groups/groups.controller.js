@@ -12,7 +12,7 @@
         $scope.groupList = [];
         $scope.promises = {};
         $scope.defaultGroupThumbnail = "./images/cp.png";
-        $scope.listItemOptions = {select:false, onSelect : openBoard, edit:true, onEdit : editGroup, thumbnailProp : 'thumbnail'};
+        $scope.listItemOptions = {select:false, onSelect : openBoard, thumbnailProp : 'thumbnail'};
         function getGroups (){
             var groupsPromise = dataService.getGroups()
             .then(function(d){
@@ -44,10 +44,6 @@
             $state.go("home.group.new",{"g": "new"});
         }
         
-        function editGroup(g){
-            $state.go("home.group.detail",{"g": g._id});
-        }
-
         function openBoard(g){
             $state.go("home.group.board",{"g": g._id});
             $scope.mainTitle = g.name;

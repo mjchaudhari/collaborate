@@ -32,9 +32,7 @@
             var tasks = [];
             tasks.push(getGroupDetail());
             tasks.push(getTopics());
-            $q.all([
-                tasks
-            ])
+            $rootScope.__busy  = $q.all(tasks)
             .then(function(){
                 init()
             });
@@ -48,9 +46,11 @@
             $state.go("home.group.detail",{"g": $scope.group._id});
             $scope.mainTitle = $scope.group.name;
         }
-
+        $scope.editGroup = function(){
+            $state.go("home.group.detail",{"g": $scope._id});
+        }
         function getGroupDetail (){
-            $scope.promices.groupBoard = dataService.getGroup($scope._id)
+            var p =  dataService.getGroup($scope._id)
             .then(function(d){
                 $scope.group = angular.copy(d.data.data[0]);
                 $scope.title = $scope.group.name;
@@ -64,17 +64,18 @@
             function(e){
 
             });
-            return $scope.promices.groupPromice;
+            return p;
         }
         function getTopics (){
-            $scope.promices.groupTopics = dataService.getAssets({groupId:$scope._id})
+            var p = dataService.getAssets({groupId:$scope._id})
             .then(function(d){
                 $scope.topics = angular.copy(d.data.data);
             },
             function(e){
 
             });
-            return $scope.promices.groupPromice;
+
+            return p;
         }
         
         $scope.newTopic = function(){

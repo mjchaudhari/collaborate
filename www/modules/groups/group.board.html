@@ -1,13 +1,18 @@
 <div  ng-controller="groupBoardController"  >
 	<nav class="navbar navbar-inverse navbar-fixed-top fixed-top sticky-top bg-primary">
-		<span class="navbar-brand" href=""><a ng-click="historyBack()">
-			<i class="material-icons">arrow_back</i></a> {{title}}</span>
-		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-		 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
+       <div class="navbar-header">
+            <button class="float-left navbar-toggler" type="button" ng-click="historyBack()" >
+                <span class="material-icons">arrow_back</span> 
+            </button>
+            <span class="navbar-brand" href="">{{title}}</span>
+            <button class="float-right navbar-toggler" type="button" ng-click="saveAsset()" >
+                <span class="material-icons">save</span> 
+            </button>
+       </div>
 	</nav>
 	<div class="" role="main">
+		<div class="div-left" ><a class="" ng-click="editGroup()">Edit group</a> | <a class="" ng-click="newTopic()">New Topic </a></div>
+		<p></p>
 		<ul class="list-group" >
 			<li>Topics {{topics.length}}</li>
 			<li ng-repeat="item in topics" ng-click="openTopic(item)" class="list-group-item list-group-item-action flex-column align-items-start">
@@ -23,9 +28,6 @@
 						<small class="text-muted">3 days ago</small>
 					</div>
 				</div>
-			</li>
-			<li class="list-group-item list-group-item-action flex-column align-items-start">
-				<div class="div-center"><a ng-click="createGroup()">New Topic</a></div>
 			</li>
 		</ul>
 	</div>

@@ -6,13 +6,13 @@
 		</button>
 	</nav>
 	<div class="" role="main">
-		<ul class="list-group " >
-			<li ng-repeat="g in groupList" class="list-group-item list-item-block">
-				<list-item item="g" options="listItemOptions"></member>
-			</li>
-			<li class="list-group-item list-group-item-action flex-column align-items-start">
-				<div class="div-center"><a ng-click="createGroup()">New group</a></div>
-			</li>
-		</ul>
+		<div class="div-right"><a ng-click="createGroup()">New group </a></div>
+		<div>
+			<ul class="list-group " >
+				<li ng-repeat="g in groupList" class="list-group-item list-item-block">
+					<list-item item="g" options="listItemOptions"></member>
+				</li>
+			</ul>
+		</div>
 	</div>
 </div>

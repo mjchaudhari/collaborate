@@ -24,7 +24,7 @@
 <body ng-controller="indexController" class="body-gradient view-animate-container">
   <toaster-container toaster-options="{'position-class': 'toast-top-full-width'}"></toaster-container>
   <!--index view-->
-    <div ui-view style="" class="view-animate">
+    <div cg-busy="{promise:__busy, message:'Loading ...', templateUrl: '/modules/busy.html'}" ui-view style="" class="view-animate">
     
     </div>
 
@@ -62,6 +62,7 @@
     
     <script src="./modules/directives/list.item.directive.js"></script>
     <script src="./modules/directives/member.list.directive.js"></script>
+    <script src="./modules/directives/navbar.directive.js"></script>
     
     <script src="./modules/home.controller.js"></script>
     <script src="./modules/dashboard.controller.js"></script>

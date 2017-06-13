@@ -32,9 +32,9 @@
         function selectMember(){
 
         }
-        function showSimpleToast (message) {
+        function showSimpleToast (message, type) {
             toaster.pop({
-                type: 'error',
+                type: type || 'info',
                 title: '',
                 body: message,
                 showCloseButton: true
@@ -120,11 +120,11 @@
         function _saveGroupDetails(){
             //basic validation
             if($scope.group.name == ""){
-                showSimpleToast("Group name requied");
+                showSimpleToast("Group name requied", "error");
                 return;
             }
 
-            dataService.saveGroup($scope.group)
+            $rootScope.__busy = dataService.saveGroup($scope.group)
             .then(function(g){
                 //if this group is created by current user then allow user to manage users
                 $scope.group._id = g.data.data._id;
@@ -134,7 +134,7 @@
                     u.name =u._name;
                 });
                 $scope.group.createdBy = g.data.data.createdBy;
-                showSimpleToast("Group saved");
+                showSimpleToast("Group saved", "success");
             },
             function(e){
                 $log.error(e);

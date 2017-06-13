@@ -11,12 +11,12 @@
         
         $scope.message = "";
         $scope.loginModel = {
-            userName:"",
+            userName:"",    
             password:"",
             confirmPassword:""
         }
         $scope.signIn = function(){
-            authService.login($scope.loginModel.userName, $scope.loginModel.password)
+            $rootScope.__busy = authService.login($scope.loginModel.userName, $scope.loginModel.password)
             .then(function(d){
                 $rootScope.$emit("evtLogged");
             },
@@ -28,6 +28,7 @@
                     showCloseButton: true
                 });
             });
+
         }
     } //conroller ends
 })();
