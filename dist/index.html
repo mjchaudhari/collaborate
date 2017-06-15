@@ -15,7 +15,7 @@
 <body ng-controller="indexController" class="body-gradient view-animate-container">
   <toaster-container toaster-options="{'position-class': 'toast-top-full-width'}"></toaster-container>
   <!--index view-->
-    <div ui-view style="" class="view-animate">
+    <div cg-busy="{promise:__busy, message:'Loading ...', templateUrl: '/modules/busy.html'}" ui-view style="" class="view-animate">
     
     </div>
 

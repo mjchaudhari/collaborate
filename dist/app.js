@@ -545,12 +545,12 @@ function($q, $log, $localStorage){
         
         $scope.message = "";
         $scope.loginModel = {
-            userName:"",
+            userName:"",    
             password:"",
             confirmPassword:""
         }
         $scope.signIn = function(){
-            authService.login($scope.loginModel.userName, $scope.loginModel.password)
+            $rootScope.__busy = authService.login($scope.loginModel.userName, $scope.loginModel.password)
             .then(function(d){
                 $rootScope.$emit("evtLogged");
             },
@@ -562,6 +562,7 @@ function($q, $log, $localStorage){
                     showCloseButton: true
                 });
             });
+
         }
     } //conroller ends
 })();
@@ -621,15 +622,41 @@ angular.module("app")
 });
 
 
+(function (){
+    angular.module("app")
+    .controller("landingController",landingController);
+    
+    landingController.$inject = ["$scope", "$log", "$state" ,"dataService", "config","authService"];
+    
+    function landingController($scope, $log, $state, dataService, config, authService){
+        $scope.user = null
+        $scope.startApp = function(){
+            if(authService.isLoggedIn){
+                $state.go("home.dashboard");
+            }
+            else{
+                $state.go("account.login");
+            }
+        }
+        function init(){
+            if(authService.isLoggedIn){
+                $scope.user = authService.userDetail
+                    
+            }
+        }
+
+        init();
+    }//conroller ends
+})();
 
 (function (){
     angular.module("app")
     .controller("assetEditController",assetEditController);
     
-    assetEditController.$inject = ["$scope", "$rootScope", "$log", "$q", "$timeout",  "$state", "$stateParams", "dataService", "config","authService","$mdConstant","$mdToast", "Upload"];
+    assetEditController.$inject = ["$scope", "$rootScope", "$log", "$q", "$timeout",  "$state", "$stateParams", "dataService", "config","authService", "toaster", "Upload"];
     
     function assetEditController($scope, $rootScope,  $log, $q,$timeout, $state, $stateParams, dataService, 
-            config, authService, $mdConstant, $mdToast, Upload){
+            config, authService, toaster, Upload){
         
         //bindable mumbers
         $scope.title    = "Edit Assets";
@@ -675,14 +702,13 @@ angular.module("app")
         
         $scope.uploadedFiles=null;
         
-        function showSimpleToast (message) {
-            $mdToast.show(
-                $mdToast.simple()
-                .textContent(message)
-                .position('top')
-                .hideDelay(3000)
-                .action('OK')
-            );
+        function showSimpleToast (message, type) {
+            toaster.pop({
+                type: type || 'info',
+                title: '',
+                body: message,
+                showCloseButton: true
+            });
         };
         
         var preInit = function(){
@@ -690,30 +716,30 @@ angular.module("app")
             var typePromise = getTypes();
             var membersPromise = _getUsers();
             
-            $scope.promises.loading = $q.all([
+            $rootScope.__busy = $q.all([
                 assetPromise, typePromise, membersPromise
             ])
             .then(function(){
                 switch ($scope.asset.assetTypeId) {
-                        case "type_task":
-                            if($scope.asset.task == null){
-                                $scope.asset.task = {}
-                            }
-                            if($scope.asset.task.updates == null){
-                                $scope.asset.task.updates = [];
-                            }
+                    case "type_task":
+                        if($scope.asset.task == null){
+                            $scope.asset.task = {}
+                        }
+                        if($scope.asset.task.updates == null){
+                            $scope.asset.task.updates = [];
+                        }
 
-                            if($scope.asset.task.owners == null){
-                                $scope.asset.task.owners = [];
-                            }        
-                            break;
-                        case "type_calendar":
-                            if($scope.asset.calendar == null){
-                                $scope.asset.calendar = {}
-                            }
-                            break;
-                        default:
-                            break;
+                        if($scope.asset.task.owners == null){
+                            $scope.asset.task.owners = [];
+                        }        
+                        break;
+                    case "type_calendar":
+                        if($scope.asset.calendar == null){
+                            $scope.asset.calendar = {}
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 init();
             });
@@ -902,7 +928,7 @@ angular.module("app")
             // else{
             //     return _saveAssetData()
             // }
-            return _saveAssetData();
+            $rootScope.__busy =  _saveAssetData();
         }
         
         function _saveAssetData(){
@@ -998,25 +1024,7 @@ angular.module("app")
                 
             }
         }
-        var showToast = function(msg,type) {
-            if(type && type=="error"){
-                $mdToast.show(
-                    $mdToast.simple()
-                    .textContent(msg)
-                    .position('left')
-                    .hideDelay(3000)
-                );    
-            }
-            else{
-                $mdToast.show(
-                    $mdToast.simple()
-                    .textContent(msg)
-                    .position('left')
-                    .hideDelay(3000)
-                );
-            }
-            
-        };
+        
         $scope.addUpdate = function(u){
                 $scope.asset.task.updates.push({
                     Update : $scope.tempData.taskUpdate,
@@ -1781,6 +1789,47 @@ angular.module("app")
     
 
 })();
+(function (){
+      this.tpl = [
+        '    <nav class="navbar navbar-inverse navbar-fixed-top fixed-top sticky-top bg-primary">',
+        '        <div class="navbar-header">',
+        '            <a class="navbar-brand" href="">{{title}}</a>',
+        '            <button class="float-left navbar-toggler" type="button" ng-click="onBackClick()"><span class="material-icons">arrow_back</span></button>',
+        '            <button class="float-right navbar-toggler" type="button" ng-click="onOkClick()" ><span class="material-icons">done</span> </button>',
+        '        </div>',
+        '    </nav>',
+
+    ].join('\n');
+    
+    angular.module("app")
+    .directive('navbar', ['$timeout', 
+        function ($timeout) {
+            return{
+                restrict: "E",
+                template: tpl,
+                replace: true,
+                scope: {
+                    title:"=?",
+                    backAction : "=?",
+                    okAction: "=?"
+                },
+                controller: ["$scope", function($scope){
+                    
+                    $scope.onBackClick = function(){
+                        if($scope.backAction){
+                            $scope.backAction();
+                        }
+                    }
+                    $scope.onOkClick = function(item){
+                        if($scope.okAction){
+                            $scope.okAction();
+                        }
+                    }
+                }]
+            }
+        }
+    ]);
+})();
 
 (function (){
     angular.module("app")
@@ -1890,9 +1939,7 @@ angular.module("app")
             var tasks = [];
             tasks.push(getGroupDetail());
             tasks.push(getTopics());
-            $q.all([
-                tasks
-            ])
+            $rootScope.__busy  = $q.all(tasks)
             .then(function(){
                 init()
             });
@@ -1906,9 +1953,11 @@ angular.module("app")
             $state.go("home.group.detail",{"g": $scope.group._id});
             $scope.mainTitle = $scope.group.name;
         }
-
+        $scope.editGroup = function(){
+            $state.go("home.group.detail",{"g": $scope._id});
+        }
         function getGroupDetail (){
-            $scope.promices.groupBoard = dataService.getGroup($scope._id)
+            var p =  dataService.getGroup($scope._id)
             .then(function(d){
                 $scope.group = angular.copy(d.data.data[0]);
                 $scope.title = $scope.group.name;
@@ -1922,17 +1971,18 @@ angular.module("app")
             function(e){
 
             });
-            return $scope.promices.groupPromice;
+            return p;
         }
         function getTopics (){
-            $scope.promices.groupTopics = dataService.getAssets({groupId:$scope._id})
+            var p = dataService.getAssets({groupId:$scope._id})
             .then(function(d){
                 $scope.topics = angular.copy(d.data.data);
             },
             function(e){
 
             });
-            return $scope.promices.groupPromice;
+
+            return p;
         }
         
         $scope.newTopic = function(){
@@ -1977,9 +2027,9 @@ angular.module("app")
         function selectMember(){
 
         }
-        function showSimpleToast (message) {
+        function showSimpleToast (message, type) {
             toaster.pop({
-                type: 'error',
+                type: type || 'info',
                 title: '',
                 body: message,
                 showCloseButton: true
@@ -2065,11 +2115,11 @@ angular.module("app")
         function _saveGroupDetails(){
             //basic validation
             if($scope.group.name == ""){
-                showSimpleToast("Group name requied");
+                showSimpleToast("Group name requied", "error");
                 return;
             }
 
-            dataService.saveGroup($scope.group)
+            $rootScope.__busy = dataService.saveGroup($scope.group)
             .then(function(g){
                 //if this group is created by current user then allow user to manage users
                 $scope.group._id = g.data.data._id;
@@ -2079,7 +2129,7 @@ angular.module("app")
                     u.name =u._name;
                 });
                 $scope.group.createdBy = g.data.data.createdBy;
-                showSimpleToast("Group saved");
+                showSimpleToast("Group saved", "success");
             },
             function(e){
                 $log.error(e);
@@ -2121,7 +2171,7 @@ angular.module("app")
         $scope.groupList = [];
         $scope.promises = {};
         $scope.defaultGroupThumbnail = "./images/cp.png";
-        $scope.listItemOptions = {select:false, onSelect : openBoard, edit:true, onEdit : editGroup, thumbnailProp : 'thumbnail'};
+        $scope.listItemOptions = {select:false, onSelect : openBoard, thumbnailProp : 'thumbnail'};
         function getGroups (){
             var groupsPromise = dataService.getGroups()
             .then(function(d){
@@ -2153,10 +2203,6 @@ angular.module("app")
             $state.go("home.group.new",{"g": "new"});
         }
         
-        function editGroup(g){
-            $state.go("home.group.detail",{"g": g._id});
-        }
-
         function openBoard(g){
             $state.go("home.group.board",{"g": g._id});
             $scope.mainTitle = g.name;
@@ -2164,32 +2210,6 @@ angular.module("app")
         
         preInit();
 
-    }//conroller ends
-})();
-(function (){
-    angular.module("app")
-    .controller("landingController",landingController);
-    
-    landingController.$inject = ["$scope", "$log", "$state" ,"dataService", "config","authService"];
-    
-    function landingController($scope, $log, $state, dataService, config, authService){
-        $scope.user = null
-        $scope.startApp = function(){
-            if(authService.isLoggedIn){
-                $state.go("home.dashboard");
-            }
-            else{
-                $state.go("account.login");
-            }
-        }
-        function init(){
-            if(authService.isLoggedIn){
-                $scope.user = authService.userDetail
-                    
-            }
-        }
-
-        init();
     }//conroller ends
 })();
 
