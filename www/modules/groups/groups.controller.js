@@ -28,9 +28,7 @@
         var preInit = function(){
             var tasks = [];
             tasks.push(getGroups());
-            $scope.promises.init = $q.all([
-                tasks
-            ])
+            $rootScope.__busy = $q.all(tasks)
             .then(function(){
                 init();
             });
