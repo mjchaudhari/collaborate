@@ -293,6 +293,8 @@ Show the image as background to display: block;
   min-height: 100vh;
   display: flex;
   align-items: center;
+  margin-top: 50%;
+  margin-bottom: 50%;
 }
 .div-center {
   text-align: center;
