@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({extended: true, limit: '5mb'}));
 app.use(express.static(path.join(__dirname, serverConfig.webRootDir)));
 // required for passport
 app.use(session({
-      secret: 'letscCollaborate', 
+      secret: 'letsCollaborate', 
       saveUninitialized: true,
       resave: true })); // session secret
 					
@@ -48,10 +48,10 @@ require('./api/routes/asset.routes.js')(app); // load our routes and pass in our
 
 
 // launch ====================================================================== 
-app.listen(port);
+app.listen(process.env.PORT);
 
 var core = new Core();
 core.initConfig();
 
-console.log('Start on port ' + port);
+console.log('Start on port ' + process.env.PORT);
 
