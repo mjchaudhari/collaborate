@@ -5,7 +5,7 @@
   src: url(Material-Design-Ico.eot); /* For IE6-8 */
   src: 
     local('Material Icons'), local('MaterialIcons-Regular'), 
-    url(Material-Design-Icons.woff2) format('woff2'),
+    url(Material-Design-icons.woff2) format('woff2'),
     url(fonts/Material-Design-Icons.woff) format('woff'),
     url(fonts/Material-Design-Icons.eot) format('truetype');
 }

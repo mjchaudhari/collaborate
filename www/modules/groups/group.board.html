@@ -5,8 +5,8 @@
                 <span class="material-icons">arrow_back</span> 
             </button>
             <span class="navbar-brand" href="">{{title}}</span>
-            <button class="float-right navbar-toggler" type="button" ng-click="saveAsset()" >
-                <span class="material-icons">save</span> 
+            <button class="float-right navbar-toggler" type="button" ng-click="editGroup()" >
+                <span class="material-icons">edit</span> 
             </button>
        </div>
 	</nav>
@@ -25,8 +25,11 @@
 							<h7 class="mb-1">{{item.name}}</h7>
 						</div>
 						<p class="mb-1">{{item.description}} </p>
-						<small class="text-muted">3 days ago</small>
+						<small class="text-muted"></small>
 					</div>
+					<button class="float-right" type="button" ng-click="editGroup()" >
+						<span class="material-icons">edit</span> 
+					</button>
 				</div>
 			</li>
 		</ul>

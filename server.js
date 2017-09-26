@@ -48,10 +48,10 @@ require('./api/routes/asset.routes.js')(app); // load our routes and pass in our
 
 
 // launch ====================================================================== 
-app.listen(process.env.PORT);
+app.listen(port);
 
 var core = new Core();
 core.initConfig();
 
-console.log('Start on port ' + process.env.PORT);
+console.log('Start on port ' + port);
 
