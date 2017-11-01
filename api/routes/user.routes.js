@@ -1,6 +1,7 @@
 
 //User routes
 var models = require("./../response.models.js").models;
+var auth            = require("./../auth.js");
 var AccountController = require("./../controllers/account.controller.js");
 
 var _dir = process.cwd();
@@ -52,7 +53,7 @@ module.exports = function (app) {
 	 *     } 
      * @apiSuccess on success returns the authentication token
     */
-	app.post('/v1/account/isAuthenticated', function (req, res) {
+	app.get('/v1/account/isAuthenticated', auth.isBearerAuth, function (req, res) {
 		console.log('isLoggedIn');
 		if (req.isAuthenticated())
 			res.json(new models.success('true'));

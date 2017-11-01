@@ -235,7 +235,7 @@ angular.module('app').factory('authService', ['$http', '$log','$q','config' ,'$l
 
     var _isAuthenticated = function () {
         var url = config.apiBaseUrl + "v1/account/isAuthenticated";
-        return $http.post(url).then(function(f){
+        return $http.get(url).then(function(f){
             _isLoggedIn = !f.data.isError;
             if($localStorage.__splituser){
             	_userDetail = $localStorage.__splituser;
