@@ -9,10 +9,12 @@
     ],
     "tasks": [
         {
-            "taskName": "default",
+            "taskName": "tsc",
             "args": [],
-            "isBuildCommand": true,
+            "isBuildCommand": false,
             "isWatching": false,
+            "command": "tsc",
+            "isShellCommand": true,
             "problemMatcher": [
                 "$lessCompile",
                 "$tsc",

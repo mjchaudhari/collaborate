@@ -14,10 +14,12 @@
         {
             "type": "node",
             "request": "launch",
+            "preLaunchTask": "tsc",
             "name": "Launch Program",
-            "program": "${workspaceRoot}/server.js",
+            "program": "${workspaceRoot}/dist/server.js",
             "cwd": "${workspaceRoot}",
             "stopOnEntry": false
+
         },
         {
             "type": "node",
