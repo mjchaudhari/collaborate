@@ -3,9 +3,12 @@ import * as path from "path"
 import * as  express  from "express";
 import {  } from "morgan";
 
+
 import {Success, Error} from "./Response"
 
-import { Account} from "./Account/Account"
+import accountRouter from "./Account/AccountRoutes"
+import { access } from 'fs';
+import { Router } from 'express';
 
 export class App{
     public app: express.Application;
@@ -24,8 +27,8 @@ export class App{
         })
     }
     config(){
-        this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: true, limit: '5mb'}));
+        this.app.use(bodyParser.json());
 
         this.app.use(function(req, res, next) {
             res.header("Access-Control-Allow-Origin", "*");
@@ -36,19 +39,23 @@ export class App{
     }
 
     routes(){
-        var router = express.Router();
+        let router:express.Router = express.Router();
         router.get("/", (req, resp, next) =>{
-            //resp.json({data: "Good to see you. Lets collaborate!!!"});
-            const a = new Account();
-            let auth = a.authenticate("9850890846", "654321")
-            .then((res)=>{
-                resp.json(new Success(res));
-            })
-            .catch((err)=>{
-                resp.json(new Error(err.code, err.message));
-            });
+            resp.send("Lets Collaborate");
         });
-        this.app.use("/", router);
+        router.post("/", (req, resp, next) =>{
+            
+            resp.send("Hey " + req.body.name);
+        });
+        
+        
+        
+        this.app.use("/v1/", router);
+        // var acctRoutes = AccountRouter;
+        // var acctRouter = acctRoutes.getRouter();
+        
+        this.app.use("/v1/account", accountRouter)
+
     }
 
 }

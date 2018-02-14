@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const bodyParser = require("body-parser");
 const express = require("express");
-const Response_1 = require("./Response");
-const Account_1 = require("./Account/Account");
+const AccountRoutes_1 = require("./Account/AccountRoutes");
 class App {
     constructor() {
         this.port = process.env.PORT || "8085";
@@ -17,8 +16,8 @@ class App {
         });
     }
     config() {
-        this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true, limit: '5mb' }));
+        this.app.use(bodyParser.json());
         this.app.use(function (req, res, next) {
             res.header("Access-Control-Allow-Origin", "*");
             res.header('Access-Control-Allow-Methods', 'OPTIONS,GET,PUT,POST,DELETE');
@@ -27,19 +26,17 @@ class App {
         });
     }
     routes() {
-        var router = express.Router();
+        let router = express.Router();
         router.get("/", (req, resp, next) => {
-            //resp.json({data: "Good to see you. Lets collaborate!!!"});
-            const a = new Account_1.Account();
-            let auth = a.authenticate("9850890846", "654321")
-                .then((res) => {
-                resp.json(new Response_1.Success(res));
-            })
-                .catch((err) => {
-                resp.json(new Response_1.Error(err.code, err.message));
-            });
+            resp.send("Lets Collaborate");
         });
-        this.app.use("/", router);
+        router.post("/", (req, resp, next) => {
+            resp.send("Hey " + req.body.name);
+        });
+        this.app.use("/v1/", router);
+        // var acctRoutes = AccountRouter;
+        // var acctRouter = acctRoutes.getRouter();
+        this.app.use("/v1/account", AccountRoutes_1.default);
     }
 }
 exports.App = App;
