@@ -13,7 +13,7 @@ export class Profile {
     private passowrd: string
 
     constructor(profileRec: any) {
-        this.id = profileRec.id;
+        this.id = profileRec.id || profileRec._id;
         this.userName = profileRec.userName;
         this.firstName = profileRec.firstName;
         this.lastName = profileRec.lasttName;

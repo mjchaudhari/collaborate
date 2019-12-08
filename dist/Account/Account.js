@@ -19,6 +19,36 @@ class Account {
                     else {
                         //Find user and match password
                         db.collection("users")
+                            .findOne({ "profileId": profile._id, secret: password })
+                            .then((user) => {
+                            var p = new Profile_1.Profile(profile);
+                            resolve(p);
+                        })
+                            .catch((err) => {
+                            reject(new Response_1.Error("UNAUTHENTICATED", ""));
+                        });
+                    }
+                })
+                    .catch(() => {
+                    reject(new Response_1.Error("UNAUTHENTICATED", ""));
+                });
+            });
+        });
+        return p;
+    }
+    getProfile(userName) {
+        const p = new Promise((resolve, reject) => {
+            new DB_1.DB().connect()
+                .then((db) => {
+                db.collection("profiles")
+                    .findOne({ "userName": userName })
+                    .then((profile) => {
+                    if (profile == null) {
+                        reject(new Response_1.Error("UNAUTHENTICATED", ""));
+                    }
+                    else {
+                        //Find user and match password
+                        db.collection("users")
                             .findOne({ "profileId": profile._id })
                             .then((user) => {
                             var p = new Profile_1.Profile(profile);

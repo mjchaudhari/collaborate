@@ -22,6 +22,16 @@ class AccountController {
             return response.json(err);
         });
     }
+    getAccount(request, response) {
+        let a = new Account_1.Account();
+        a.authenticate(request.body.userName, request.body.secret)
+            .then((profile) => {
+            return response.json(profile);
+        })
+            .catch((err) => {
+            return response.json(err);
+        });
+    }
 }
 exports.AccountController = AccountController;
 //# sourceMappingURL=AccountController.js.map

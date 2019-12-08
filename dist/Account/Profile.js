@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class Profile {
     constructor(profileRec) {
-        this.id = profileRec.id;
+        this.id = profileRec.id || profileRec._id;
         this.userName = profileRec.userName;
         this.firstName = profileRec.firstName;
         this.lastName = profileRec.lasttName;

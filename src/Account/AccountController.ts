@@ -25,4 +25,14 @@ export class AccountController{
             return response.json(err);
         });
     }
+    public getAccount (request: Request, response: Response) {
+        let a = new Account();
+        a.authenticate(request.body.userName, request.body.secret)
+        .then((profile)=>{
+            return response.json(profile);
+        })
+        .catch((err)=>{
+            return response.json(err);
+        });
+    }
 }

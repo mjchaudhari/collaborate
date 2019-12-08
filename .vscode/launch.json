@@ -7,15 +7,19 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "build",
-            "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
-            "cwd": "${workspaceRoot}"
+            "name": "serve",
+            "runtimeExecutable": "npm serve" ,
+            "runtimeArgs": [
+                "run-script",
+                "debug"
+            ],
+            "port": 9229
         },
         {
             "type": "node",
             "request": "launch",
             "preLaunchTask": "tsc",
-            "name": "Launch Program",
+            "name": "build and launch",
             "program": "${workspaceRoot}/dist/server.js",
             "cwd": "${workspaceRoot}",
             "stopOnEntry": false

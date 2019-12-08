@@ -11,9 +11,9 @@
         {
             "taskName": "tsc",
             "args": [],
-            "isBuildCommand": false,
-            "isWatching": false,
-            "command": "tsc",
+            "isBuildCommand": true,
+            "isBackground": true,
+            "command": "npm run tsc",
             "isShellCommand": true,
             "problemMatcher": [
                 "$lessCompile",
