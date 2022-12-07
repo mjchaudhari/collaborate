@@ -4,7 +4,7 @@
   "description": "Collaoration core",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "lodash": "^4.17.5",
     "mongodb": "^3.0.2",
     "morgan": "^1.9.0",
